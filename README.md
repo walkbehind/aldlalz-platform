@@ -72,12 +72,15 @@ cp .env.example apps/web/.env.local
 
 Edit both files with your values (see table below).
 
-### 3. Database
+### 3. Database (Supabase)
+
+Copy **Session** and **Transaction** pooler URIs from Supabase → Settings → Database into `.env.local`. See [docs/SUPABASE.md](docs/SUPABASE.md).
 
 ```bash
 npm run db:generate
-npm run db:push
+npm run db:migrate:deploy   # or db:push for dev-only sync
 npm run db:seed
+npm run db:verify
 ```
 
 ### 4. Start dev server
@@ -102,7 +105,8 @@ Open [http://localhost:3000](http://localhost:3000) — you will be redirected t
 
 | Variable | Required | Description |
 |----------|:--------:|-------------|
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `DATABASE_URL` | Yes | Supabase **transaction** pooler (port 6543) |
+| `DIRECT_URL` | Yes | Supabase **session** pooler (port 5432) — Prisma migrations |
 | `AUTH_SECRET` | Yes | Random secret for Auth.js sessions. Generate: `openssl rand -base64 32` |
 | `AUTH_URL` | Yes | Canonical app URL (e.g. `http://localhost:3000` or `https://your-app.vercel.app`) |
 | `NEXT_PUBLIC_APP_URL` | Yes | Public URL (same as production domain in deploy) |
@@ -124,7 +128,8 @@ Open [http://localhost:3000](http://localhost:3000) — you will be redirected t
 | Script | Description |
 |--------|-------------|
 | `npm run dev` | Next.js dev server (Turbopack) |
-| `npm run build` | Prisma generate + production build |
+| `npm run build` | Prisma generate + Next.js build (local) |
+| `npm run build:vercel` | Generate + migrate deploy + build (Vercel CI) |
 | `npm run lint` | ESLint |
 | `npm run db:generate` | Generate Prisma client |
 | `npm run db:push` | Push schema to database (dev) |
@@ -158,14 +163,16 @@ This repo is a **npm workspaces monorepo**. Recommended Vercel setup:
 2. Set **Root Directory** to `apps/web`.
 3. Override commands (monorepo installs from repo root):
    - **Install Command:** `cd ../.. && npm install`
-   - **Build Command:** `cd ../.. && npm run build`
+   - **Build Command:** `cd ../.. && npm run build:vercel`
 4. Add environment variables in Vercel (Production + Preview):
-   - `DATABASE_URL`
+   - `DATABASE_URL` — transaction pooler (6543)
+   - `DIRECT_URL` — session pooler (5432)
    - `AUTH_SECRET`
    - `AUTH_URL` → `https://<your-domain>`
    - `NEXT_PUBLIC_APP_URL` → same as `AUTH_URL`
 5. Use **Vercel Postgres**, **Neon**, or **Supabase** for `DATABASE_URL`.
-6. After first deploy, run migrations/seed against production DB as needed (`db:push` or `db:migrate` + `db:seed` from your machine or CI).
+6. After deploy, verify: `GET https://your-domain/api/health/db`
+7. Seed production once from your machine: `npm run db:seed` (with production `DATABASE_URL` in `.env.local` temporarily, or use Supabase SQL)
 
 `apps/web/vercel.json` documents the install/build overrides for this layout.
 

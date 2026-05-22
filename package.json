@@ -8,19 +8,27 @@
   "scripts": {
     "dev": "npm run dev --workspace=@aldlalz/web",
     "build": "npm run db:generate && npm run build --workspace=@aldlalz/web",
+    "build:vercel": "npm run db:generate && npm run db:migrate:deploy:ci && npm run build --workspace=@aldlalz/web",
     "lint": "npm run lint --workspace=@aldlalz/web",
-    "postinstall": "prisma generate --schema=packages/database/prisma/schema.prisma",
-    "db:generate": "prisma generate --schema=packages/database/prisma/schema.prisma",
-    "db:push": "prisma db push --schema=packages/database/prisma/schema.prisma",
-    "db:migrate": "prisma migrate dev --schema=packages/database/prisma/schema.prisma",
-    "db:studio": "prisma studio --schema=packages/database/prisma/schema.prisma",
-    "db:seed": "npm run db:seed --workspace=@aldlalz/database"
+    "postinstall": "prisma generate --schema=packages/database/prisma/schema.prisma || true",
+    "db:generate": "dotenv -e .env.local -- prisma generate --schema=packages/database/prisma/schema.prisma",
+    "db:push": "dotenv -e .env.local -- prisma db push --schema=packages/database/prisma/schema.prisma",
+    "db:migrate": "dotenv -e .env.local -- prisma migrate dev --schema=packages/database/prisma/schema.prisma",
+    "db:migrate:deploy": "dotenv -e .env.local -- prisma migrate deploy --schema=packages/database/prisma/schema.prisma",
+    "db:migrate:deploy:ci": "prisma migrate deploy --schema=packages/database/prisma/schema.prisma",
+    "db:studio": "dotenv -e .env.local -- prisma studio --schema=packages/database/prisma/schema.prisma",
+    "db:seed": "dotenv -e .env.local -- npm run db:seed --workspace=@aldlalz/database",
+    "db:verify": "dotenv -e .env.local -- node scripts/verify-db.mjs",
+    "db:sync-env": "node scripts/sync-supabase-env.mjs",
+    "db:find-region": "node scripts/find-supabase-region.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
     "@prisma/client": "^6.19.3",
+    "dotenv-cli": "^8.0.0",
+    "pg": "^8.21.0",
     "prisma": "^6.19.0"
   }
 }
