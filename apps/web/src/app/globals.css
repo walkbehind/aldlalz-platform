@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* ─── Aldlalz design tokens ─────────────────────────────── */
+@theme {
+  --color-brand-50: #e6f7fc;
+  --color-brand-100: #b3e8f5;
+  --color-brand-200: #80d9ee;
+  --color-brand-300: #4dcae7;
+  --color-brand-400: #26b8db;
+  --color-brand-500: #0099cc;
+  --color-brand-600: #0088b8;
+  --color-brand-700: #006d94;
+  --color-brand-800: #005270;
+  --color-brand-900: #00374c;
+
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f7f9;
+  --color-border: #e2e8f0;
+  --color-text: #1a1f2e;
+  --color-text-muted: #64748b;
+
+  --font-sans: "Segoe UI", Tahoma, system-ui, sans-serif;
+  --radius-card: 0.75rem;
+  --shadow-card: 0 4px 24px rgb(0 0 0 / 0.06);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface-muted text-text antialiased;
+    font-family: var(--font-sans);
+  }
+
+  [dir="rtl"] {
+    font-family: "Segoe UI", Tahoma, "Noto Sans Arabic", sans-serif;
+  }
+}

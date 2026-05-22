@@ -1,0 +1,174 @@
+// Aldlalz — Phase 1 initial schema (foundation only)
+// Full business tables will expand in Phase 2+
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────
+
+enum UserRole {
+  USER
+  OWNER
+  BROKER
+  OFFICE
+  ADMIN
+  SUPERADMIN
+}
+
+enum ListingType {
+  SALE
+  RENT
+  BOOKING
+  PROJECT
+  SPORT
+  COURSE
+  ENTERTAINMENT
+}
+
+enum ListingStatus {
+  AVAILABLE
+  SOLD
+  RENTED
+  BOOKED
+  NEGOTIATING
+  UNDER_REVIEW
+  REJECTED
+}
+
+enum AdminStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PackageTarget {
+  USER
+  OFFICE
+}
+
+// ─── Auth.js (required adapter models) ───────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  image         String?
+
+  nameAr String?
+  nameEn String?
+  phone  String? @unique
+  role   UserRole @default(USER)
+
+  langPreference String @default("ar")
+  isActive       Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+
+  listings Listing[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── Core domain (Phase 1 placeholders) ─────────────────
+
+model Listing {
+  id      String @id @default(cuid())
+  ownerId String
+
+  listingType ListingType
+  titleAr     String
+  titleEn     String?
+  descriptionAr String? @db.Text
+  descriptionEn String? @db.Text
+
+  priceKwd Decimal? @db.Decimal(12, 3)
+
+  listingStatus ListingStatus @default(AVAILABLE)
+  adminStatus   AdminStatus   @default(PENDING)
+
+  viewCount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@index([listingType])
+  @@index([listingStatus])
+  @@map("listings")
+}
+
+model Package {
+  id String @id @default(cuid())
+
+  nameAr        String
+  nameEn        String?
+  descriptionAr String? @db.Text
+  descriptionEn String? @db.Text
+
+  target       PackageTarget @default(USER)
+  tier         Int           @default(1)
+  maxListings  Int           @default(5)
+  durationDays Int           @default(30)
+  priceKwd     Decimal       @db.Decimal(12, 3)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("packages")
+}

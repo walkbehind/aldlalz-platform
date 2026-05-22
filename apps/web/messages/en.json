@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "title": "Aldlalz",
+    "description": "Modern real estate platform for Kuwait"
+  },
+  "nav": {
+    "home": "Home",
+    "listings": "Listings",
+    "packages": "Packages",
+    "login": "Sign in",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "admin": "Admin",
+    "logout": "Sign out"
+  },
+  "home": {
+    "title": "Welcome to Aldlalz",
+    "subtitle": "Sale • Rent • Booking • Entertainment • Projects — all in one place",
+    "ctaListings": "Browse listings",
+    "ctaRegister": "Get started"
+  },
+  "listings": {
+    "title": "Listings",
+    "subtitle": "Property list — database integration in Phase 2",
+    "empty": "No listings yet",
+    "viewDetails": "Details"
+  },
+  "listingDetail": {
+    "title": "Listing details",
+    "placeholder": "Listing detail page — coming in Phase 2"
+  },
+  "packages": {
+    "title": "Packages",
+    "subtitle": "Choose the plan that fits your real estate activity"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "registerTitle": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "submitLogin": "Sign in",
+    "submitRegister": "Register",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "dashboard": {
+    "title": "User dashboard",
+    "welcome": "Welcome",
+    "placeholder": "Dashboard — wallet, listings, and messages in Phase 2"
+  },
+  "admin": {
+    "title": "Admin dashboard",
+    "subtitle": "Platform management — Phase 2",
+    "placeholder": "Listing approvals, users, and reports coming soon"
+  },
+  "common": {
+    "phase1": "Phase 1 — platform foundation",
+    "backHome": "Back to home"
+  }
+}
