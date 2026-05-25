@@ -39,7 +39,7 @@ if (directMatch) {
 }
 
 const directUrl = `postgresql://postgres.${ref}:${password}@${poolerHost}:5432/postgres`;
-const databaseUrl = `postgresql://postgres.${ref}:${password}@${poolerHost}:6543/postgres?pgbouncer=true`;
+const databaseUrl = `postgresql://postgres.${ref}:${password}@${poolerHost}:6543/postgres?pgbouncer=true&connection_limit=1`;
 
 const preserved = content
   .split(/\r?\n/)

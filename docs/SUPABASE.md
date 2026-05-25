@@ -7,7 +7,7 @@ In **Supabase Dashboard** → **Project Settings** → **Database** → **Connec
 | Variable | Supabase mode | Port |
 |----------|---------------|------|
 | `DIRECT_URL` | **Session pooler** | 5432 |
-| `DATABASE_URL` | **Transaction pooler** | 6543 (`?pgbouncer=true`) |
+| `DATABASE_URL` | **Transaction pooler** | 6543 (`?pgbouncer=true&connection_limit=1`) |
 
 Username format: `postgres.[project-ref]`  
 Example region for this project: `aws-1-ap-northeast-1.pooler.supabase.com`
@@ -18,6 +18,8 @@ Add both to:
 - `apps/web/.env.local`
 - **Vercel** → Environment Variables (Production + Preview)
 
+> **Vercel / serverless:** `DATABASE_URL` must include `pgbouncer=true` and `connection_limit=1` on the transaction pooler (port 6543). Without this, you may see `prepared statement "sX" already exists` (Postgres 42P05). The app auto-adds these params on Vercel, but set them explicitly in Vercel env vars too.
+>
 > If you only have the legacy direct URL (`db.*.supabase.co`), run:
 > ```bash
 > npm run db:sync-env
