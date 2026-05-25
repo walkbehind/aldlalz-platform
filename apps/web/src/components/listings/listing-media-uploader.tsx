@@ -13,6 +13,8 @@ type Props = {
   storageConfigured: boolean;
 };
 
+const fetchOpts = { credentials: "same-origin" as const };
+
 export function ListingMediaUploader({
   listingId,
   initialImages,
@@ -43,6 +45,7 @@ export function ListingMediaUploader({
         const res = await fetch(`/api/listings/${listingId}/images`, {
           method: "POST",
           body: formData,
+          ...fetchOpts,
         });
         const data = await res.json();
         if (!res.ok) {
@@ -63,6 +66,7 @@ export function ListingMediaUploader({
     if (!confirm(t("deleteConfirm"))) return;
     const res = await fetch(`/api/listings/${listingId}/images/${imageId}`, {
       method: "DELETE",
+      ...fetchOpts,
     });
     if (!res.ok) return;
     setImages((prev) => {
@@ -79,6 +83,7 @@ export function ListingMediaUploader({
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "cover", imageId }),
+      ...fetchOpts,
     });
     if (!res.ok) return;
     setImages((prev) =>
@@ -94,11 +99,12 @@ export function ListingMediaUploader({
         action: "reorder",
         orderedIds: next.map((i) => i.id),
       }),
+      ...fetchOpts,
     });
   }
 
   function reorder(from: number, to: number) {
-    if (from === to) return;
+    if (from === to || to < 0 || to >= images.length) return;
     setImages((prev) => {
       const next = [...prev];
       const [moved] = next.splice(from, 1);
@@ -187,7 +193,7 @@ export function ListingMediaUploader({
             >
               <div className="relative aspect-[4/3]">
                 <Image
-                  src={image.url}
+                  src={image.thumbUrl}
                   alt=""
                   fill
                   sizes="(max-width: 640px) 50vw, 200px"
@@ -199,6 +205,34 @@ export function ListingMediaUploader({
                 <span className="absolute start-2 top-2 rounded bg-brand-600 px-2 py-0.5 text-xs text-white">
                   {t("cover")}
                 </span>
+              )}
+              {images.length > 1 && (
+                <div className="absolute end-2 top-2 flex flex-col gap-0.5 sm:hidden">
+                  <button
+                    type="button"
+                    disabled={index === 0}
+                    className="rounded bg-black/50 px-1.5 py-0.5 text-xs text-white disabled:opacity-30"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      reorder(index, index - 1);
+                    }}
+                    aria-label={t("moveEarlier")}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    disabled={index === images.length - 1}
+                    className="rounded bg-black/50 px-1.5 py-0.5 text-xs text-white disabled:opacity-30"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      reorder(index, index + 1);
+                    }}
+                    aria-label={t("moveLater")}
+                  >
+                    ↓
+                  </button>
+                </div>
               )}
               <div className="absolute inset-x-0 bottom-0 flex gap-1 bg-black/60 p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
                 {!image.isCover && (

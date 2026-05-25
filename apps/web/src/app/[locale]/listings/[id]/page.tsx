@@ -23,6 +23,7 @@ import {
   PROPERTY_TYPE_LABELS,
 } from "@/lib/listings/constants";
 import { getCoverImage } from "@/lib/listings/images";
+import { getThumbnailStorageUrl } from "@/lib/supabase/client";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -102,6 +103,7 @@ export default async function ListingDetailPage({ params }: Props) {
             images={listing.images.map((img) => ({
               id: img.id,
               url: img.url,
+              thumbUrl: getThumbnailStorageUrl(img.storagePath),
               width: img.width,
               height: img.height,
             }))}

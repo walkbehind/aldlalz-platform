@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import {
+  getListingImagesForOwner,
   reorderListingImages,
   setListingCoverImage,
   uploadListingImages,
@@ -20,6 +21,23 @@ function revalidateListing(id: string) {
 
 function errorResponse(code: string, status: number) {
   return NextResponse.json({ error: code }, { status });
+}
+
+export async function GET(_request: Request, context: RouteContext) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return errorResponse("UNAUTHORIZED", 401);
+  }
+
+  const { id } = await context.params;
+
+  try {
+    const images = await getListingImagesForOwner(id, session.user.id);
+    return NextResponse.json({ images });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "FAILED";
+    return errorResponse(message, message === "NOT_FOUND" ? 404 : 500);
+  }
 }
 
 export async function POST(request: Request, context: RouteContext) {

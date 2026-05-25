@@ -36,7 +36,7 @@ export function ListingCard({
         <div className="relative aspect-[16/10] bg-surface-muted">
           {listing.coverImage ? (
             <Image
-              src={listing.coverImage.url}
+              src={listing.coverImage.thumbUrl}
               alt={title}
               fill
               sizes="(max-width: 768px) 100vw, 33vw"

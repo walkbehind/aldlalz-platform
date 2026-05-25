@@ -5,12 +5,14 @@ import {
   type Prisma,
 } from "@aldlalz/database";
 import { getCoverImage } from "@/lib/listings/images";
+import { getThumbnailStorageUrl } from "@/lib/supabase/client";
 import { PAGE_SIZE } from "./constants";
 import type { ListingSearchParams } from "./validation";
 
 export type ListingImageSummary = {
   id: string;
   url: string;
+  thumbUrl: string;
   isCover: boolean;
   width: number | null;
   height: number | null;
@@ -38,6 +40,7 @@ export type ListingCardData = Pick<
 const cardImageSelect = {
   id: true,
   url: true,
+  storagePath: true,
   isCover: true,
   width: true,
   height: true,
@@ -145,6 +148,7 @@ function mapToCardData(
       ? {
           id: cover.id,
           url: cover.url,
+          thumbUrl: getThumbnailStorageUrl(cover.storagePath),
           isCover: cover.isCover,
           width: cover.width,
           height: cover.height,

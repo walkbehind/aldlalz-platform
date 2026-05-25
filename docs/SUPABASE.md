@@ -86,16 +86,18 @@ Then **Redeploy** on Vercel.
 - `listings`, `listing_images`, `packages`
 - Enums: `UserRole`, `ListingType`, `ListingStatus`, `AdminStatus`, `PackageTarget`, `PropertyType`, `KuwaitGovernorate`
 
-## 6. Storage (Phase 3 — listing photos)
+## 6. Storage (listing photos)
 
 1. **Supabase Dashboard** → **Storage** → **New bucket**
    - Name: `listing-images`
-   - **Public bucket**: enabled (public read for approved listing photos)
+   - **Public bucket**: enabled (public read for listing photos on approved listings)
 2. Add to `.env.local`, `apps/web/.env.local`, and **Vercel**:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY` (server-only — never expose to client)
-3. Optional RLS: uploads go through the Next.js API using the service role; public read via bucket policy.
+3. **Security model:** uploads, deletes, reorder, and cover changes go through authenticated Next.js API routes using the service role. Only the listing owner can mutate images. Public read is via the public bucket URL.
+4. **Mobile optimization:** uploads are converted to WebP (max 1600px) via `sharp`. Thumbnails use Supabase image transforms (`/storage/v1/render/image/public/...`) for cards and gallery strips.
+5. **Verify:** after deploy, upload photos on a draft listing in the dashboard, set a cover, reorder, then submit and view the public listing gallery.
 
 ## 7. Google Maps (Phase 3)
 

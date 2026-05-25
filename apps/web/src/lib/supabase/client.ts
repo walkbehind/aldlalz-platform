@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 export const LISTING_IMAGES_BUCKET = "listing-images";
 export const MAX_IMAGES_PER_LISTING = 20;
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
+export const THUMB_WIDTH = 480;
 
 export function getSupabaseUrl() {
   return process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -17,10 +18,7 @@ export function getSupabaseServiceRoleKey() {
 }
 
 export function isSupabaseStorageConfigured() {
-  return !!(
-    getSupabaseUrl() &&
-    getSupabaseServiceRoleKey()
-  );
+  return !!(getSupabaseUrl() && getSupabaseServiceRoleKey());
 }
 
 export function createSupabaseAdminClient() {
@@ -39,10 +37,26 @@ export function getPublicStorageUrl(storagePath: string) {
   return `${url}/storage/v1/object/public/${LISTING_IMAGES_BUCKET}/${storagePath}`;
 }
 
+/** Supabase image transform — fast thumbnails for cards and gallery strip */
+export function getThumbnailStorageUrl(storagePath: string, width = THUMB_WIDTH) {
+  const base = getSupabaseUrl();
+  if (!base) return getPublicStorageUrl(storagePath);
+  const params = new URLSearchParams({
+    width: String(width),
+    quality: "80",
+    resize: "contain",
+  });
+  return `${base}/storage/v1/render/image/public/${LISTING_IMAGES_BUCKET}/${storagePath}?${params.toString()}`;
+}
+
 export function buildListingImagePath(
   ownerId: string,
   listingId: string,
   fileName: string
 ) {
   return `${ownerId}/${listingId}/${fileName}`;
+}
+
+export function buildListingImageFolder(ownerId: string, listingId: string) {
+  return `${ownerId}/${listingId}`;
 }

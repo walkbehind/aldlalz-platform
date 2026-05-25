@@ -10,6 +10,7 @@ import {
   type PropertyType,
 } from "@aldlalz/database";
 import { isValidKuwaitCoordinate } from "@/lib/maps/kuwait";
+import { deleteAllListingImagesFromStorage } from "@/lib/listings/images";
 import { requireAdminUser, requireSessionUser } from "./auth";
 import { parseListingForm, rejectListingSchema } from "./validation";
 
@@ -140,8 +141,15 @@ export async function deleteDraftListingAction(id: string) {
   const user = await requireSessionUser();
   const existing = await prisma.listing.findFirst({
     where: { id, ownerId: user.id, isDraft: true },
+    include: { images: { select: { storagePath: true } } },
   });
   if (!existing) throw new Error("NOT_FOUND");
+
+  await deleteAllListingImagesFromStorage(
+    user.id,
+    id,
+    existing.images.map((i) => i.storagePath)
+  );
 
   await prisma.listing.delete({ where: { id } });
   revalidateListingPaths();

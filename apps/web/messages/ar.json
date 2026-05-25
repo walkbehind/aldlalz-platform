@@ -69,7 +69,8 @@
       "openFullscreen": "عرض بملء الشاشة",
       "prev": "السابق",
       "next": "التالي",
-      "close": "إغلاق"
+      "close": "إغلاق",
+      "counter": "{current} / {total}"
     },
     "map": {
       "title": "الموقع على الخريطة",
@@ -141,6 +142,8 @@
         "setCover": "تعيين كغلاف",
         "delete": "حذف",
         "deleteConfirm": "حذف هذه الصورة؟",
+        "moveEarlier": "تحريك للأمام",
+        "moveLater": "تحريك للخلف",
         "storageNotConfigured": "تخزين Supabase غير مُعد — أضف مفاتيح Storage في متغيرات البيئة",
         "errors": {
           "UPLOAD_FAILED": "فشل الرفع",

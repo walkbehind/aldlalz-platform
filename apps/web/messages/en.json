@@ -69,7 +69,8 @@
       "openFullscreen": "View fullscreen",
       "prev": "Previous",
       "next": "Next",
-      "close": "Close"
+      "close": "Close",
+      "counter": "{current} / {total}"
     },
     "map": {
       "title": "Location on map",
@@ -141,6 +142,8 @@
         "setCover": "Set cover",
         "delete": "Delete",
         "deleteConfirm": "Delete this photo?",
+        "moveEarlier": "Move earlier",
+        "moveLater": "Move later",
         "storageNotConfigured": "Supabase Storage is not configured — add Storage env vars",
         "errors": {
           "UPLOAD_FAILED": "Upload failed",
