@@ -19,11 +19,26 @@ export async function GET() {
       ORDER BY table_name
     `;
 
+    const migrations = await prisma.$queryRaw<
+      { migration_name: string; finished_at: Date | null }[]
+    >`
+      SELECT migration_name, finished_at
+      FROM "_prisma_migrations"
+      ORDER BY finished_at
+    `;
+
+    const tableNames = tables.map((t) => t.table_name);
+    const phase3Ready =
+      tableNames.includes("listing_images") &&
+      migrations.some((m) => m.migration_name === "003_listing_media_location");
+
     return NextResponse.json({
       ok: true,
       database: ping.db,
       serverTime: ping.now,
-      tables: tables.map((t) => t.table_name),
+      tables: tableNames,
+      migrations: migrations.map((m) => m.migration_name),
+      phase3Ready,
     });
   } catch (error) {
     const message =

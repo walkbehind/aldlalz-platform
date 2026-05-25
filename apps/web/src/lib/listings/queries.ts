@@ -65,6 +65,64 @@ const cardListingSelect = {
   },
 };
 
+const legacyCardListingSelect = {
+  id: true,
+  titleAr: true,
+  titleEn: true,
+  listingType: true,
+  propertyType: true,
+  priceKwd: true,
+  governorate: true,
+  area: true,
+  bedrooms: true,
+  bathrooms: true,
+  sizeM2: true,
+  createdAt: true,
+} as const;
+
+let preferLegacyListingQueries: boolean | null = null;
+
+function isListingSchemaError(error: unknown) {
+  if (error && typeof error === "object" && "code" in error) {
+    const code = String((error as { code: string }).code);
+    if (code === "P2021" || code === "P2022") return true;
+  }
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    message.includes("listing_images") ||
+    message.includes("isFeatured") ||
+    message.includes("does not exist")
+  );
+}
+
+function mapLegacyToCardData(
+  listing: Prisma.ListingGetPayload<{ select: typeof legacyCardListingSelect }>
+): ListingCardData {
+  return {
+    ...listing,
+    isFeatured: false,
+    coverImage: null,
+  };
+}
+
+async function withListingSchemaFallback<T>(
+  modern: () => Promise<T>,
+  legacy: () => Promise<T>
+): Promise<T> {
+  if (preferLegacyListingQueries) return legacy();
+  try {
+    const result = await modern();
+    preferLegacyListingQueries = false;
+    return result;
+  } catch (error) {
+    if (isListingSchemaError(error)) {
+      preferLegacyListingQueries = true;
+      return legacy();
+    }
+    throw error;
+  }
+}
+
 function mapToCardData(
   listing: Prisma.ListingGetPayload<{ select: typeof cardListingSelect }>
 ): ListingCardData {
@@ -149,6 +207,13 @@ function buildPublicWhere(
 }
 
 export async function searchPublicListings(params: ListingSearchParams) {
+  return withListingSchemaFallback(
+    () => searchPublicListingsModern(params),
+    () => searchPublicListingsLegacy(params)
+  );
+}
+
+async function searchPublicListingsModern(params: ListingSearchParams) {
   const page = Math.max(1, Number(params.page) || 1);
   const where = buildPublicWhere(params);
 
@@ -172,21 +237,57 @@ export async function searchPublicListings(params: ListingSearchParams) {
   };
 }
 
+async function searchPublicListingsLegacy(params: ListingSearchParams) {
+  const page = Math.max(1, Number(params.page) || 1);
+  const where = buildPublicWhere(params);
+
+  const [rows, total] = await Promise.all([
+    prisma.listing.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+      select: legacyCardListingSelect,
+    }),
+    prisma.listing.count({ where }),
+  ]);
+
+  return {
+    items: rows.map(mapLegacyToCardData),
+    total,
+    page,
+    pageSize: PAGE_SIZE,
+    totalPages: Math.max(1, Math.ceil(total / PAGE_SIZE)),
+  };
+}
+
 export async function getFeaturedListings(limit = 6) {
-  const rows = await prisma.listing.findMany({
-    where: {
-      isDraft: false,
-      adminStatus: "APPROVED",
-      isFeatured: true,
+  return withListingSchemaFallback(
+    async () => {
+      const rows = await prisma.listing.findMany({
+        where: {
+          isDraft: false,
+          adminStatus: "APPROVED",
+          isFeatured: true,
+        },
+        orderBy: { updatedAt: "desc" },
+        take: limit,
+        select: cardListingSelect,
+      });
+      return rows.map(mapToCardData);
     },
-    orderBy: { updatedAt: "desc" },
-    take: limit,
-    select: cardListingSelect,
-  });
-  return rows.map(mapToCardData);
+    async () => []
+  );
 }
 
 export async function getPublicListingById(id: string) {
+  return withListingSchemaFallback(
+    () => getPublicListingByIdModern(id),
+    () => getPublicListingByIdLegacy(id)
+  );
+}
+
+async function getPublicListingByIdModern(id: string) {
   const listing = await prisma.listing.findFirst({
     where: {
       id,
@@ -218,6 +319,37 @@ export async function getPublicListingById(id: string) {
   return listing;
 }
 
+async function getPublicListingByIdLegacy(id: string) {
+  const listing = await prisma.listing.findFirst({
+    where: {
+      id,
+      isDraft: false,
+      adminStatus: "APPROVED",
+    },
+    include: {
+      owner: {
+        select: {
+          id: true,
+          nameAr: true,
+          nameEn: true,
+          phone: true,
+          image: true,
+          role: true,
+        },
+      },
+    },
+  });
+
+  if (!listing) return null;
+
+  await prisma.listing.update({
+    where: { id },
+    data: { viewCount: { increment: 1 } },
+  });
+
+  return { ...listing, images: [] };
+}
+
 export async function getSimilarListings(listing: {
   id: string;
   governorate: Listing["governorate"];
@@ -230,72 +362,138 @@ export async function getSimilarListings(listing: {
   const min = price * 0.7;
   const max = price * 1.3;
 
-  const rows = await prisma.listing.findMany({
-    where: {
-      id: { not: listing.id },
-      isDraft: false,
-      adminStatus: "APPROVED",
-      OR: [
-        { governorate: listing.governorate, area: listing.area },
-        {
-          governorate: listing.governorate,
-          propertyType: listing.propertyType,
+  const rows = await withListingSchemaFallback(
+    () =>
+      prisma.listing.findMany({
+        where: {
+          id: { not: listing.id },
+          isDraft: false,
+          adminStatus: "APPROVED",
+          OR: [
+            { governorate: listing.governorate, area: listing.area },
+            {
+              governorate: listing.governorate,
+              propertyType: listing.propertyType,
+            },
+            {
+              listingType: listing.listingType,
+              priceKwd: { gte: min, lte: max },
+            },
+          ],
         },
-        {
-          listingType: listing.listingType,
-          priceKwd: { gte: min, lte: max },
+        orderBy: { viewCount: "desc" },
+        take: 4,
+        select: cardListingSelect,
+      }),
+    () =>
+      prisma.listing.findMany({
+        where: {
+          id: { not: listing.id },
+          isDraft: false,
+          adminStatus: "APPROVED",
+          OR: [
+            { governorate: listing.governorate, area: listing.area },
+            {
+              governorate: listing.governorate,
+              propertyType: listing.propertyType,
+            },
+            {
+              listingType: listing.listingType,
+              priceKwd: { gte: min, lte: max },
+            },
+          ],
         },
-      ],
-    },
-    orderBy: { viewCount: "desc" },
-    take: 4,
-    select: cardListingSelect,
-  });
+        orderBy: { viewCount: "desc" },
+        take: 4,
+        select: legacyCardListingSelect,
+      })
+  );
 
-  return rows.map(mapToCardData);
+  if (preferLegacyListingQueries) {
+    return (
+      rows as Prisma.ListingGetPayload<{
+        select: typeof legacyCardListingSelect;
+      }>[]
+    ).map(mapLegacyToCardData);
+  }
+
+  return (
+    rows as Prisma.ListingGetPayload<{ select: typeof cardListingSelect }>[]
+  ).map(mapToCardData);
 }
 
 export async function getOwnerListings(ownerId: string) {
-  return prisma.listing.findMany({
-    where: { ownerId },
-    orderBy: { updatedAt: "desc" },
-    include: {
-      images: {
-        orderBy: { sortOrder: "asc" },
-        take: 1,
-        where: { isCover: true },
-      },
-    },
-  });
+  return withListingSchemaFallback(
+    () =>
+      prisma.listing.findMany({
+        where: { ownerId },
+        orderBy: { updatedAt: "desc" },
+        include: {
+          images: {
+            orderBy: { sortOrder: "asc" },
+            take: 1,
+            where: { isCover: true },
+          },
+        },
+      }),
+    () =>
+      prisma.listing.findMany({
+        where: { ownerId },
+        orderBy: { updatedAt: "desc" },
+      })
+  );
 }
 
 export async function getOwnerListing(ownerId: string, id: string) {
-  return prisma.listing.findFirst({
-    where: { id, ownerId },
-    include: {
-      images: { orderBy: { sortOrder: "asc" } },
-    },
-  });
+  return withListingSchemaFallback(
+    () =>
+      prisma.listing.findFirst({
+        where: { id, ownerId },
+        include: {
+          images: { orderBy: { sortOrder: "asc" } },
+        },
+      }),
+    () =>
+      prisma.listing.findFirst({
+        where: { id, ownerId },
+      }).then((listing) => (listing ? { ...listing, images: [] } : null))
+  );
 }
 
 export async function getAdminListings(adminStatus: AdminStatus) {
-  return prisma.listing.findMany({
-    where: {
-      isDraft: false,
-      adminStatus,
-    },
-    orderBy: { updatedAt: "desc" },
-    include: {
-      owner: {
-        select: { id: true, email: true, nameAr: true, nameEn: true },
-      },
-      images: {
-        orderBy: { sortOrder: "asc" },
-        take: 1,
-        where: { isCover: true },
-      },
-    },
-  });
+  return withListingSchemaFallback(
+    () =>
+      prisma.listing.findMany({
+        where: {
+          isDraft: false,
+          adminStatus,
+        },
+        orderBy: { updatedAt: "desc" },
+        include: {
+          owner: {
+            select: { id: true, email: true, nameAr: true, nameEn: true },
+          },
+          images: {
+            orderBy: { sortOrder: "asc" },
+            take: 1,
+            where: { isCover: true },
+          },
+        },
+      }),
+    () =>
+      prisma.listing.findMany({
+        where: {
+          isDraft: false,
+          adminStatus,
+        },
+        orderBy: { updatedAt: "desc" },
+        include: {
+          owner: {
+            select: { id: true, email: true, nameAr: true, nameEn: true },
+          },
+        },
+      })
+  );
 }
 
 export async function getAdminListingCounts() {

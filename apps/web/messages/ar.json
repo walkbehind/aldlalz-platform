@@ -30,6 +30,8 @@
     "pageOf": "صفحة {page} من {total}",
     "featuredTitle": "عقارات مميزة",
     "featuredBadge": "مميز",
+    "loadError": "تعذّر تحميل العقارات",
+    "loadErrorHint": "تحقق من اتصال قاعدة البيانات على Vercel (DATABASE_URL و DIRECT_URL) وتأكد من تطبيق migration 003.",
     "filters": {
       "search": "بحث",
       "searchPlaceholder": "ابحث بالعنوان أو المنطقة...",

@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ListingFilters } from "@/components/listings/listing-filters";
 import { ListingCard } from "@/components/listings/listing-card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   getFeaturedListings,
   searchPublicListings,
@@ -26,10 +27,28 @@ export default async function ListingsPage({ params, searchParams }: Props) {
     ([key, value]) => key !== "page" && value
   );
 
-  const [{ items, page, totalPages, total }, featured] = await Promise.all([
-    searchPublicListings(filters),
-    hasFilters ? Promise.resolve([]) : getFeaturedListings(6),
-  ]);
+  let items: Awaited<ReturnType<typeof searchPublicListings>>["items"] = [];
+  let page = 1;
+  let totalPages = 1;
+  let total = 0;
+  let featured: Awaited<ReturnType<typeof getFeaturedListings>> = [];
+  let loadError: string | null = null;
+
+  try {
+    const [searchResult, featuredResult] = await Promise.all([
+      searchPublicListings(filters),
+      hasFilters ? Promise.resolve([]) : getFeaturedListings(6),
+    ]);
+    items = searchResult.items;
+    page = searchResult.page;
+    totalPages = searchResult.totalPages;
+    total = searchResult.total;
+    featured = featuredResult;
+  } catch (error) {
+    console.error("[listings]", error);
+    loadError =
+      error instanceof Error ? error.message : "Database query failed";
+  }
 
   const prevPage = page > 1 ? page - 1 : null;
   const nextPage = page < totalPages ? page + 1 : null;
@@ -47,7 +66,15 @@ export default async function ListingsPage({ params, searchParams }: Props) {
     <Container>
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
-      {!hasFilters && featured.length > 0 && (
+      {loadError && (
+        <Card className="mb-6 border-amber-200 bg-amber-50">
+          <p className="font-medium text-amber-900">{t("loadError")}</p>
+          <p className="mt-2 text-sm text-amber-800">{loadError}</p>
+          <p className="mt-2 text-sm text-amber-800">{t("loadErrorHint")}</p>
+        </Card>
+      )}
+
+      {!loadError && !hasFilters && featured.length > 0 && (
         <section className="mb-10">
           <h2 className="mb-4 text-xl font-bold">{t("featuredTitle")}</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -66,11 +93,11 @@ export default async function ListingsPage({ params, searchParams }: Props) {
 
       <ListingFilters initial={filters} />
 
-      {items.length === 0 ? (
+      {!loadError && items.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border bg-surface p-8 text-center text-text-muted">
           {t("empty")}
         </p>
-      ) : (
+      ) : !loadError ? (
         <>
           <p className="mb-4 text-sm text-text-muted">
             {t("resultsCount", { count: total })}
@@ -109,7 +136,7 @@ export default async function ListingsPage({ params, searchParams }: Props) {
             </div>
           )}
         </>
-      )}
+      ) : null}
     </Container>
   );
 }
