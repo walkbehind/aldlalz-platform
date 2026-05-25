@@ -31,7 +31,7 @@
     "featuredTitle": "Featured listings",
     "featuredBadge": "Featured",
     "loadError": "Could not load listings",
-    "loadErrorHint": "Check Vercel DATABASE_URL and DIRECT_URL, then ensure migration 003_listing_media_location is applied.",
+    "loadErrorHint": "If this mentions Prisma Query Engine, redeploy after the latest fix. Otherwise check Vercel DATABASE_URL and DIRECT_URL.",
     "filters": {
       "search": "Search",
       "searchPlaceholder": "Search by title or area...",
