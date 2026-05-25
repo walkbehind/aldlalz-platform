@@ -172,10 +172,17 @@ model Listing {
 
   viewCount Int @default(0)
 
+  latitude    Decimal? @db.Decimal(10, 7)
+  longitude   Decimal? @db.Decimal(10, 7)
+  addressLine String?
+
+  isFeatured Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner  User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  images ListingImage[]
 
   @@index([ownerId])
   @@index([listingType])
@@ -187,7 +194,33 @@ model Listing {
   @@index([isDraft])
   @@index([priceKwd])
   @@index([bedrooms])
+  @@index([isFeatured])
   @@map("listings")
+}
+
+model ListingImage {
+  id          String @id @default(cuid())
+  listingId   String
+
+  url         String
+  storagePath String
+  sortOrder   Int    @default(0)
+  isCover     Boolean @default(false)
+
+  width     Int?
+  height    Int?
+  sizeBytes Int?
+  mimeType  String @default("image/webp")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+  @@index([listingId, sortOrder])
+  @@index([listingId, isCover])
+  @@map("listing_images")
 }
 
 model Package {

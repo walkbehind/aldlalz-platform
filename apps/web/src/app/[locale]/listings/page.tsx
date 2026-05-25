@@ -5,7 +5,10 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ListingFilters } from "@/components/listings/listing-filters";
 import { ListingCard } from "@/components/listings/listing-card";
 import { Button } from "@/components/ui/button";
-import { searchPublicListings } from "@/lib/listings/queries";
+import {
+  getFeaturedListings,
+  searchPublicListings,
+} from "@/lib/listings/queries";
 import type { ListingSearchParams } from "@/lib/listings/validation";
 
 type Props = {
@@ -19,7 +22,14 @@ export default async function ListingsPage({ params, searchParams }: Props) {
   setRequestLocale(locale);
 
   const t = await getTranslations("listings");
-  const { items, page, totalPages, total } = await searchPublicListings(filters);
+  const hasFilters = Object.entries(filters).some(
+    ([key, value]) => key !== "page" && value
+  );
+
+  const [{ items, page, totalPages, total }, featured] = await Promise.all([
+    searchPublicListings(filters),
+    hasFilters ? Promise.resolve([]) : getFeaturedListings(6),
+  ]);
 
   const prevPage = page > 1 ? page - 1 : null;
   const nextPage = page < totalPages ? page + 1 : null;
@@ -37,6 +47,23 @@ export default async function ListingsPage({ params, searchParams }: Props) {
     <Container>
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
+      {!hasFilters && featured.length > 0 && (
+        <section className="mb-10">
+          <h2 className="mb-4 text-xl font-bold">{t("featuredTitle")}</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {featured.map((listing) => (
+              <ListingCard
+                key={listing.id}
+                listing={listing}
+                locale={locale}
+                viewDetailsLabel={t("viewDetails")}
+                featuredLabel={t("featuredBadge")}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
       <ListingFilters initial={filters} />
 
       {items.length === 0 ? (
@@ -48,13 +75,14 @@ export default async function ListingsPage({ params, searchParams }: Props) {
           <p className="mb-4 text-sm text-text-muted">
             {t("resultsCount", { count: total })}
           </p>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((listing) => (
               <ListingCard
                 key={listing.id}
                 listing={listing}
                 locale={locale}
                 viewDetailsLabel={t("viewDetails")}
+                featuredLabel={t("featuredBadge")}
               />
             ))}
           </div>

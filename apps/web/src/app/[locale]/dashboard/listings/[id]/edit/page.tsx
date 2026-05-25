@@ -9,11 +9,15 @@ import { Button } from "@/components/ui/button";
 import { ListingForm } from "@/components/listings/listing-form";
 import { ListingStatusBadge } from "@/components/listings/listing-status-badge";
 import { DeleteDraftButton } from "@/components/listings/delete-draft-button";
+import { ListingMediaUploader } from "@/components/listings/listing-media-uploader";
 import { getOwnerListing } from "@/lib/listings/queries";
+import { toListingImageDto } from "@/lib/listings/images";
 import {
   submitListingAction,
   updateListingAndRedirectAction,
 } from "@/lib/listings/actions";
+import { isStorageConfigured } from "@/lib/storage";
+import { googleMapsConfigured, getGoogleMapsApiKey } from "@/lib/maps/kuwait";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -38,6 +42,7 @@ export default async function EditListingPage({
 
   const t = await getTranslations("dashboard.listings");
   const form = await getTranslations("dashboard.listings.form");
+  const map = await getTranslations("dashboard.listings.map");
 
   const labels = {
     listingType: form("listingType"),
@@ -55,6 +60,14 @@ export default async function EditListingPage({
     bathrooms: form("bathrooms"),
     parking: form("parking"),
     sizeM2: form("sizeM2"),
+  };
+
+  const mapLabels = {
+    title: map("title"),
+    hint: map("hint"),
+    addressLine: map("addressLine"),
+    latitude: map("latitude"),
+    longitude: map("longitude"),
   };
 
   return (
@@ -86,12 +99,25 @@ export default async function EditListingPage({
       </div>
 
       <Card className="mb-6">
+        <h2 className="mb-4 text-lg font-semibold">{t("mediaTitle")}</h2>
+        <ListingMediaUploader
+          listingId={listing.id}
+          initialImages={listing.images.map(toListingImageDto)}
+          storageConfigured={isStorageConfigured()}
+        />
+      </Card>
+
+      <Card className="mb-6">
         <ListingForm
           locale={locale}
           labels={labels}
           action={updateListingAndRedirectAction.bind(null, id)}
           listing={listing}
           submitLabel={t("saveChanges")}
+          mapsApiKey={
+            googleMapsConfigured() ? getGoogleMapsApiKey() : undefined
+          }
+          mapLabels={mapLabels}
         />
       </Card>
 

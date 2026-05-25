@@ -64,8 +64,45 @@ Then mark migration applied:
 npx dotenv -e .env.local -- prisma migrate resolve --schema=packages/database/prisma/schema.prisma --applied 001_init
 ```
 
+## 6. Error P3005 (database not empty)
+
+If deploy fails with **P3005** but tables already exist (e.g. you ran SQL manually):
+
+```bash
+npm run db:migrate:deploy   # will fail with P3005
+npx dotenv -e .env.local -- prisma migrate resolve \
+  --schema=packages/database/prisma/schema.prisma \
+  --applied 001_init
+npm run db:migrate:deploy   # should say "No pending migrations"
+```
+
+Then **Redeploy** on Vercel.
+
 ## 5. Tables
 
 - `users`, `accounts`, `sessions`, `verification_tokens`
-- `listings`, `packages`
-- Enums: `UserRole`, `ListingType`, `ListingStatus`, `AdminStatus`, `PackageTarget`
+- `listings`, `listing_images`, `packages`
+- Enums: `UserRole`, `ListingType`, `ListingStatus`, `AdminStatus`, `PackageTarget`, `PropertyType`, `KuwaitGovernorate`
+
+## 6. Storage (Phase 3 — listing photos)
+
+1. **Supabase Dashboard** → **Storage** → **New bucket**
+   - Name: `listing-images`
+   - **Public bucket**: enabled (public read for approved listing photos)
+2. Add to `.env.local`, `apps/web/.env.local`, and **Vercel**:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY` (server-only — never expose to client)
+3. Optional RLS: uploads go through the Next.js API using the service role; public read via bucket policy.
+
+## 7. Google Maps (Phase 3)
+
+1. Enable **Maps JavaScript API** in Google Cloud Console.
+2. Add `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` to env files and Vercel.
+3. Restrict the key to your domains in production.
+
+## 8. Apply migration 003
+
+```bash
+npm run db:migrate:deploy
+```

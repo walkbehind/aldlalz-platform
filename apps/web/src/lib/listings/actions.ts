@@ -9,6 +9,7 @@ import {
   type ListingType,
   type PropertyType,
 } from "@aldlalz/database";
+import { isValidKuwaitCoordinate } from "@/lib/maps/kuwait";
 import { requireAdminUser, requireSessionUser } from "./auth";
 import { parseListingForm, rejectListingSchema } from "./validation";
 
@@ -32,6 +33,19 @@ function listingDataFromParsed(parsed: ReturnType<typeof parseListingForm>) {
     bathrooms: data.bathrooms ?? null,
     parking: data.parking ?? null,
     sizeM2: data.sizeM2 ?? null,
+    latitude:
+      data.latitude != null &&
+      data.longitude != null &&
+      isValidKuwaitCoordinate(data.latitude, data.longitude)
+        ? data.latitude
+        : null,
+    longitude:
+      data.latitude != null &&
+      data.longitude != null &&
+      isValidKuwaitCoordinate(data.latitude, data.longitude)
+        ? data.longitude
+        : null,
+    addressLine: data.addressLine ?? null,
   };
 }
 
@@ -171,6 +185,21 @@ export async function rejectListingAction(id: string, formData: FormData) {
       adminStatus: "REJECTED",
       rejectionReason: parsed.data.reason,
     },
+  });
+
+  revalidateListingPaths(id);
+}
+
+export async function toggleListingFeaturedAction(id: string) {
+  await requireAdminUser();
+  const existing = await prisma.listing.findFirst({
+    where: { id, isDraft: false, adminStatus: "APPROVED" },
+  });
+  if (!existing) throw new Error("NOT_FOUND");
+
+  await prisma.listing.update({
+    where: { id },
+    data: { isFeatured: !existing.isFeatured },
   });
 
   revalidateListingPaths(id);

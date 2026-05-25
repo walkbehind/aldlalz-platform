@@ -28,6 +28,8 @@
     "prevPage": "السابق",
     "nextPage": "التالي",
     "pageOf": "صفحة {page} من {total}",
+    "featuredTitle": "عقارات مميزة",
+    "featuredBadge": "مميز",
     "filters": {
       "search": "بحث",
       "searchPlaceholder": "ابحث بالعنوان أو المنطقة...",
@@ -46,12 +48,31 @@
   },
   "listingDetail": {
     "title": "تفاصيل العقار",
+    "description": "الوصف",
     "bedrooms": "غرف النوم",
     "bathrooms": "الحمامات",
     "parking": "مواقف",
     "sizeM2": "المساحة",
     "paciNumber": "رقم PACI",
-    "contact": "التواصل"
+    "contact": "التواصل",
+    "call": "اتصال",
+    "whatsapp": "واتساب",
+    "ownerProfile": "المالك",
+    "phoneMasked": "الهاتف",
+    "featured": "مميز",
+    "similar": "عقارات مشابهة",
+    "viewDetails": "التفاصيل",
+    "gallery": {
+      "noImages": "لا توجد صور",
+      "openFullscreen": "عرض بملء الشاشة",
+      "prev": "السابق",
+      "next": "التالي",
+      "close": "إغلاق"
+    },
+    "map": {
+      "title": "الموقع على الخريطة",
+      "openInMaps": "فتح في خرائط Google"
+    }
   },
   "packages": {
     "title": "الباقات",
@@ -101,6 +122,32 @@
       "resubmitHint": "عدّل العقار ثم أعد الإرسال بعد الرفض",
       "resubmit": "إعادة الإرسال للمراجعة",
       "submittedNotice": "تم إرسال العقار للمراجعة",
+      "mediaTitle": "صور العقار",
+      "map": {
+        "title": "الموقع على الخريطة",
+        "hint": "انقر على الخريطة لتحديد موقع العقار في الكويت",
+        "addressLine": "العنوان التفصيلي",
+        "latitude": "خط العرض",
+        "longitude": "خط الطول"
+      },
+      "media": {
+        "dropzoneTitle": "اسحب الصور هنا أو انقر للرفع",
+        "dropzoneHint": "JPEG, PNG, WebP — حتى 10 م.ب لكل صورة",
+        "count": "{count} / {max} صور",
+        "uploading": "جاري الرفع...",
+        "cover": "غلاف",
+        "setCover": "تعيين كغلاف",
+        "delete": "حذف",
+        "deleteConfirm": "حذف هذه الصورة؟",
+        "storageNotConfigured": "تخزين Supabase غير مُعد — أضف مفاتيح Storage في متغيرات البيئة",
+        "errors": {
+          "UPLOAD_FAILED": "فشل الرفع",
+          "MAX_IMAGES": "تجاوزت الحد الأقصى للصور",
+          "INVALID_TYPE": "نوع ملف غير مدعوم",
+          "FILE_TOO_LARGE": "الملف كبير جداً",
+          "STORAGE_NOT_CONFIGURED": "التخزين غير مُعد"
+        }
+      },
       "form": {
         "createTitle": "إضافة عقار جديد",
         "createSubtitle": "احفظ كمسودة ثم أرسل للمراجعة عند الجاهزية",
@@ -143,6 +190,8 @@
       "rejectReason": "سبب الرفض",
       "confirmReject": "تأكيد الرفض",
       "cancel": "إلغاء",
+      "feature": "تمييز",
+      "unfeature": "إلغاء التمييز",
       "tabs": {
         "pending": "قيد المراجعة",
         "approved": "معتمد",
@@ -151,7 +200,7 @@
     }
   },
   "common": {
-    "phase1": "المرحلة 2 — نظام العقارات",
+    "phase1": "المرحلة 3 — الوسائط والخرائط",
     "backHome": "العودة للرئيسية",
     "backToListings": "العودة للعقارات"
   }

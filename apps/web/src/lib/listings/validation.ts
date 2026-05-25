@@ -13,6 +13,10 @@ const optionalFloat = z
   .union([z.literal(""), z.coerce.number().positive().max(1_000_000)])
   .transform((v) => (v === "" ? undefined : v));
 
+const optionalCoord = z
+  .union([z.literal(""), z.coerce.number()])
+  .transform((v) => (v === "" ? null : v));
+
 export const listingFormSchema = z.object({
   listingType: z.enum(LISTING_TYPES as [string, ...string[]]),
   propertyType: z.enum(PROPERTY_TYPES as [string, ...string[]]),
@@ -28,6 +32,9 @@ export const listingFormSchema = z.object({
   bathrooms: optionalInt,
   parking: optionalInt,
   sizeM2: optionalFloat,
+  latitude: optionalCoord,
+  longitude: optionalCoord,
+  addressLine: z.string().trim().max(300).optional(),
 });
 
 export type ListingFormInput = z.infer<typeof listingFormSchema>;
@@ -48,6 +55,9 @@ export function parseListingForm(formData: FormData) {
     bathrooms: formData.get("bathrooms") ?? "",
     parking: formData.get("parking") ?? "",
     sizeM2: formData.get("sizeM2") ?? "",
+    latitude: formData.get("latitude") ?? "",
+    longitude: formData.get("longitude") ?? "",
+    addressLine: String(formData.get("addressLine") ?? "") || undefined,
   };
 
   return listingFormSchema.safeParse(raw);

@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AdminListingActions } from "@/components/listings/admin-listing-actions";
+import { ToggleFeaturedButton } from "@/components/listings/toggle-featured-button";
 import { ListingStatusBadge } from "@/components/listings/listing-status-badge";
 import {
   getAdminListingCounts,
@@ -126,10 +127,18 @@ export default async function AdminListingsPage({
                   )}
                 </div>
 
-                <AdminListingActions
-                  listingId={listing.id}
-                  status={listing.adminStatus}
-                />
+                <div className="flex flex-col gap-2">
+                  {listing.adminStatus === "APPROVED" && (
+                    <ToggleFeaturedButton
+                      listingId={listing.id}
+                      isFeatured={listing.isFeatured}
+                    />
+                  )}
+                  <AdminListingActions
+                    listingId={listing.id}
+                    status={listing.adminStatus}
+                  />
+                </div>
               </Card>
             );
           })}

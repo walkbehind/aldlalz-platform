@@ -4,8 +4,17 @@ import {
   type Listing,
   type Prisma,
 } from "@aldlalz/database";
+import { getCoverImage } from "@/lib/listings/images";
 import { PAGE_SIZE } from "./constants";
 import type { ListingSearchParams } from "./validation";
+
+export type ListingImageSummary = {
+  id: string;
+  url: string;
+  isCover: boolean;
+  width: number | null;
+  height: number | null;
+};
 
 export type ListingCardData = Pick<
   Listing,
@@ -21,7 +30,70 @@ export type ListingCardData = Pick<
   | "bathrooms"
   | "sizeM2"
   | "createdAt"
->;
+  | "isFeatured"
+> & {
+  coverImage: ListingImageSummary | null;
+};
+
+const cardImageSelect = {
+  id: true,
+  url: true,
+  isCover: true,
+  width: true,
+  height: true,
+  sortOrder: true,
+} as const;
+
+const cardListingSelect = {
+  id: true,
+  titleAr: true,
+  titleEn: true,
+  listingType: true,
+  propertyType: true,
+  priceKwd: true,
+  governorate: true,
+  area: true,
+  bedrooms: true,
+  bathrooms: true,
+  sizeM2: true,
+  createdAt: true,
+  isFeatured: true,
+  images: {
+    orderBy: { sortOrder: "asc" as const },
+    take: 3,
+    select: cardImageSelect,
+  },
+};
+
+function mapToCardData(
+  listing: Prisma.ListingGetPayload<{ select: typeof cardListingSelect }>
+): ListingCardData {
+  const cover = getCoverImage(listing.images);
+  return {
+    id: listing.id,
+    titleAr: listing.titleAr,
+    titleEn: listing.titleEn,
+    listingType: listing.listingType,
+    propertyType: listing.propertyType,
+    priceKwd: listing.priceKwd,
+    governorate: listing.governorate,
+    area: listing.area,
+    bedrooms: listing.bedrooms,
+    bathrooms: listing.bathrooms,
+    sizeM2: listing.sizeM2,
+    createdAt: listing.createdAt,
+    isFeatured: listing.isFeatured,
+    coverImage: cover
+      ? {
+          id: cover.id,
+          url: cover.url,
+          isCover: cover.isCover,
+          width: cover.width,
+          height: cover.height,
+        }
+      : null,
+  };
+}
 
 function buildPublicWhere(
   params: ListingSearchParams
@@ -80,37 +152,38 @@ export async function searchPublicListings(params: ListingSearchParams) {
   const page = Math.max(1, Number(params.page) || 1);
   const where = buildPublicWhere(params);
 
-  const [items, total] = await Promise.all([
+  const [rows, total] = await Promise.all([
     prisma.listing.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
-      select: {
-        id: true,
-        titleAr: true,
-        titleEn: true,
-        listingType: true,
-        propertyType: true,
-        priceKwd: true,
-        governorate: true,
-        area: true,
-        bedrooms: true,
-        bathrooms: true,
-        sizeM2: true,
-        createdAt: true,
-      },
+      select: cardListingSelect,
     }),
     prisma.listing.count({ where }),
   ]);
 
   return {
-    items,
+    items: rows.map(mapToCardData),
     total,
     page,
     pageSize: PAGE_SIZE,
     totalPages: Math.max(1, Math.ceil(total / PAGE_SIZE)),
   };
+}
+
+export async function getFeaturedListings(limit = 6) {
+  const rows = await prisma.listing.findMany({
+    where: {
+      isDraft: false,
+      adminStatus: "APPROVED",
+      isFeatured: true,
+    },
+    orderBy: { updatedAt: "desc" },
+    take: limit,
+    select: cardListingSelect,
+  });
+  return rows.map(mapToCardData);
 }
 
 export async function getPublicListingById(id: string) {
@@ -122,8 +195,16 @@ export async function getPublicListingById(id: string) {
     },
     include: {
       owner: {
-        select: { id: true, nameAr: true, nameEn: true, phone: true },
+        select: {
+          id: true,
+          nameAr: true,
+          nameEn: true,
+          phone: true,
+          image: true,
+          role: true,
+        },
       },
+      images: { orderBy: { sortOrder: "asc" } },
     },
   });
 
@@ -137,16 +218,63 @@ export async function getPublicListingById(id: string) {
   return listing;
 }
 
+export async function getSimilarListings(listing: {
+  id: string;
+  governorate: Listing["governorate"];
+  area: string;
+  propertyType: Listing["propertyType"];
+  listingType: Listing["listingType"];
+  priceKwd: Listing["priceKwd"];
+}) {
+  const price = Number(listing.priceKwd.toString());
+  const min = price * 0.7;
+  const max = price * 1.3;
+
+  const rows = await prisma.listing.findMany({
+    where: {
+      id: { not: listing.id },
+      isDraft: false,
+      adminStatus: "APPROVED",
+      OR: [
+        { governorate: listing.governorate, area: listing.area },
+        {
+          governorate: listing.governorate,
+          propertyType: listing.propertyType,
+        },
+        {
+          listingType: listing.listingType,
+          priceKwd: { gte: min, lte: max },
+        },
+      ],
+    },
+    orderBy: { viewCount: "desc" },
+    take: 4,
+    select: cardListingSelect,
+  });
+
+  return rows.map(mapToCardData);
+}
+
 export async function getOwnerListings(ownerId: string) {
   return prisma.listing.findMany({
     where: { ownerId },
     orderBy: { updatedAt: "desc" },
+    include: {
+      images: {
+        orderBy: { sortOrder: "asc" },
+        take: 1,
+        where: { isCover: true },
+      },
+    },
   });
 }
 
 export async function getOwnerListing(ownerId: string, id: string) {
   return prisma.listing.findFirst({
     where: { id, ownerId },
+    include: {
+      images: { orderBy: { sortOrder: "asc" } },
+    },
   });
 }
 
@@ -160,6 +288,11 @@ export async function getAdminListings(adminStatus: AdminStatus) {
     include: {
       owner: {
         select: { id: true, email: true, nameAr: true, nameEn: true },
+      },
+      images: {
+        orderBy: { sortOrder: "asc" },
+        take: 1,
+        where: { isCover: true },
       },
     },
   });
@@ -183,7 +316,30 @@ export function serializeListing(listing: Listing) {
     ...listing,
     priceKwd: listing.priceKwd.toString(),
     sizeM2: listing.sizeM2?.toString() ?? null,
+    latitude: listing.latitude?.toString() ?? null,
+    longitude: listing.longitude?.toString() ?? null,
   };
 }
 
 export type SerializedListing = ReturnType<typeof serializeListing>;
+
+export async function getPublicListingForMetadata(id: string) {
+  return prisma.listing.findFirst({
+    where: { id, isDraft: false, adminStatus: "APPROVED" },
+    select: {
+      id: true,
+      titleAr: true,
+      titleEn: true,
+      descriptionAr: true,
+      descriptionEn: true,
+      area: true,
+      governorate: true,
+      priceKwd: true,
+      images: {
+        orderBy: { sortOrder: "asc" },
+        take: 1,
+        select: { url: true, isCover: true },
+      },
+    },
+  });
+}

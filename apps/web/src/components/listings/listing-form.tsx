@@ -17,6 +17,7 @@ import {
   PROPERTY_TYPES,
   PROPERTY_TYPE_LABELS,
 } from "@/lib/listings/constants";
+import { ListingMapPicker } from "@/components/listings/listing-map-picker";
 
 type Props = {
   locale: string;
@@ -24,6 +25,14 @@ type Props = {
   action: (formData: FormData) => void | Promise<void>;
   listing?: Listing;
   submitLabel: string;
+  mapsApiKey?: string;
+  mapLabels?: {
+    title: string;
+    hint: string;
+    addressLine: string;
+    latitude: string;
+    longitude: string;
+  };
 };
 
 export function ListingForm({
@@ -32,6 +41,8 @@ export function ListingForm({
   action,
   listing,
   submitLabel,
+  mapsApiKey,
+  mapLabels,
 }: Props) {
   const [governorate, setGovernorate] = useState<KuwaitGovernorate>(
     listing?.governorate ?? "CAPITAL"
@@ -219,6 +230,26 @@ export function ListingForm({
           />
         </div>
       </div>
+
+      {mapsApiKey && mapLabels && (
+        <div className="rounded-xl border border-border bg-surface-muted/50 p-4">
+          <ListingMapPicker
+            apiKey={mapsApiKey}
+            labels={mapLabels}
+            initialLat={
+              listing?.latitude != null
+                ? Number(listing.latitude.toString())
+                : null
+            }
+            initialLng={
+              listing?.longitude != null
+                ? Number(listing.longitude.toString())
+                : null
+            }
+            initialAddress={listing?.addressLine}
+          />
+        </div>
+      )}
 
       <Button type="submit" size="lg">
         {submitLabel}

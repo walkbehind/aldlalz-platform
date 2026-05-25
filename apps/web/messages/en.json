@@ -28,6 +28,8 @@
     "prevPage": "Previous",
     "nextPage": "Next",
     "pageOf": "Page {page} of {total}",
+    "featuredTitle": "Featured listings",
+    "featuredBadge": "Featured",
     "filters": {
       "search": "Search",
       "searchPlaceholder": "Search by title or area...",
@@ -46,12 +48,31 @@
   },
   "listingDetail": {
     "title": "Listing details",
+    "description": "Description",
     "bedrooms": "Bedrooms",
     "bathrooms": "Bathrooms",
     "parking": "Parking",
     "sizeM2": "Size",
     "paciNumber": "PACI number",
-    "contact": "Contact"
+    "contact": "Contact",
+    "call": "Call",
+    "whatsapp": "WhatsApp",
+    "ownerProfile": "Owner",
+    "phoneMasked": "Phone",
+    "featured": "Featured",
+    "similar": "Similar listings",
+    "viewDetails": "Details",
+    "gallery": {
+      "noImages": "No photos yet",
+      "openFullscreen": "View fullscreen",
+      "prev": "Previous",
+      "next": "Next",
+      "close": "Close"
+    },
+    "map": {
+      "title": "Location on map",
+      "openInMaps": "Open in Google Maps"
+    }
   },
   "packages": {
     "title": "Packages",
@@ -101,6 +122,32 @@
       "resubmitHint": "Update the listing then resubmit after rejection",
       "resubmit": "Resubmit for review",
       "submittedNotice": "Listing submitted for review",
+      "mediaTitle": "Listing photos",
+      "map": {
+        "title": "Map location",
+        "hint": "Click the map to pin the property location in Kuwait",
+        "addressLine": "Street address",
+        "latitude": "Latitude",
+        "longitude": "Longitude"
+      },
+      "media": {
+        "dropzoneTitle": "Drag photos here or click to upload",
+        "dropzoneHint": "JPEG, PNG, WebP — up to 10 MB each",
+        "count": "{count} / {max} photos",
+        "uploading": "Uploading...",
+        "cover": "Cover",
+        "setCover": "Set cover",
+        "delete": "Delete",
+        "deleteConfirm": "Delete this photo?",
+        "storageNotConfigured": "Supabase Storage is not configured — add Storage env vars",
+        "errors": {
+          "UPLOAD_FAILED": "Upload failed",
+          "MAX_IMAGES": "Maximum photos reached",
+          "INVALID_TYPE": "Unsupported file type",
+          "FILE_TOO_LARGE": "File too large",
+          "STORAGE_NOT_CONFIGURED": "Storage not configured"
+        }
+      },
       "form": {
         "createTitle": "Add new listing",
         "createSubtitle": "Save as draft, then submit when ready",
@@ -143,6 +190,8 @@
       "rejectReason": "Rejection reason",
       "confirmReject": "Confirm reject",
       "cancel": "Cancel",
+      "feature": "Feature",
+      "unfeature": "Unfeature",
       "tabs": {
         "pending": "Pending",
         "approved": "Approved",
@@ -151,7 +200,7 @@
     }
   },
   "common": {
-    "phase1": "Phase 2 — listings system",
+    "phase1": "Phase 3 — media & maps",
     "backHome": "Back to home",
     "backToListings": "Back to listings"
   }
