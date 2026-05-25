@@ -21,13 +21,37 @@
   },
   "listings": {
     "title": "العقارات",
-    "subtitle": "قائمة العقارات — سيتم ربطها بقاعدة البيانات في المرحلة التالية",
-    "empty": "لا توجد عقارات بعد",
-    "viewDetails": "التفاصيل"
+    "subtitle": "تصفح العقارات المعتمدة في الكويت",
+    "empty": "لا توجد عقارات مطابقة لبحثك",
+    "viewDetails": "التفاصيل",
+    "resultsCount": "{count} عقار",
+    "prevPage": "السابق",
+    "nextPage": "التالي",
+    "pageOf": "صفحة {page} من {total}",
+    "filters": {
+      "search": "بحث",
+      "searchPlaceholder": "ابحث بالعنوان أو المنطقة...",
+      "listingType": "نوع الإعلان",
+      "propertyType": "نوع العقار",
+      "governorate": "المحافظة",
+      "area": "المنطقة",
+      "minPrice": "الحد الأدنى (د.ك)",
+      "maxPrice": "الحد الأقصى (د.ك)",
+      "bedrooms": "غرف النوم",
+      "bathrooms": "الحمامات",
+      "all": "الكل",
+      "apply": "تطبيق",
+      "reset": "إعادة تعيين"
+    }
   },
   "listingDetail": {
     "title": "تفاصيل العقار",
-    "placeholder": "صفحة تفاصيل العقار — قيد التطوير"
+    "bedrooms": "غرف النوم",
+    "bathrooms": "الحمامات",
+    "parking": "مواقف",
+    "sizeM2": "المساحة",
+    "paciNumber": "رقم PACI",
+    "contact": "التواصل"
   },
   "packages": {
     "title": "الباقات",
@@ -47,15 +71,88 @@
   "dashboard": {
     "title": "لوحة المستخدم",
     "welcome": "مرحباً",
-    "placeholder": "لوحة التحكم — المرحلة 2 ستضيف المحفظة والعقارات والرسائل"
+    "comingSoon": "المحفظة والرسائل والمزيد قريباً",
+    "listingsCard": {
+      "title": "عقاراتي",
+      "description": "أنشئ وأدر إعلاناتك العقارية",
+      "myListings": "عرض عقاراتي",
+      "create": "إضافة عقار"
+    },
+    "listings": {
+      "title": "عقاراتي",
+      "subtitle": "إدارة مسوداتك وإعلاناتك المنشورة",
+      "empty": "لم تضف أي عقارات بعد",
+      "create": "إضافة عقار",
+      "createFirst": "أضف أول عقار",
+      "edit": "تعديل",
+      "draft": "مسودة",
+      "deleteDraft": "حذف المسودة",
+      "deleteConfirm": "هل أنت متأكد من حذف هذه المسودة؟",
+      "rejectionReason": "سبب الرفض",
+      "editTitle": "تعديل العقار",
+      "createdNotice": "تم إنشاء المسودة — أكمل التفاصيل ثم أرسل للمراجعة",
+      "savedNotice": "تم حفظ التغييرات",
+      "backToList": "العودة للقائمة",
+      "saveChanges": "حفظ التغييرات",
+      "submitTitle": "إرسال للمراجعة",
+      "submitHint": "بعد الإرسال، سيراجع فريق الإدارة إعلانك قبل النشر",
+      "submitForReview": "إرسال للمراجعة",
+      "resubmitTitle": "إعادة الإرسال",
+      "resubmitHint": "عدّل العقار ثم أعد الإرسال بعد الرفض",
+      "resubmit": "إعادة الإرسال للمراجعة",
+      "submittedNotice": "تم إرسال العقار للمراجعة",
+      "form": {
+        "createTitle": "إضافة عقار جديد",
+        "createSubtitle": "احفظ كمسودة ثم أرسل للمراجعة عند الجاهزية",
+        "listingType": "نوع الإعلان",
+        "propertyType": "نوع العقار",
+        "titleAr": "العنوان (عربي) *",
+        "titleEn": "العنوان (إنجليزي)",
+        "descriptionAr": "الوصف (عربي)",
+        "descriptionEn": "الوصف (إنجليزي)",
+        "priceKwd": "السعر (د.ك) *",
+        "paciNumber": "رقم PACI",
+        "governorate": "المحافظة *",
+        "area": "المنطقة *",
+        "selectArea": "اختر المنطقة",
+        "bedrooms": "غرف النوم",
+        "bathrooms": "الحمامات",
+        "parking": "مواقف السيارات",
+        "sizeM2": "المساحة (م²)",
+        "saveDraft": "حفظ مسودة"
+      }
+    }
   },
   "admin": {
     "title": "لوحة الإدارة",
-    "subtitle": "إدارة المنصة — المرحلة 2",
-    "placeholder": "موافقات العقارات، المستخدمين، والتقارير قريباً"
+    "subtitle": "إدارة المنصة والموافقات",
+    "listingsCard": {
+      "title": "موافقات العقارات",
+      "description": "مراجعة الإعلانات المقدمة من المستخدمين",
+      "pending": "قيد المراجعة",
+      "review": "فتح قائمة المراجعة"
+    },
+    "listings": {
+      "title": "مراجعة العقارات",
+      "subtitle": "اعتماد أو رفض الإعلانات المقدمة",
+      "empty": "لا توجد إعلانات في هذه الحالة",
+      "owner": "المالك",
+      "viewPublic": "عرض الصفحة العامة",
+      "approve": "اعتماد",
+      "reject": "رفض",
+      "rejectReason": "سبب الرفض",
+      "confirmReject": "تأكيد الرفض",
+      "cancel": "إلغاء",
+      "tabs": {
+        "pending": "قيد المراجعة",
+        "approved": "معتمد",
+        "rejected": "مرفوض"
+      }
+    }
   },
   "common": {
-    "phase1": "المرحلة 1 — أساس المنصة",
-    "backHome": "العودة للرئيسية"
+    "phase1": "المرحلة 2 — نظام العقارات",
+    "backHome": "العودة للرئيسية",
+    "backToListings": "العودة للعقارات"
   }
 }

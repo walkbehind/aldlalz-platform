@@ -2,47 +2,86 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { ListingFilters } from "@/components/listings/listing-filters";
+import { ListingCard } from "@/components/listings/listing-card";
 import { Button } from "@/components/ui/button";
+import { searchPublicListings } from "@/lib/listings/queries";
+import type { ListingSearchParams } from "@/lib/listings/validation";
 
-type Props = { params: Promise<{ locale: string }> };
+type Props = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<ListingSearchParams>;
+};
 
-const PLACEHOLDER_LISTINGS = [
-  { id: "1", titleAr: "شقة في السالمية", titleEn: "Apartment in Salmiya", type: "RENT" },
-  { id: "2", titleAr: "فيلا للبيع — حولي", titleEn: "Villa for sale — Hawally", type: "SALE" },
-  { id: "3", titleAr: "استراحة للحجز", titleEn: "Chalet booking", type: "BOOKING" },
-];
-
-export default async function ListingsPage({ params }: Props) {
+export default async function ListingsPage({ params, searchParams }: Props) {
   const { locale } = await params;
+  const filters = await searchParams;
   setRequestLocale(locale);
 
   const t = await getTranslations("listings");
-  const common = await getTranslations("common");
+  const { items, page, totalPages, total } = await searchPublicListings(filters);
+
+  const prevPage = page > 1 ? page - 1 : null;
+  const nextPage = page < totalPages ? page + 1 : null;
+
+  function pageHref(targetPage: number) {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(filters)) {
+      if (value && key !== "page") params.set(key, value);
+    }
+    params.set("page", String(targetPage));
+    return `/listings?${params.toString()}`;
+  }
 
   return (
     <Container>
-      <PageHeader
-        title={t("title")}
-        subtitle={t("subtitle")}
-        badge={common("phase1")}
-      />
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {PLACEHOLDER_LISTINGS.map((listing) => (
-          <Card key={listing.id}>
-            <CardTitle>
-              {locale === "ar" ? listing.titleAr : listing.titleEn}
-            </CardTitle>
-            <CardDescription>{listing.type}</CardDescription>
-            <Link href={`/listings/${listing.id}`} className="mt-4 inline-block">
-              <Button variant="outline" size="sm">
-                {t("viewDetails")}
-              </Button>
-            </Link>
-          </Card>
-        ))}
-      </div>
+      <ListingFilters initial={filters} />
+
+      {items.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-border bg-surface p-8 text-center text-text-muted">
+          {t("empty")}
+        </p>
+      ) : (
+        <>
+          <p className="mb-4 text-sm text-text-muted">
+            {t("resultsCount", { count: total })}
+          </p>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {items.map((listing) => (
+              <ListingCard
+                key={listing.id}
+                listing={listing}
+                locale={locale}
+                viewDetailsLabel={t("viewDetails")}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-8 flex items-center justify-center gap-3">
+              {prevPage && (
+                <Link href={pageHref(prevPage)}>
+                  <Button variant="secondary" size="sm">
+                    {t("prevPage")}
+                  </Button>
+                </Link>
+              )}
+              <span className="text-sm text-text-muted">
+                {t("pageOf", { page, total: totalPages })}
+              </span>
+              {nextPage && (
+                <Link href={pageHref(nextPage)}>
+                  <Button variant="secondary" size="sm">
+                    {t("nextPage")}
+                  </Button>
+                </Link>
+              )}
+            </div>
+          )}
+        </>
+      )}
     </Container>
   );
 }

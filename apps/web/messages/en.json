@@ -21,13 +21,37 @@
   },
   "listings": {
     "title": "Listings",
-    "subtitle": "Property list — database integration in Phase 2",
-    "empty": "No listings yet",
-    "viewDetails": "Details"
+    "subtitle": "Browse approved properties across Kuwait",
+    "empty": "No listings match your search",
+    "viewDetails": "Details",
+    "resultsCount": "{count} listings",
+    "prevPage": "Previous",
+    "nextPage": "Next",
+    "pageOf": "Page {page} of {total}",
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search by title or area...",
+      "listingType": "Listing type",
+      "propertyType": "Property type",
+      "governorate": "Governorate",
+      "area": "Area",
+      "minPrice": "Min price (KWD)",
+      "maxPrice": "Max price (KWD)",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "all": "All",
+      "apply": "Apply",
+      "reset": "Reset"
+    }
   },
   "listingDetail": {
     "title": "Listing details",
-    "placeholder": "Listing detail page — coming in Phase 2"
+    "bedrooms": "Bedrooms",
+    "bathrooms": "Bathrooms",
+    "parking": "Parking",
+    "sizeM2": "Size",
+    "paciNumber": "PACI number",
+    "contact": "Contact"
   },
   "packages": {
     "title": "Packages",
@@ -47,15 +71,88 @@
   "dashboard": {
     "title": "User dashboard",
     "welcome": "Welcome",
-    "placeholder": "Dashboard — wallet, listings, and messages in Phase 2"
+    "comingSoon": "Wallet, messages, and more coming soon",
+    "listingsCard": {
+      "title": "My listings",
+      "description": "Create and manage your property listings",
+      "myListings": "View my listings",
+      "create": "Add listing"
+    },
+    "listings": {
+      "title": "My listings",
+      "subtitle": "Manage drafts and published listings",
+      "empty": "You have not added any listings yet",
+      "create": "Add listing",
+      "createFirst": "Add your first listing",
+      "edit": "Edit",
+      "draft": "Draft",
+      "deleteDraft": "Delete draft",
+      "deleteConfirm": "Are you sure you want to delete this draft?",
+      "rejectionReason": "Rejection reason",
+      "editTitle": "Edit listing",
+      "createdNotice": "Draft created — complete details then submit for review",
+      "savedNotice": "Changes saved",
+      "backToList": "Back to list",
+      "saveChanges": "Save changes",
+      "submitTitle": "Submit for review",
+      "submitHint": "After submission, admin will review before publishing",
+      "submitForReview": "Submit for review",
+      "resubmitTitle": "Resubmit",
+      "resubmitHint": "Update the listing then resubmit after rejection",
+      "resubmit": "Resubmit for review",
+      "submittedNotice": "Listing submitted for review",
+      "form": {
+        "createTitle": "Add new listing",
+        "createSubtitle": "Save as draft, then submit when ready",
+        "listingType": "Listing type",
+        "propertyType": "Property type",
+        "titleAr": "Title (Arabic) *",
+        "titleEn": "Title (English)",
+        "descriptionAr": "Description (Arabic)",
+        "descriptionEn": "Description (English)",
+        "priceKwd": "Price (KWD) *",
+        "paciNumber": "PACI number",
+        "governorate": "Governorate *",
+        "area": "Area *",
+        "selectArea": "Select area",
+        "bedrooms": "Bedrooms",
+        "bathrooms": "Bathrooms",
+        "parking": "Parking",
+        "sizeM2": "Size (m²)",
+        "saveDraft": "Save draft"
+      }
+    }
   },
   "admin": {
     "title": "Admin dashboard",
-    "subtitle": "Platform management — Phase 2",
-    "placeholder": "Listing approvals, users, and reports coming soon"
+    "subtitle": "Platform management and approvals",
+    "listingsCard": {
+      "title": "Listing approvals",
+      "description": "Review listings submitted by users",
+      "pending": "Pending",
+      "review": "Open review queue"
+    },
+    "listings": {
+      "title": "Review listings",
+      "subtitle": "Approve or reject submitted listings",
+      "empty": "No listings in this status",
+      "owner": "Owner",
+      "viewPublic": "View public page",
+      "approve": "Approve",
+      "reject": "Reject",
+      "rejectReason": "Rejection reason",
+      "confirmReject": "Confirm reject",
+      "cancel": "Cancel",
+      "tabs": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      }
+    }
   },
   "common": {
-    "phase1": "Phase 1 — platform foundation",
-    "backHome": "Back to home"
+    "phase1": "Phase 2 — listings system",
+    "backHome": "Back to home",
+    "backToListings": "Back to listings"
   }
 }
