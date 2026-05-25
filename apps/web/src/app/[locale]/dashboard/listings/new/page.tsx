@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { ListingForm } from "@/components/listings/listing-form";
 import { createListingAction } from "@/lib/listings/actions";
+import { isTranslationConfigured } from "@/lib/translation";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -19,6 +20,7 @@ export default async function NewListingPage({ params }: Props) {
   }
 
   const t = await getTranslations("dashboard.listings.form");
+  const tr = await getTranslations("dashboard.listings.translation");
 
   const labels = {
     listingType: t("listingType"),
@@ -48,6 +50,25 @@ export default async function NewListingPage({ params }: Props) {
         <ListingForm
           locale={locale}
           labels={labels}
+          translationEnabled={isTranslationConfigured()}
+          translationLabels={{
+            title: tr("title"),
+            description: tr("description"),
+            primaryHint:
+              locale === "ar" ? tr("primaryHintAr") : tr("primaryHintEn"),
+            autoFilled: tr("autoFilled"),
+            translating: tr("translating"),
+            translateNow: tr("translateNow"),
+            editTranslation: tr("editTranslation"),
+            translationPreviewAr: tr("translationPreviewAr"),
+            translationPreviewEn: tr("translationPreviewEn"),
+            translationFailed: tr("translationFailed"),
+            notConfigured: tr("notConfigured"),
+            titleAr: t("titleAr"),
+            titleEn: t("titleEn"),
+            descriptionAr: t("descriptionAr"),
+            descriptionEn: t("descriptionEn"),
+          }}
           action={createListingAction}
           submitLabel={t("saveDraft")}
         />

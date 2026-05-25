@@ -172,6 +172,20 @@
         "parking": "مواقف السيارات",
         "sizeM2": "المساحة (م²)",
         "saveDraft": "حفظ مسودة"
+      },
+      "translation": {
+        "title": "العنوان",
+        "description": "الوصف",
+        "primaryHintAr": "اكتب بالعربية — سيتم تعبئة الإنجليزية تلقائياً",
+        "primaryHintEn": "Write in English — Arabic will be filled in automatically",
+        "autoFilled": "ترجمة تلقائية",
+        "translating": "جاري الترجمة…",
+        "translateNow": "ترجم الآن",
+        "editTranslation": "تعديل الترجمة",
+        "translationPreviewAr": "الترجمة العربية (تلقائية)",
+        "translationPreviewEn": "English translation (auto)",
+        "translationFailed": "فشلت الترجمة — أعد المحاولة أو املأ اللغتين يدوياً",
+        "notConfigured": "الترجمة بالذكاء الاصطناعي غير مُعدة — املأ حقول العربية والإنجليزية يدوياً"
       }
     }
   },

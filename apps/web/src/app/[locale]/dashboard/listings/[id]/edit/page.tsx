@@ -18,6 +18,7 @@ import {
 } from "@/lib/listings/actions";
 import { isStorageConfigured } from "@/lib/storage";
 import { googleMapsConfigured, getGoogleMapsApiKey } from "@/lib/maps/kuwait";
+import { isTranslationConfigured } from "@/lib/translation";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -43,6 +44,7 @@ export default async function EditListingPage({
   const t = await getTranslations("dashboard.listings");
   const form = await getTranslations("dashboard.listings.form");
   const map = await getTranslations("dashboard.listings.map");
+  const tr = await getTranslations("dashboard.listings.translation");
 
   const labels = {
     listingType: form("listingType"),
@@ -111,6 +113,25 @@ export default async function EditListingPage({
         <ListingForm
           locale={locale}
           labels={labels}
+          translationEnabled={isTranslationConfigured()}
+          translationLabels={{
+            title: tr("title"),
+            description: tr("description"),
+            primaryHint:
+              locale === "ar" ? tr("primaryHintAr") : tr("primaryHintEn"),
+            autoFilled: tr("autoFilled"),
+            translating: tr("translating"),
+            translateNow: tr("translateNow"),
+            editTranslation: tr("editTranslation"),
+            translationPreviewAr: tr("translationPreviewAr"),
+            translationPreviewEn: tr("translationPreviewEn"),
+            translationFailed: tr("translationFailed"),
+            notConfigured: tr("notConfigured"),
+            titleAr: form("titleAr"),
+            titleEn: form("titleEn"),
+            descriptionAr: form("descriptionAr"),
+            descriptionEn: form("descriptionEn"),
+          }}
           action={updateListingAndRedirectAction.bind(null, id)}
           listing={listing}
           submitLabel={t("saveChanges")}

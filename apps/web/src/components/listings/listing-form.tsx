@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import type { Listing, KuwaitGovernorate } from "@aldlalz/database";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   GOVERNORATE_AREAS,
@@ -18,10 +17,17 @@ import {
   PROPERTY_TYPE_LABELS,
 } from "@/lib/listings/constants";
 import { ListingMapPicker } from "@/components/listings/listing-map-picker";
+import {
+  ListingBilingualFields,
+  type ListingBilingualFieldsHandle,
+  type TranslationLabels,
+} from "@/components/listings/listing-bilingual-fields";
 
 type Props = {
   locale: string;
   labels: Record<string, string>;
+  translationLabels: TranslationLabels;
+  translationEnabled: boolean;
   action: (formData: FormData) => void | Promise<void>;
   listing?: Listing;
   submitLabel: string;
@@ -38,6 +44,8 @@ type Props = {
 export function ListingForm({
   locale,
   labels,
+  translationLabels,
+  translationEnabled,
   action,
   listing,
   submitLabel,
@@ -47,11 +55,32 @@ export function ListingForm({
   const [governorate, setGovernorate] = useState<KuwaitGovernorate>(
     listing?.governorate ?? "CAPITAL"
   );
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const formRef = useRef<HTMLFormElement>(null);
+  const bilingualRef = useRef<ListingBilingualFieldsHandle>(null);
 
   const areas = GOVERNORATE_AREAS[governorate] ?? [];
 
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitError(null);
+
+    if (translationEnabled && bilingualRef.current) {
+      const ok = await bilingualRef.current.ensureTranslated();
+      if (!ok) {
+        setSubmitError(translationLabels.translationFailed);
+        return;
+      }
+    }
+
+    if (!formRef.current) return;
+    const formData = new FormData(formRef.current);
+    startTransition(() => action(formData));
+  }
+
   return (
-    <form action={action} className="space-y-6">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <Label htmlFor="listingType">{labels.listingType}</Label>
@@ -85,46 +114,16 @@ export function ListingForm({
           </Select>
         </div>
 
-        <div className="md:col-span-2">
-          <Label htmlFor="titleAr">{labels.titleAr}</Label>
-          <Input
-            id="titleAr"
-            name="titleAr"
-            defaultValue={listing?.titleAr ?? ""}
-            required
-            dir="rtl"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <Label htmlFor="titleEn">{labels.titleEn}</Label>
-          <Input
-            id="titleEn"
-            name="titleEn"
-            defaultValue={listing?.titleEn ?? ""}
-            dir="ltr"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <Label htmlFor="descriptionAr">{labels.descriptionAr}</Label>
-          <Textarea
-            id="descriptionAr"
-            name="descriptionAr"
-            defaultValue={listing?.descriptionAr ?? ""}
-            dir="rtl"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <Label htmlFor="descriptionEn">{labels.descriptionEn}</Label>
-          <Textarea
-            id="descriptionEn"
-            name="descriptionEn"
-            defaultValue={listing?.descriptionEn ?? ""}
-            dir="ltr"
-          />
-        </div>
+        <ListingBilingualFields
+          ref={bilingualRef}
+          locale={locale}
+          translationEnabled={translationEnabled}
+          labels={translationLabels}
+          initialTitleAr={listing?.titleAr ?? ""}
+          initialTitleEn={listing?.titleEn ?? ""}
+          initialDescriptionAr={listing?.descriptionAr ?? ""}
+          initialDescriptionEn={listing?.descriptionEn ?? ""}
+        />
 
         <div>
           <Label htmlFor="priceKwd">{labels.priceKwd}</Label>
@@ -251,8 +250,10 @@ export function ListingForm({
         </div>
       )}
 
-      <Button type="submit" size="lg">
-        {submitLabel}
+      {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+
+      <Button type="submit" size="lg" disabled={pending}>
+        {pending ? translationLabels.translating : submitLabel}
       </Button>
     </form>
   );

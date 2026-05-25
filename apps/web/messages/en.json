@@ -172,6 +172,20 @@
         "parking": "Parking",
         "sizeM2": "Size (m²)",
         "saveDraft": "Save draft"
+      },
+      "translation": {
+        "title": "Title",
+        "description": "Description",
+        "primaryHintAr": "Write in Arabic — English will be filled in automatically",
+        "primaryHintEn": "Write in English — Arabic will be filled in automatically",
+        "autoFilled": "Auto-translated",
+        "translating": "Translating…",
+        "translateNow": "Translate now",
+        "editTranslation": "Edit translation",
+        "translationPreviewAr": "Arabic translation (auto)",
+        "translationPreviewEn": "English translation (auto)",
+        "translationFailed": "Translation failed — try again or edit both languages manually",
+        "notConfigured": "AI translation is not configured — fill Arabic and English fields manually"
       }
     }
   },
