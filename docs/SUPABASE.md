@@ -56,13 +56,12 @@ Expected: `{ "ok": true, "database": "postgres", "tables": [...] }`
 
 If CLI cannot connect locally, paste and run:
 
-`packages/database/prisma/migrations/20250522120000_init/migration.sql`
+`packages/database/prisma/migrations/001_init/migration.sql`
 
 Then mark migration applied:
 
 ```bash
-npm run db:migrate:deploy
-# or: npx prisma migrate resolve --applied 20250522120000_init --schema=packages/database/prisma/schema.prisma
+npx dotenv -e .env.local -- prisma migrate resolve --schema=packages/database/prisma/schema.prisma --applied 001_init
 ```
 
 ## 5. Tables
