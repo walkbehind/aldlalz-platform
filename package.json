@@ -23,6 +23,7 @@
     "db:sync-env": "node scripts/sync-supabase-env.mjs",
     "db:find-region": "node scripts/find-supabase-region.mjs",
     "storage:setup": "node scripts/setup-storage-env.mjs",
+    "storage:sync": "node scripts/sync-storage-env.mjs",
     "storage:check": "node scripts/check-storage.mjs"
   },
   "engines": {
