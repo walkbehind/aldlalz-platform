@@ -10,6 +10,7 @@ import { ListingForm } from "@/components/listings/listing-form";
 import { ListingStatusBadge } from "@/components/listings/listing-status-badge";
 import { DeleteDraftButton } from "@/components/listings/delete-draft-button";
 import { ListingMediaUploader } from "@/components/listings/listing-media-uploader";
+import { ListingPhotosScrollAnchor } from "@/components/listings/listing-photos-scroll-anchor";
 import { getOwnerListing } from "@/lib/listings/queries";
 import { toListingImageDto } from "@/lib/listings/images";
 import {
@@ -18,7 +19,6 @@ import {
 } from "@/lib/listings/actions";
 import { isStorageConfigured } from "@/lib/storage";
 import { googleMapsConfigured, getGoogleMapsApiKey } from "@/lib/maps/kuwait";
-import { isTranslationConfigured } from "@/lib/translation";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -100,7 +100,9 @@ export default async function EditListingPage({
         {listing.isDraft && <DeleteDraftButton listingId={listing.id} />}
       </div>
 
-      <Card className="mb-6">
+      <ListingPhotosScrollAnchor active={!!query.created} />
+
+      <Card className="mb-6" id="listing-photos">
         <h2 className="mb-4 text-lg font-semibold">{t("mediaTitle")}</h2>
         <ListingMediaUploader
           listingId={listing.id}
@@ -113,7 +115,7 @@ export default async function EditListingPage({
         <ListingForm
           locale={locale}
           labels={labels}
-          translationEnabled={isTranslationConfigured()}
+          translationEnabled={false}
           translationLabels={{
             title: tr("title"),
             description: tr("description"),

@@ -3,10 +3,8 @@ import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
-import { Card } from "@/components/ui/card";
-import { ListingForm } from "@/components/listings/listing-form";
-import { createListingAction } from "@/lib/listings/actions";
-import { isTranslationConfigured } from "@/lib/translation";
+import { NewListingFlow } from "@/components/listings/new-listing-flow";
+import { isStorageConfigured } from "@/lib/storage";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -20,6 +18,7 @@ export default async function NewListingPage({ params }: Props) {
   }
 
   const t = await getTranslations("dashboard.listings.form");
+  const listings = await getTranslations("dashboard.listings");
   const tr = await getTranslations("dashboard.listings.translation");
 
   const labels = {
@@ -40,39 +39,42 @@ export default async function NewListingPage({ params }: Props) {
     sizeM2: t("sizeM2"),
   };
 
+  const translationLabels = {
+    title: tr("title"),
+    description: tr("description"),
+    primaryHint:
+      locale === "ar" ? tr("primaryHintAr") : tr("primaryHintEn"),
+    autoFilled: tr("autoFilled"),
+    translating: tr("translating"),
+    translateNow: tr("translateNow"),
+    editTranslation: tr("editTranslation"),
+    translationPreviewAr: tr("translationPreviewAr"),
+    translationPreviewEn: tr("translationPreviewEn"),
+    translationFailed: tr("translationFailed"),
+    notConfigured: tr("notConfigured"),
+    titleAr: t("titleAr"),
+    titleEn: t("titleEn"),
+    descriptionAr: t("descriptionAr"),
+    descriptionEn: t("descriptionEn"),
+  };
+
   return (
     <Container>
       <PageHeader
         title={t("createTitle")}
         subtitle={t("createSubtitle")}
       />
-      <Card>
-        <ListingForm
-          locale={locale}
-          labels={labels}
-          translationEnabled={isTranslationConfigured()}
-          translationLabels={{
-            title: tr("title"),
-            description: tr("description"),
-            primaryHint:
-              locale === "ar" ? tr("primaryHintAr") : tr("primaryHintEn"),
-            autoFilled: tr("autoFilled"),
-            translating: tr("translating"),
-            translateNow: tr("translateNow"),
-            editTranslation: tr("editTranslation"),
-            translationPreviewAr: tr("translationPreviewAr"),
-            translationPreviewEn: tr("translationPreviewEn"),
-            translationFailed: tr("translationFailed"),
-            notConfigured: tr("notConfigured"),
-            titleAr: t("titleAr"),
-            titleEn: t("titleEn"),
-            descriptionAr: t("descriptionAr"),
-            descriptionEn: t("descriptionEn"),
-          }}
-          action={createListingAction}
-          submitLabel={t("saveDraft")}
-        />
-      </Card>
+      <NewListingFlow
+        locale={locale}
+        labels={labels}
+        translationLabels={translationLabels}
+        storageConfigured={isStorageConfigured()}
+        submitLabel={t("saveDraft")}
+        mediaTitle={listings("mediaTitle")}
+        photosHint={t("photosHint")}
+        photosAfterSave={t("photosAfterSave")}
+        continueEditing={t("continueEditing")}
+      />
     </Container>
   );
 }

@@ -78,8 +78,7 @@ export async function createListingAction(formData: FormData) {
   });
 
   revalidateListingPaths(listing.id);
-  const locale = await getLocale();
-  redirect(`/${locale}/dashboard/listings/${listing.id}/edit?created=1`);
+  return { id: listing.id };
 }
 
 export async function updateListingAction(id: string, formData: FormData) {

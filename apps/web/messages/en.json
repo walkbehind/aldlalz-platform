@@ -114,7 +114,7 @@
       "deleteConfirm": "Are you sure you want to delete this draft?",
       "rejectionReason": "Rejection reason",
       "editTitle": "Edit listing",
-      "createdNotice": "Draft created — complete details then submit for review",
+      "createdNotice": "Draft saved — add photos below, then submit for review",
       "savedNotice": "Changes saved",
       "backToList": "Back to list",
       "saveChanges": "Save changes",
@@ -155,7 +155,7 @@
       },
       "form": {
         "createTitle": "Add new listing",
-        "createSubtitle": "Save as draft, then submit when ready",
+        "createSubtitle": "Fill in the details, save the draft, then add photos below",
         "listingType": "Listing type",
         "propertyType": "Property type",
         "titleAr": "Title (Arabic) *",
@@ -171,6 +171,9 @@
         "bathrooms": "Bathrooms",
         "parking": "Parking",
         "sizeM2": "Size (m²)",
+        "photosHint": "Save the draft first — photo upload will unlock here",
+        "photosAfterSave": "Draft saved — you can upload photos now",
+        "continueEditing": "Open full edit page",
         "saveDraft": "Save draft"
       },
       "translation": {

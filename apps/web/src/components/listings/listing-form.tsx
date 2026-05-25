@@ -28,9 +28,10 @@ type Props = {
   labels: Record<string, string>;
   translationLabels: TranslationLabels;
   translationEnabled: boolean;
-  action: (formData: FormData) => void | Promise<void>;
+  action: (formData: FormData) => void | Promise<void | { id: string }>;
   listing?: Listing;
   submitLabel: string;
+  onListingCreated?: (id: string) => void;
   mapsApiKey?: string;
   mapLabels?: {
     title: string;
@@ -49,6 +50,7 @@ export function ListingForm({
   action,
   listing,
   submitLabel,
+  onListingCreated,
   mapsApiKey,
   mapLabels,
 }: Props) {
@@ -76,7 +78,12 @@ export function ListingForm({
 
     if (!formRef.current) return;
     const formData = new FormData(formRef.current);
-    startTransition(() => action(formData));
+    startTransition(async () => {
+      const result = await action(formData);
+      if (result && typeof result === "object" && "id" in result) {
+        onListingCreated?.(result.id);
+      }
+    });
   }
 
   return (
