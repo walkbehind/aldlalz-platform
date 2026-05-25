@@ -8,13 +8,17 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.join(__dirname, "../..");
 
+const prismaTraceGlobs = [
+  "./node_modules/.prisma/client/**",
+  "./node_modules/@prisma/client/**",
+];
+
 const nextConfig: NextConfig = {
   transpilePackages: ["@aldlalz/database"],
-  // Include Prisma query engine from the monorepo package in Vercel serverless bundles
   outputFileTracingRoot: monorepoRoot,
   outputFileTracingIncludes: {
-    "/*": ["./packages/database/src/generated/prisma/**"],
-    "/api/**/*": ["./packages/database/src/generated/prisma/**"],
+    "/*": prismaTraceGlobs,
+    "/api/**/*": prismaTraceGlobs,
   },
   images: {
     remotePatterns: [

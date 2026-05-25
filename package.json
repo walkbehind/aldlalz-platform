@@ -7,8 +7,8 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace=@aldlalz/web",
-    "build": "npm run db:generate && npm run build --workspace=@aldlalz/web",
-    "build:vercel": "npm run db:generate:ci && npm run db:migrate:deploy:ci && npm run build --workspace=@aldlalz/web",
+    "build": "npm run db:generate:ci && npm run build --workspace=@aldlalz/web",
+    "build:vercel": "npm run db:generate:ci && npm run db:migrate:deploy:ci && npm run build --workspace=@aldlalz/web && node scripts/sync-prisma-vercel.mjs",
     "lint": "npm run lint --workspace=@aldlalz/web",
     "postinstall": "prisma generate --schema=packages/database/prisma/schema.prisma || true",
     "db:generate": "dotenv -e .env.local -- prisma generate --schema=packages/database/prisma/schema.prisma",
