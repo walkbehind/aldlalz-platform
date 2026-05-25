@@ -21,7 +21,9 @@
     "db:seed": "dotenv -e .env.local -- npm run db:seed --workspace=@aldlalz/database",
     "db:verify": "dotenv -e .env.local -- node scripts/verify-db.mjs",
     "db:sync-env": "node scripts/sync-supabase-env.mjs",
-    "db:find-region": "node scripts/find-supabase-region.mjs"
+    "db:find-region": "node scripts/find-supabase-region.mjs",
+    "storage:setup": "node scripts/setup-storage-env.mjs",
+    "storage:check": "node scripts/check-storage.mjs"
   },
   "engines": {
     "node": ">=20"
