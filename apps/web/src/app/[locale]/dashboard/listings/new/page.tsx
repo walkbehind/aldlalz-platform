@@ -4,7 +4,8 @@ import { redirect } from "@/i18n/navigation";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { NewListingFlow } from "@/components/listings/new-listing-flow";
-import { isStorageConfigured } from "@/lib/storage";
+
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -68,7 +69,6 @@ export default async function NewListingPage({ params }: Props) {
         locale={locale}
         labels={labels}
         translationLabels={translationLabels}
-        storageConfigured={isStorageConfigured()}
         submitLabel={t("saveDraft")}
         mediaTitle={listings("mediaTitle")}
         photosHint={t("photosHint")}

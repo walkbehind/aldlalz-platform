@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ListingForm } from "@/components/listings/listing-form";
 import { ListingStatusBadge } from "@/components/listings/listing-status-badge";
 import { DeleteDraftButton } from "@/components/listings/delete-draft-button";
-import { ListingMediaUploader } from "@/components/listings/listing-media-uploader";
+import { ListingMediaSection } from "@/components/listings/listing-media-section";
 import { ListingPhotosScrollAnchor } from "@/components/listings/listing-photos-scroll-anchor";
 import { getOwnerListing } from "@/lib/listings/queries";
 import { toListingImageDto } from "@/lib/listings/images";
@@ -17,8 +17,9 @@ import {
   submitListingAction,
   updateListingAndRedirectAction,
 } from "@/lib/listings/actions";
-import { isStorageConfigured } from "@/lib/storage";
 import { googleMapsConfigured, getGoogleMapsApiKey } from "@/lib/maps/kuwait";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -104,10 +105,9 @@ export default async function EditListingPage({
 
       <Card className="mb-6" id="listing-photos">
         <h2 className="mb-4 text-lg font-semibold">{t("mediaTitle")}</h2>
-        <ListingMediaUploader
+        <ListingMediaSection
           listingId={listing.id}
           initialImages={listing.images.map(toListingImageDto)}
-          storageConfigured={isStorageConfigured()}
         />
       </Card>
 

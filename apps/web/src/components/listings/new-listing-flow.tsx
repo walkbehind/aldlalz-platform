@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ListingForm } from "@/components/listings/listing-form";
-import { ListingMediaUploader } from "@/components/listings/listing-media-uploader";
+import { ListingMediaSection } from "@/components/listings/listing-media-section";
 import type { TranslationLabels } from "@/components/listings/listing-bilingual-fields";
 import { createListingAction } from "@/lib/listings/actions";
 
@@ -13,7 +13,6 @@ type Props = {
   locale: string;
   labels: Record<string, string>;
   translationLabels: TranslationLabels;
-  storageConfigured: boolean;
   submitLabel: string;
   mediaTitle: string;
   photosHint: string;
@@ -25,7 +24,6 @@ export function NewListingFlow({
   locale,
   labels,
   translationLabels,
-  storageConfigured,
   submitLabel,
   mediaTitle,
   photosHint,
@@ -64,11 +62,7 @@ export function NewListingFlow({
 
         {listingId ? (
           <>
-            <ListingMediaUploader
-              listingId={listingId}
-              initialImages={[]}
-              storageConfigured={storageConfigured}
-            />
+            <ListingMediaSection listingId={listingId} initialImages={[]} />
             <div className="mt-4">
               <Button
                 type="button"
