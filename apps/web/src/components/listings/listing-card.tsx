@@ -17,6 +17,7 @@ type Props = {
   locale: string;
   viewDetailsLabel: string;
   featuredLabel?: string;
+  distanceLabel?: string;
 };
 
 export function ListingCard({
@@ -24,6 +25,7 @@ export function ListingCard({
   locale,
   viewDetailsLabel,
   featuredLabel,
+  distanceLabel,
 }: Props) {
   const title =
     locale === "ar"
@@ -51,6 +53,11 @@ export function ListingCard({
           {listing.isFeatured && featuredLabel && (
             <Badge className="absolute start-3 top-3 bg-brand-600 text-white">
               {featuredLabel}
+            </Badge>
+          )}
+          {distanceLabel && (
+            <Badge className="absolute end-3 top-3 bg-black/60 text-white">
+              {distanceLabel}
             </Badge>
           )}
         </div>

@@ -9,6 +9,17 @@ import { ListingMediaSection } from "@/components/listings/listing-media-section
 import type { TranslationLabels } from "@/components/listings/listing-bilingual-fields";
 import { createListingAction } from "@/lib/listings/actions";
 
+type MapLabels = {
+  title: string;
+  hint: string;
+  addressLine: string;
+  latitude: string;
+  longitude: string;
+  useMyLocation: string;
+  clearPin: string;
+  locationDenied: string;
+};
+
 type Props = {
   locale: string;
   labels: Record<string, string>;
@@ -18,6 +29,9 @@ type Props = {
   photosHint: string;
   photosAfterSave: string;
   continueEditing: string;
+  mapsApiKey?: string;
+  mapLabels?: MapLabels;
+  mapsNotConfigured?: string;
 };
 
 export function NewListingFlow({
@@ -29,6 +43,9 @@ export function NewListingFlow({
   photosHint,
   photosAfterSave,
   continueEditing,
+  mapsApiKey,
+  mapLabels,
+  mapsNotConfigured,
 }: Props) {
   const router = useRouter();
   const [listingId, setListingId] = useState<string | null>(null);
@@ -51,6 +68,9 @@ export function NewListingFlow({
                 ?.scrollIntoView({ behavior: "smooth", block: "start" });
             });
           }}
+          mapsApiKey={mapsApiKey}
+          mapLabels={mapLabels}
+          mapsNotConfigured={mapsNotConfigured}
         />
       </Card>
 

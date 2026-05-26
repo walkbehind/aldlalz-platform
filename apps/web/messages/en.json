@@ -63,6 +63,7 @@
     "phoneMasked": "Phone",
     "featured": "Featured",
     "similar": "Similar listings",
+    "nearby": "Nearby listings",
     "viewDetails": "Details",
     "gallery": {
       "noImages": "No photos yet",
@@ -74,7 +75,8 @@
     },
     "map": {
       "title": "Location on map",
-      "openInMaps": "Open in Google Maps"
+      "openInMaps": "Open in Google Maps",
+      "tapToLoadMap": "Tap to load interactive map"
     }
   },
   "packages": {
@@ -128,10 +130,14 @@
       "mediaTitle": "Listing photos",
       "map": {
         "title": "Map location",
-        "hint": "Click the map to pin the property location in Kuwait",
+        "hint": "Tap the map or drag the pin to set the property location in Kuwait",
         "addressLine": "Street address",
         "latitude": "Latitude",
-        "longitude": "Longitude"
+        "longitude": "Longitude",
+        "useMyLocation": "Use my location",
+        "clearPin": "Clear pin",
+        "locationDenied": "Could not access your location — pin manually on the map",
+        "notConfigured": "Google Maps is not configured — add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY"
       },
       "media": {
         "dropzoneTitle": "Drag photos here or click to upload",

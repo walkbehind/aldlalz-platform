@@ -4,6 +4,10 @@ import { redirect } from "@/i18n/navigation";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { NewListingFlow } from "@/components/listings/new-listing-flow";
+import {
+  googleMapsConfigured,
+  getGoogleMapsApiKey,
+} from "@/lib/maps/kuwait";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +24,7 @@ export default async function NewListingPage({ params }: Props) {
 
   const t = await getTranslations("dashboard.listings.form");
   const listings = await getTranslations("dashboard.listings");
+  const map = await getTranslations("dashboard.listings.map");
   const tr = await getTranslations("dashboard.listings.translation");
 
   const labels = {
@@ -74,6 +79,20 @@ export default async function NewListingPage({ params }: Props) {
         photosHint={t("photosHint")}
         photosAfterSave={t("photosAfterSave")}
         continueEditing={t("continueEditing")}
+        mapsApiKey={
+          googleMapsConfigured() ? getGoogleMapsApiKey() : undefined
+        }
+        mapLabels={{
+          title: map("title"),
+          hint: map("hint"),
+          addressLine: map("addressLine"),
+          latitude: map("latitude"),
+          longitude: map("longitude"),
+          useMyLocation: map("useMyLocation"),
+          clearPin: map("clearPin"),
+          locationDenied: map("locationDenied"),
+        }}
+        mapsNotConfigured={map("notConfigured")}
       />
     </Container>
   );

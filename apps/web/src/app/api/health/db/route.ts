@@ -32,6 +32,10 @@ export async function GET() {
       tableNames.includes("listing_images") &&
       migrations.some((m) => m.migration_name === "003_listing_media_location");
 
+    const phase4Ready = migrations.some(
+      (m) => m.migration_name === "004_listing_geo_index"
+    );
+
     return NextResponse.json({
       ok: true,
       database: ping.db,
@@ -39,6 +43,7 @@ export async function GET() {
       tables: tableNames,
       migrations: migrations.map((m) => m.migration_name),
       phase3Ready,
+      phase4Ready,
     });
   } catch (error) {
     const message =

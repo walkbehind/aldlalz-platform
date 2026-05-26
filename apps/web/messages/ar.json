@@ -63,6 +63,7 @@
     "phoneMasked": "الهاتف",
     "featured": "مميز",
     "similar": "عقارات مشابهة",
+    "nearby": "عقارات قريبة",
     "viewDetails": "التفاصيل",
     "gallery": {
       "noImages": "لا توجد صور",
@@ -74,7 +75,8 @@
     },
     "map": {
       "title": "الموقع على الخريطة",
-      "openInMaps": "فتح في خرائط Google"
+      "openInMaps": "فتح في خرائط Google",
+      "tapToLoadMap": "اضغط لتحميل الخريطة التفاعلية"
     }
   },
   "packages": {
@@ -128,10 +130,14 @@
       "mediaTitle": "صور العقار",
       "map": {
         "title": "الموقع على الخريطة",
-        "hint": "انقر على الخريطة لتحديد موقع العقار في الكويت",
+        "hint": "اضغط على الخريطة أو اسحب الدبوس لتحديد موقع العقار في الكويت",
         "addressLine": "العنوان التفصيلي",
         "latitude": "خط العرض",
-        "longitude": "خط الطول"
+        "longitude": "خط الطول",
+        "useMyLocation": "استخدام موقعي",
+        "clearPin": "مسح الدبوس",
+        "locationDenied": "تعذّر الوصول لموقعك — حدّد الموقع يدوياً على الخريطة",
+        "notConfigured": "خرائط Google غير مُعدة — أضف NEXT_PUBLIC_GOOGLE_MAPS_API_KEY"
       },
       "media": {
         "dropzoneTitle": "اسحب الصور هنا أو انقر للرفع",

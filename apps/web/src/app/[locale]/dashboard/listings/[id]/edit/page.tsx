@@ -71,6 +71,9 @@ export default async function EditListingPage({
     addressLine: map("addressLine"),
     latitude: map("latitude"),
     longitude: map("longitude"),
+    useMyLocation: map("useMyLocation"),
+    clearPin: map("clearPin"),
+    locationDenied: map("locationDenied"),
   };
 
   return (
@@ -141,6 +144,7 @@ export default async function EditListingPage({
             googleMapsConfigured() ? getGoogleMapsApiKey() : undefined
           }
           mapLabels={mapLabels}
+          mapsNotConfigured={map("notConfigured")}
         />
       </Card>
 

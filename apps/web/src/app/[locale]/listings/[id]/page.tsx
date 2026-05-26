@@ -24,6 +24,8 @@ import {
 } from "@/lib/listings/constants";
 import { getCoverImage } from "@/lib/listings/images";
 import { getThumbnailStorageUrl } from "@/lib/supabase/client";
+import { getNearbyListingsForListing } from "@/lib/listings/nearby";
+import { formatDistanceKm } from "@/lib/maps/geo";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -79,6 +81,10 @@ export default async function ListingDetailPage({ params }: Props) {
   const t = await getTranslations("listingDetail");
   const common = await getTranslations("common");
   const similar = await getSimilarListings(listing);
+  const nearby =
+    listing.latitude != null && listing.longitude != null
+      ? await getNearbyListingsForListing(listing)
+      : [];
 
   const title =
     locale === "ar" ? listing.titleAr : listing.titleEn || listing.titleAr;
@@ -216,6 +222,23 @@ export default async function ListingDetailPage({ params }: Props) {
           </Link>
         </div>
       </div>
+
+      {nearby.length > 0 && (
+        <section className="mt-12">
+          <h2 className="mb-4 text-xl font-bold">{t("nearby")}</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {nearby.map((item) => (
+              <ListingCard
+                key={item.id}
+                listing={item}
+                locale={locale}
+                viewDetailsLabel={t("viewDetails")}
+                distanceLabel={formatDistanceKm(item.distanceKm, locale)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {similar.length > 0 && (
         <section className="mt-12">

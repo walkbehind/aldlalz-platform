@@ -126,7 +126,7 @@ async function withListingSchemaFallback<T>(
   }
 }
 
-function mapToCardData(
+export function mapToCardData(
   listing: Prisma.ListingGetPayload<{ select: typeof cardListingSelect }>
 ): ListingCardData {
   const cover = getCoverImage(listing.images);

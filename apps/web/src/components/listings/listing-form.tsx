@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import dynamic from "next/dynamic";
 import type { Listing, KuwaitGovernorate } from "@aldlalz/database";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,12 +17,26 @@ import {
   PROPERTY_TYPES,
   PROPERTY_TYPE_LABELS,
 } from "@/lib/listings/constants";
-import { ListingMapPicker } from "@/components/listings/listing-map-picker";
 import {
   ListingBilingualFields,
   type ListingBilingualFieldsHandle,
   type TranslationLabels,
 } from "@/components/listings/listing-bilingual-fields";
+
+const ListingMapPicker = dynamic(
+  () =>
+    import("@/components/listings/listing-map-picker").then(
+      (m) => m.ListingMapPicker
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-56 items-center justify-center rounded-xl bg-surface-muted text-sm text-text-muted">
+        …
+      </div>
+    ),
+  }
+);
 
 type Props = {
   locale: string;
@@ -39,7 +54,11 @@ type Props = {
     addressLine: string;
     latitude: string;
     longitude: string;
+    useMyLocation: string;
+    clearPin: string;
+    locationDenied: string;
   };
+  mapsNotConfigured?: string;
 };
 
 export function ListingForm({
@@ -53,10 +72,12 @@ export function ListingForm({
   onListingCreated,
   mapsApiKey,
   mapLabels,
+  mapsNotConfigured,
 }: Props) {
   const [governorate, setGovernorate] = useState<KuwaitGovernorate>(
     listing?.governorate ?? "CAPITAL"
   );
+  const [area, setArea] = useState(listing?.area ?? "");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
@@ -160,9 +181,10 @@ export function ListingForm({
             id="governorate"
             name="governorate"
             value={governorate}
-            onChange={(e) =>
-              setGovernorate(e.target.value as KuwaitGovernorate)
-            }
+            onChange={(e) => {
+              setGovernorate(e.target.value as KuwaitGovernorate);
+              setArea("");
+            }}
             required
           >
             {GOVERNORATES.map((gov) => (
@@ -178,8 +200,8 @@ export function ListingForm({
           <Select
             id="area"
             name="area"
-            key={governorate}
-            defaultValue={listing?.area ?? ""}
+            value={area}
+            onChange={(e) => setArea(e.target.value)}
             required
           >
             <option value="">{labels.selectArea}</option>
@@ -237,10 +259,13 @@ export function ListingForm({
         </div>
       </div>
 
-      {mapsApiKey && mapLabels && (
+      {mapsApiKey && mapLabels ? (
         <div className="rounded-xl border border-border bg-surface-muted/50 p-4">
           <ListingMapPicker
             apiKey={mapsApiKey}
+            locale={locale}
+            governorate={governorate}
+            areaAr={area}
             labels={mapLabels}
             initialLat={
               listing?.latitude != null
@@ -255,6 +280,12 @@ export function ListingForm({
             initialAddress={listing?.addressLine}
           />
         </div>
+      ) : (
+        mapsNotConfigured && (
+          <p className="rounded-lg border border-dashed border-border bg-surface-muted p-4 text-sm text-text-muted">
+            {mapsNotConfigured}
+          </p>
+        )
       )}
 
       {submitError && <p className="text-sm text-red-600">{submitError}</p>}
