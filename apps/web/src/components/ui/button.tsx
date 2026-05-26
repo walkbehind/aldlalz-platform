@@ -15,9 +15,9 @@ const variants: Record<Variant, string> = {
 type Size = "sm" | "md" | "lg";
 
 const sizes: Record<Size, string> = {
-  sm: "px-3 py-1.5 text-sm",
-  md: "px-5 py-2.5 text-base",
-  lg: "px-6 py-3 text-lg",
+  sm: "px-3 py-2 text-sm min-h-[36px]",
+  md: "px-5 py-2.5 text-base min-h-[44px]",
+  lg: "px-6 py-3 text-lg min-h-[48px]",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

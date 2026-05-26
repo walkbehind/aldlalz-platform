@@ -106,13 +106,14 @@ export function ListingMapPicker({
           <h3 className="font-medium">{labels.title}</h3>
           <p className="text-sm text-text-muted">{labels.hint}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 sm:justify-end">
           <Button
             type="button"
             size="sm"
             variant="outline"
             disabled={locating}
             onClick={useMyLocation}
+            className="min-h-[44px] flex-1 sm:flex-none"
           >
             {labels.useMyLocation}
           </Button>
@@ -122,6 +123,7 @@ export function ListingMapPicker({
               size="sm"
               variant="ghost"
               onClick={() => setPosition(null)}
+              className="min-h-[44px] flex-1 sm:flex-none"
             >
               {labels.clearPin}
             </Button>
@@ -130,7 +132,7 @@ export function ListingMapPicker({
       </div>
 
       <GoogleMapsProvider apiKey={apiKey}>
-        <div className="h-56 overflow-hidden rounded-xl border border-border sm:h-64 md:h-80">
+        <div className="h-64 overflow-hidden rounded-xl border border-border sm:h-72 md:h-80">
           <Map
             key={`${center.lat}-${center.lng}-${zoom}`}
             defaultCenter={center}

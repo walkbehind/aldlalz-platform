@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Alert, Spinner } from "@/components/ui/feedback";
 import type { ListingImageDto } from "@/lib/listings/images";
 import { MAX_IMAGES_PER_LISTING } from "@/lib/supabase/client";
 
@@ -14,6 +15,32 @@ type Props = {
 };
 
 const fetchOpts = { credentials: "same-origin" as const };
+
+const MEDIA_ERROR_KEYS = [
+  "UPLOAD_FAILED",
+  "MAX_IMAGES",
+  "INVALID_TYPE",
+  "FILE_TOO_LARGE",
+  "STORAGE_NOT_CONFIGURED",
+  "UNAUTHORIZED",
+  "NOT_FOUND",
+  "DELETE_FAILED",
+  "REORDER_FAILED",
+  "COVER_FAILED",
+] as const;
+
+type MediaErrorKey = (typeof MEDIA_ERROR_KEYS)[number];
+
+function mediaErrorMessage(
+  t: ReturnType<typeof useTranslations<"dashboard.listings.media">>,
+  code: string | undefined,
+  fallback: MediaErrorKey
+) {
+  const key = MEDIA_ERROR_KEYS.includes(code as MediaErrorKey)
+    ? (code as MediaErrorKey)
+    : fallback;
+  return t(`errors.${key}`);
+}
 
 export function ListingMediaUploader({
   listingId,
@@ -49,7 +76,7 @@ export function ListingMediaUploader({
         });
         const data = await res.json();
         if (!res.ok) {
-          setError(t(`errors.${data.error}` as "errors.UPLOAD_FAILED"));
+          setError(mediaErrorMessage(t, data.error, "UPLOAD_FAILED"));
           return;
         }
         setImages((prev) => [...prev, ...(data.images as ListingImageDto[])]);
@@ -64,11 +91,16 @@ export function ListingMediaUploader({
 
   async function onDelete(imageId: string) {
     if (!confirm(t("deleteConfirm"))) return;
+    setError(null);
     const res = await fetch(`/api/listings/${listingId}/images/${imageId}`, {
       method: "DELETE",
       ...fetchOpts,
     });
-    if (!res.ok) return;
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(mediaErrorMessage(t, data.error, "DELETE_FAILED"));
+      return;
+    }
     setImages((prev) => {
       const next = prev.filter((i) => i.id !== imageId);
       if (next.length > 0 && !next.some((i) => i.isCover)) {
@@ -79,20 +111,25 @@ export function ListingMediaUploader({
   }
 
   async function onSetCover(imageId: string) {
+    setError(null);
     const res = await fetch(`/api/listings/${listingId}/images`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "cover", imageId }),
       ...fetchOpts,
     });
-    if (!res.ok) return;
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(mediaErrorMessage(t, data.error, "COVER_FAILED"));
+      return;
+    }
     setImages((prev) =>
       prev.map((img) => ({ ...img, isCover: img.id === imageId }))
     );
   }
 
   async function persistOrder(next: ListingImageDto[]) {
-    await fetch(`/api/listings/${listingId}/images`, {
+    const res = await fetch(`/api/listings/${listingId}/images`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -101,6 +138,10 @@ export function ListingMediaUploader({
       }),
       ...fetchOpts,
     });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(mediaErrorMessage(t, data.error, "REORDER_FAILED"));
+    }
   }
 
   function reorder(from: number, to: number) {
@@ -124,9 +165,7 @@ export function ListingMediaUploader({
 
   if (!storageConfigured) {
     return (
-      <p className="rounded-lg border border-dashed border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
-        {t("storageNotConfigured")}
-      </p>
+      <Alert variant="warning">{t("storageNotConfigured")}</Alert>
     );
   }
 
@@ -145,7 +184,7 @@ export function ListingMediaUploader({
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
         onClick={() => inputRef.current?.click()}
-        className={`flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
+        className={`flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-colors touch-manipulation ${
           dragging
             ? "border-brand-500 bg-brand-50"
             : "border-border bg-surface-muted hover:border-brand-400"
@@ -170,9 +209,12 @@ export function ListingMediaUploader({
       </div>
 
       {uploading && (
-        <p className="text-sm text-brand-600">{t("uploading")}</p>
+        <p className="flex items-center gap-2 text-sm text-brand-600">
+          <Spinner size="sm" />
+          {t("uploading")}
+        </p>
       )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <Alert>{error}</Alert>}
 
       {images.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">

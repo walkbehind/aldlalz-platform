@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ListingMediaUploader } from "@/components/listings/listing-media-uploader";
+import { LoadingRow } from "@/components/ui/feedback";
 import type { ListingImageDto } from "@/lib/listings/images";
 
 type StorageHealth = {
@@ -17,6 +19,7 @@ type Props = {
 };
 
 export function ListingMediaSection({ listingId, initialImages }: Props) {
+  const t = useTranslations("common");
   const [storageConfigured, setStorageConfigured] = useState<boolean | null>(
     null
   );
@@ -48,11 +51,7 @@ export function ListingMediaSection({ listingId, initialImages }: Props) {
   }, []);
 
   if (storageConfigured === null) {
-    return (
-      <p className="text-sm text-text-muted" aria-live="polite">
-        …
-      </p>
-    );
+    return <LoadingRow label={t("loading")} />;
   }
 
   return (

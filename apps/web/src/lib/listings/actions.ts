@@ -9,14 +9,37 @@ import {
   type ListingType,
   type PropertyType,
 } from "@aldlalz/database";
+import { AppErrorCode, errorCodeFromUnknown, isNextRedirect, validationKeyFromForm } from "@/lib/app-errors";
 import { isValidKuwaitCoordinate } from "@/lib/maps/kuwait";
 import { deleteAllListingImagesFromStorage } from "@/lib/listings/images";
 import { requireAdminUser, requireSessionUser } from "./auth";
 import { parseListingForm, rejectListingSchema } from "./validation";
+import { actionFail, actionOk, type ActionResult } from "./action-result";
+
+function isDatabaseError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    (error.name === "PrismaClientKnownRequestError" ||
+      error.name === "PrismaClientUnknownRequestError" ||
+      error.message.includes("Prisma"))
+  );
+}
+
+function wrapAction<T>(fn: () => Promise<T>): Promise<ActionResult<T>> {
+  return fn()
+    .then((data) => actionOk(data))
+    .catch((error: unknown) => {
+      if (isNextRedirect(error)) throw error;
+      if (isDatabaseError(error)) {
+        return actionFail(AppErrorCode.DATABASE_ERROR);
+      }
+      return actionFail(errorCodeFromUnknown(error));
+    });
+}
 
 function listingDataFromParsed(parsed: ReturnType<typeof parseListingForm>) {
   if (!parsed.success) {
-    throw new Error("VALIDATION");
+    throw new Error(validationKeyFromForm(parsed));
   }
   const data = parsed.data;
   return {
@@ -63,151 +86,184 @@ function revalidateListingPaths(id?: string) {
   }
 }
 
-export async function createListingAction(formData: FormData) {
-  const user = await requireSessionUser();
-  const parsed = parseListingForm(formData);
-  const data = listingDataFromParsed(parsed);
+export async function createListingAction(
+  formData: FormData
+): Promise<ActionResult<{ id: string }>> {
+  return wrapAction(async () => {
+    const user = await requireSessionUser();
+    const parsed = parseListingForm(formData);
+    const data = listingDataFromParsed(parsed);
 
-  const listing = await prisma.listing.create({
-    data: {
-      ...data,
-      ownerId: user.id,
-      isDraft: true,
-      adminStatus: "PENDING",
-    },
+    const listing = await prisma.listing.create({
+      data: {
+        ...data,
+        ownerId: user.id,
+        isDraft: true,
+        adminStatus: "PENDING",
+      },
+    });
+
+    revalidateListingPaths(listing.id);
+    return { id: listing.id };
   });
-
-  revalidateListingPaths(listing.id);
-  return { id: listing.id };
 }
 
-export async function updateListingAction(id: string, formData: FormData) {
-  const user = await requireSessionUser();
-  const existing = await prisma.listing.findFirst({
-    where: { id, ownerId: user.id },
+export async function updateListingAction(
+  id: string,
+  formData: FormData
+): Promise<ActionResult> {
+  return wrapAction(async () => {
+    const user = await requireSessionUser();
+    const existing = await prisma.listing.findFirst({
+      where: { id, ownerId: user.id },
+    });
+    if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
+
+    const parsed = parseListingForm(formData);
+    const data = listingDataFromParsed(parsed);
+
+    const needsReReview =
+      !existing.isDraft && existing.adminStatus === "APPROVED";
+
+    await prisma.listing.update({
+      where: { id },
+      data: {
+        ...data,
+        adminStatus: needsReReview ? "PENDING" : existing.adminStatus,
+        rejectionReason: needsReReview ? null : existing.rejectionReason,
+      },
+    });
+
+    revalidateListingPaths(id);
   });
-  if (!existing) throw new Error("NOT_FOUND");
-
-  const parsed = parseListingForm(formData);
-  const data = listingDataFromParsed(parsed);
-
-  const needsReReview =
-    !existing.isDraft && existing.adminStatus === "APPROVED";
-
-  await prisma.listing.update({
-    where: { id },
-    data: {
-      ...data,
-      adminStatus: needsReReview ? "PENDING" : existing.adminStatus,
-      rejectionReason: needsReReview ? null : existing.rejectionReason,
-    },
-  });
-
-  revalidateListingPaths(id);
 }
 
 export async function updateListingAndRedirectAction(
   id: string,
   formData: FormData
-) {
-  await updateListingAction(id, formData);
+): Promise<ActionResult> {
+  const result = await updateListingAction(id, formData);
+  if (!result.ok) return result;
   const locale = await getLocale();
   redirect(`/${locale}/dashboard/listings/${id}/edit?saved=1`);
 }
 
-export async function submitListingAction(id: string) {
-  const user = await requireSessionUser();
-  const existing = await prisma.listing.findFirst({
-    where: { id, ownerId: user.id },
-  });
-  if (!existing) throw new Error("NOT_FOUND");
+export async function submitListingAction(
+  id: string
+): Promise<ActionResult> {
+  return wrapAction(async () => {
+    const user = await requireSessionUser();
+    const existing = await prisma.listing.findFirst({
+      where: { id, ownerId: user.id },
+    });
+    if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
 
-  await prisma.listing.update({
-    where: { id },
-    data: {
-      isDraft: false,
-      adminStatus: "PENDING",
-      rejectionReason: null,
-    },
-  });
+    await prisma.listing.update({
+      where: { id },
+      data: {
+        isDraft: false,
+        adminStatus: "PENDING",
+        rejectionReason: null,
+      },
+    });
 
-  revalidateListingPaths(id);
-  const locale = await getLocale();
-  redirect(`/${locale}/dashboard/listings?submitted=1`);
+    revalidateListingPaths(id);
+    const locale = await getLocale();
+    redirect(`/${locale}/dashboard/listings?submitted=1`);
+  });
 }
 
-export async function deleteDraftListingAction(id: string) {
-  const user = await requireSessionUser();
-  const existing = await prisma.listing.findFirst({
-    where: { id, ownerId: user.id, isDraft: true },
-    include: { images: { select: { storagePath: true } } },
+export async function deleteDraftListingAction(
+  id: string
+): Promise<ActionResult> {
+  return wrapAction(async () => {
+    const user = await requireSessionUser();
+    const existing = await prisma.listing.findFirst({
+      where: { id, ownerId: user.id, isDraft: true },
+      include: { images: { select: { storagePath: true } } },
+    });
+    if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
+
+    await deleteAllListingImagesFromStorage(
+      user.id,
+      id,
+      existing.images.map((i) => i.storagePath)
+    );
+
+    await prisma.listing.delete({ where: { id } });
+    revalidateListingPaths();
+    const locale = await getLocale();
+    redirect(`/${locale}/dashboard/listings`);
   });
-  if (!existing) throw new Error("NOT_FOUND");
-
-  await deleteAllListingImagesFromStorage(
-    user.id,
-    id,
-    existing.images.map((i) => i.storagePath)
-  );
-
-  await prisma.listing.delete({ where: { id } });
-  revalidateListingPaths();
-  const locale = await getLocale();
-  redirect(`/${locale}/dashboard/listings`);
 }
 
-export async function approveListingAction(id: string) {
-  await requireAdminUser();
-  const existing = await prisma.listing.findFirst({
-    where: { id, isDraft: false },
-  });
-  if (!existing) throw new Error("NOT_FOUND");
+export async function approveListingAction(
+  id: string
+): Promise<ActionResult> {
+  return wrapAction(async () => {
+    await requireAdminUser();
+    const existing = await prisma.listing.findFirst({
+      where: { id, isDraft: false },
+    });
+    if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
 
-  await prisma.listing.update({
-    where: { id },
-    data: {
-      adminStatus: "APPROVED",
-      rejectionReason: null,
-    },
-  });
+    await prisma.listing.update({
+      where: { id },
+      data: {
+        adminStatus: "APPROVED",
+        rejectionReason: null,
+      },
+    });
 
-  revalidateListingPaths(id);
+    revalidateListingPaths(id);
+  });
 }
 
-export async function rejectListingAction(id: string, formData: FormData) {
-  await requireAdminUser();
-  const existing = await prisma.listing.findFirst({
-    where: { id, isDraft: false },
-  });
-  if (!existing) throw new Error("NOT_FOUND");
+export async function rejectListingAction(
+  id: string,
+  formData: FormData
+): Promise<ActionResult> {
+  return wrapAction(async () => {
+    await requireAdminUser();
+    const existing = await prisma.listing.findFirst({
+      where: { id, isDraft: false },
+    });
+    if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
 
-  const parsed = rejectListingSchema.safeParse({
-    reason: String(formData.get("reason") ?? ""),
-  });
-  if (!parsed.success) throw new Error("VALIDATION");
+    const parsed = rejectListingSchema.safeParse({
+      reason: String(formData.get("reason") ?? ""),
+    });
+    if (!parsed.success) {
+      throw new Error(validationKeyFromForm(parsed));
+    }
 
-  await prisma.listing.update({
-    where: { id },
-    data: {
-      adminStatus: "REJECTED",
-      rejectionReason: parsed.data.reason,
-    },
-  });
+    await prisma.listing.update({
+      where: { id },
+      data: {
+        adminStatus: "REJECTED",
+        rejectionReason: parsed.data.reason,
+      },
+    });
 
-  revalidateListingPaths(id);
+    revalidateListingPaths(id);
+  });
 }
 
-export async function toggleListingFeaturedAction(id: string) {
-  await requireAdminUser();
-  const existing = await prisma.listing.findFirst({
-    where: { id, isDraft: false, adminStatus: "APPROVED" },
-  });
-  if (!existing) throw new Error("NOT_FOUND");
+export async function toggleListingFeaturedAction(
+  id: string
+): Promise<ActionResult> {
+  return wrapAction(async () => {
+    await requireAdminUser();
+    const existing = await prisma.listing.findFirst({
+      where: { id, isDraft: false, adminStatus: "APPROVED" },
+    });
+    if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
 
-  await prisma.listing.update({
-    where: { id },
-    data: { isFeatured: !existing.isFeatured },
-  });
+    await prisma.listing.update({
+      where: { id },
+      data: { isFeatured: !existing.isFeatured },
+    });
 
-  revalidateListingPaths(id);
+    revalidateListingPaths(id);
+  });
 }

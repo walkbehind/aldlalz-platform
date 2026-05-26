@@ -63,7 +63,7 @@ export function ListingCard({
         </div>
       </Link>
 
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="mb-3 flex flex-wrap gap-2">
           <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
             {labelFor(LISTING_TYPE_LABELS, listing.listingType, locale)}
@@ -104,8 +104,8 @@ export function ListingCard({
           )}
         </div>
 
-        <Link href={`/listings/${listing.id}`} className="mt-4 inline-block">
-          <Button variant="outline" size="sm">
+        <Link href={`/listings/${listing.id}`} className="mt-4 block">
+          <Button variant="outline" size="md" className="w-full sm:w-auto">
             {viewDetailsLabel}
           </Button>
         </Link>

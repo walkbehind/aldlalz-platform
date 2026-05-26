@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/feedback";
 import { AdminListingActions } from "@/components/listings/admin-listing-actions";
 import { ToggleFeaturedButton } from "@/components/listings/toggle-featured-button";
 import { ListingStatusBadge } from "@/components/listings/listing-status-badge";
@@ -56,10 +57,11 @@ export default async function AdminListingsPage({
 
       <div className="mb-6 flex flex-wrap gap-2">
         {TABS.map((tab) => (
-          <Link key={tab} href={`/admin/listings?status=${tab}`}>
+          <Link key={tab} href={`/admin/listings?status=${tab}`} className="flex-1 sm:flex-none">
             <Button
               variant={status === tab ? "primary" : "secondary"}
               size="sm"
+              className="w-full min-h-[44px] sm:w-auto"
             >
               {t(`tabs.${tab.toLowerCase()}`)} (
               {tab === "PENDING"
@@ -74,9 +76,7 @@ export default async function AdminListingsPage({
       </div>
 
       {listings.length === 0 ? (
-        <Card>
-          <p className="text-text-muted">{t("empty")}</p>
-        </Card>
+        <EmptyState title={t("empty")} />
       ) : (
         <div className="space-y-4">
           {listings.map((listing) => {

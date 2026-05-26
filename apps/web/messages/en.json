@@ -91,6 +91,8 @@
     "name": "Name",
     "submitLogin": "Sign in",
     "submitRegister": "Register",
+    "submittingLogin": "Signing in…",
+    "submittingRegister": "Creating account…",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?"
   },
@@ -156,7 +158,12 @@
           "MAX_IMAGES": "Maximum photos reached",
           "INVALID_TYPE": "Unsupported file type",
           "FILE_TOO_LARGE": "File too large",
-          "STORAGE_NOT_CONFIGURED": "Storage not configured"
+          "STORAGE_NOT_CONFIGURED": "Storage not configured",
+          "UNAUTHORIZED": "Please sign in to upload photos",
+          "NOT_FOUND": "Listing not found",
+          "DELETE_FAILED": "Could not delete photo",
+          "REORDER_FAILED": "Could not reorder photos",
+          "COVER_FAILED": "Could not set cover photo"
         }
       },
       "form": {
@@ -230,6 +237,26 @@
   "common": {
     "phase1": "Phase 3 — media & maps",
     "backHome": "Back to home",
-    "backToListings": "Back to listings"
+    "backToListings": "Back to listings",
+    "loading": "Loading…",
+    "saving": "Saving…"
+  },
+  "errors": {
+    "UNAUTHORIZED": "Please sign in to continue",
+    "FORBIDDEN": "You don't have permission for this action",
+    "VALIDATION": "Please check the required fields",
+    "NOT_FOUND": "Listing not found",
+    "SERVER_ERROR": "Something went wrong — please try again",
+    "STORAGE_NOT_CONFIGURED": "Photo storage is not configured",
+    "UPLOAD_FAILED": "Upload failed — please try again",
+    "DATABASE_ERROR": "Database error — please try again later",
+    "titleArMin": "Arabic title must be at least 3 characters",
+    "areaMin": "Please select an area",
+    "pricePositive": "Price must be greater than zero",
+    "reasonMin": "Rejection reason must be at least 3 characters",
+    "EMAIL_TAKEN": "This email is already registered",
+    "INVALID_INPUT": "Invalid email or password (minimum 8 characters)",
+    "INVALID_CREDENTIALS": "Invalid email or password",
+    "UNAUTHORIZED_MEDIA": "Please sign in to upload photos"
   }
 }

@@ -123,13 +123,13 @@ export function ListingGallery({ images, title }: Props) {
         </div>
 
         {images.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto p-3 snap-x snap-mandatory">
+          <div className="flex gap-2 overflow-x-auto p-3 pb-4 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
             {images.map((img, i) => (
               <button
                 key={img.id}
                 type="button"
                 onClick={() => setIndex(i)}
-                className={`relative h-16 w-24 shrink-0 snap-start overflow-hidden rounded-lg border-2 ${
+                className={`relative h-20 w-28 shrink-0 snap-start overflow-hidden rounded-lg border-2 sm:h-16 sm:w-24 ${
                   i === index ? "border-brand-500" : "border-transparent"
                 }`}
               >

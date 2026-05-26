@@ -13,15 +13,12 @@ export async function POST(request: Request) {
     const locale = body.locale === "en" ? "en" : "ar";
 
     if (!email || !password || password.length < 8) {
-      return NextResponse.json(
-        { error: "Invalid email or password (min 8 characters)" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "INVALID_INPUT" }, { status: 400 });
     }
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
-      return NextResponse.json({ error: "Email already registered" }, { status: 409 });
+      return NextResponse.json({ error: "EMAIL_TAKEN" }, { status: 409 });
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
@@ -40,6 +37,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {
     console.error("[register]", error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return NextResponse.json({ error: "SERVER_ERROR" }, { status: 500 });
   }
 }

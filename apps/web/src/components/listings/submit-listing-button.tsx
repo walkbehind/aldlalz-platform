@@ -6,25 +6,24 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Alert, Spinner } from "@/components/ui/feedback";
 import { isNextRedirect } from "@/lib/app-errors";
-import { toggleListingFeaturedAction } from "@/lib/listings/actions";
+import { submitListingAction } from "@/lib/listings/actions";
 
 type Props = {
   listingId: string;
-  isFeatured: boolean;
+  label: string;
 };
 
-export function ToggleFeaturedButton({ listingId, isFeatured }: Props) {
-  const t = useTranslations("admin.listings");
+export function SubmitListingButton({ listingId, label }: Props) {
   const tErrors = useTranslations("errors");
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  function handleClick() {
+  function handleSubmit() {
     setError(null);
     startTransition(async () => {
       try {
-        const result = await toggleListingFeaturedAction(listingId);
+        const result = await submitListingAction(listingId);
         if (!result.ok) {
           setError(tErrors(result.error));
           return;
@@ -38,25 +37,16 @@ export function ToggleFeaturedButton({ listingId, isFeatured }: Props) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {error && <Alert>{error}</Alert>}
-      <Button
-        type="button"
-        size="sm"
-        variant={isFeatured ? "primary" : "outline"}
-        disabled={pending}
-        className="w-full sm:w-auto"
-        onClick={handleClick}
-      >
+      <Button type="button" onClick={handleSubmit} disabled={pending}>
         {pending ? (
           <>
             <Spinner size="sm" className="me-2" />
-            {isFeatured ? t("unfeature") : t("feature")}
+            {label}
           </>
-        ) : isFeatured ? (
-          t("unfeature")
         ) : (
-          t("feature")
+          label
         )}
       </Button>
     </div>

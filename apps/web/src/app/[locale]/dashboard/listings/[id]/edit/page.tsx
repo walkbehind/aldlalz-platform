@@ -14,9 +14,9 @@ import { ListingPhotosScrollAnchor } from "@/components/listings/listing-photos-
 import { getOwnerListing } from "@/lib/listings/queries";
 import { toListingImageDto } from "@/lib/listings/images";
 import {
-  submitListingAction,
   updateListingAndRedirectAction,
 } from "@/lib/listings/actions";
+import { SubmitListingButton } from "@/components/listings/submit-listing-button";
 import { googleMapsConfigured, getGoogleMapsApiKey } from "@/lib/maps/kuwait";
 
 export const dynamic = "force-dynamic";
@@ -152,9 +152,10 @@ export default async function EditListingPage({
         <Card>
           <h2 className="mb-2 text-lg font-semibold">{t("submitTitle")}</h2>
           <p className="mb-4 text-sm text-text-muted">{t("submitHint")}</p>
-          <form action={submitListingAction.bind(null, id)}>
-            <Button type="submit">{t("submitForReview")}</Button>
-          </form>
+          <SubmitListingButton
+            listingId={listing.id}
+            label={t("submitForReview")}
+          />
         </Card>
       )}
 
@@ -162,9 +163,7 @@ export default async function EditListingPage({
         <Card className="mt-6">
           <h2 className="mb-2 text-lg font-semibold">{t("resubmitTitle")}</h2>
           <p className="mb-4 text-sm text-text-muted">{t("resubmitHint")}</p>
-          <form action={submitListingAction.bind(null, id)}>
-            <Button type="submit">{t("resubmit")}</Button>
-          </form>
+          <SubmitListingButton listingId={listing.id} label={t("resubmit")} />
         </Card>
       )}
     </Container>

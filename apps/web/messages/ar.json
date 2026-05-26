@@ -91,6 +91,8 @@
     "name": "الاسم",
     "submitLogin": "دخول",
     "submitRegister": "تسجيل",
+    "submittingLogin": "جاري تسجيل الدخول…",
+    "submittingRegister": "جاري إنشاء الحساب…",
     "noAccount": "ليس لديك حساب؟",
     "hasAccount": "لديك حساب بالفعل؟"
   },
@@ -156,7 +158,12 @@
           "MAX_IMAGES": "تجاوزت الحد الأقصى للصور",
           "INVALID_TYPE": "نوع ملف غير مدعوم",
           "FILE_TOO_LARGE": "الملف كبير جداً",
-          "STORAGE_NOT_CONFIGURED": "التخزين غير مُعد"
+          "STORAGE_NOT_CONFIGURED": "التخزين غير مُعد",
+          "UNAUTHORIZED": "يرجى تسجيل الدخول لرفع الصور",
+          "NOT_FOUND": "العقار غير موجود",
+          "DELETE_FAILED": "تعذّر حذف الصورة",
+          "REORDER_FAILED": "تعذّر إعادة ترتيب الصور",
+          "COVER_FAILED": "تعذّر تعيين صورة الغلاف"
         }
       },
       "form": {
@@ -230,6 +237,26 @@
   "common": {
     "phase1": "المرحلة 3 — الوسائط والخرائط",
     "backHome": "العودة للرئيسية",
-    "backToListings": "العودة للعقارات"
+    "backToListings": "العودة للعقارات",
+    "loading": "جاري التحميل…",
+    "saving": "جاري الحفظ…"
+  },
+  "errors": {
+    "UNAUTHORIZED": "يرجى تسجيل الدخول للمتابعة",
+    "FORBIDDEN": "ليس لديك صلاحية لهذا الإجراء",
+    "VALIDATION": "يرجى التحقق من الحقول المطلوبة",
+    "NOT_FOUND": "العقار غير موجود",
+    "SERVER_ERROR": "حدث خطأ — يرجى المحاولة مرة أخرى",
+    "STORAGE_NOT_CONFIGURED": "تخزين الصور غير مُعد",
+    "UPLOAD_FAILED": "فشل الرفع — يرجى المحاولة مرة أخرى",
+    "DATABASE_ERROR": "خطأ في قاعدة البيانات — يرجى المحاولة لاحقاً",
+    "titleArMin": "العنوان العربي يجب أن يكون 3 أحرف على الأقل",
+    "areaMin": "يرجى اختيار المنطقة",
+    "pricePositive": "السعر يجب أن يكون أكبر من صفر",
+    "reasonMin": "سبب الرفض يجب أن يكون 3 أحرف على الأقل",
+    "EMAIL_TAKEN": "هذا البريد مسجل بالفعل",
+    "INVALID_INPUT": "بريد أو كلمة مرور غير صالحة (8 أحرف على الأقل)",
+    "INVALID_CREDENTIALS": "بيانات الدخول غير صحيحة",
+    "UNAUTHORIZED_MEDIA": "يرجى تسجيل الدخول لرفع الصور"
   }
 }

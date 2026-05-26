@@ -2,11 +2,15 @@
 
 import { useRef, useState, useTransition } from "react";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import type { Listing, KuwaitGovernorate } from "@aldlalz/database";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Alert, Spinner } from "@/components/ui/feedback";
+import { isNextRedirect } from "@/lib/app-errors";
+import type { ActionResult } from "@/lib/listings/action-result";
 import {
   GOVERNORATE_AREAS,
   GOVERNORATES,
@@ -22,6 +26,7 @@ import {
   type ListingBilingualFieldsHandle,
   type TranslationLabels,
 } from "@/components/listings/listing-bilingual-fields";
+import { MapPickerSkeleton } from "@/components/listings/map-picker-skeleton";
 
 const ListingMapPicker = dynamic(
   () =>
@@ -30,11 +35,7 @@ const ListingMapPicker = dynamic(
     ),
   {
     ssr: false,
-    loading: () => (
-      <div className="flex h-56 items-center justify-center rounded-xl bg-surface-muted text-sm text-text-muted">
-        …
-      </div>
-    ),
+    loading: () => <MapPickerSkeleton />,
   }
 );
 
@@ -43,7 +44,7 @@ type Props = {
   labels: Record<string, string>;
   translationLabels: TranslationLabels;
   translationEnabled: boolean;
-  action: (formData: FormData) => void | Promise<void | { id: string }>;
+  action: (formData: FormData) => Promise<ActionResult<{ id: string }> | ActionResult>;
   listing?: Listing;
   submitLabel: string;
   onListingCreated?: (id: string) => void;
@@ -74,6 +75,8 @@ export function ListingForm({
   mapLabels,
   mapsNotConfigured,
 }: Props) {
+  const tErrors = useTranslations("errors");
+  const tCommon = useTranslations("common");
   const [governorate, setGovernorate] = useState<KuwaitGovernorate>(
     listing?.governorate ?? "CAPITAL"
   );
@@ -100,9 +103,18 @@ export function ListingForm({
     if (!formRef.current) return;
     const formData = new FormData(formRef.current);
     startTransition(async () => {
-      const result = await action(formData);
-      if (result && typeof result === "object" && "id" in result) {
-        onListingCreated?.(result.id);
+      try {
+        const result = await action(formData);
+        if (!result.ok) {
+          setSubmitError(tErrors(result.error));
+          return;
+        }
+        if (result.ok && result.data && "id" in result.data) {
+          onListingCreated?.(result.data.id);
+        }
+      } catch (err) {
+        if (isNextRedirect(err)) throw err;
+        setSubmitError(tErrors("SERVER_ERROR"));
       }
     });
   }
@@ -288,10 +300,19 @@ export function ListingForm({
         )
       )}
 
-      {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+      {submitError && <Alert>{submitError}</Alert>}
 
-      <Button type="submit" size="lg" disabled={pending}>
-        {pending ? translationLabels.translating : submitLabel}
+      <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
+        {pending ? (
+          <>
+            <Spinner size="sm" className="me-2" />
+            {translationEnabled
+              ? translationLabels.translating
+              : tCommon("saving")}
+          </>
+        ) : (
+          submitLabel
+        )}
       </Button>
     </form>
   );

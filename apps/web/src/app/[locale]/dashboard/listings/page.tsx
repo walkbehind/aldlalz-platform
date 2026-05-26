@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/feedback";
 import { getOwnerListings } from "@/lib/listings/queries";
 import { ListingStatusBadge } from "@/components/listings/listing-status-badge";
 import { DeleteDraftButton } from "@/components/listings/delete-draft-button";
@@ -50,12 +51,14 @@ export default async function MyListingsPage({
       />
 
       {listings.length === 0 ? (
-        <Card>
-          <p className="text-text-muted">{t("empty")}</p>
-          <Link href="/dashboard/listings/new" className="mt-4 inline-block">
-            <Button>{t("createFirst")}</Button>
-          </Link>
-        </Card>
+        <EmptyState
+          title={t("empty")}
+          action={
+            <Link href="/dashboard/listings/new">
+              <Button className="w-full sm:w-auto">{t("createFirst")}</Button>
+            </Link>
+          }
+        />
       ) : (
         <div className="space-y-4">
           {listings.map((listing) => {
@@ -65,7 +68,7 @@ export default async function MyListingsPage({
                 : listing.titleEn || listing.titleAr;
 
             return (
-              <Card key={listing.id} className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <Card key={listing.id} className="flex flex-col gap-4 p-4 sm:p-6 md:flex-row md:items-center md:justify-between">
                 <div className="min-w-0 flex-1">
                   <div className="mb-2 flex flex-wrap items-center gap-2">
                     <h2 className="text-lg font-semibold">{title}</h2>
@@ -90,9 +93,9 @@ export default async function MyListingsPage({
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  <Link href={`/dashboard/listings/${listing.id}/edit`}>
-                    <Button variant="outline" size="sm">
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
+                  <Link href={`/dashboard/listings/${listing.id}/edit`} className="w-full sm:w-auto">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto">
                       {t("edit")}
                     </Button>
                   </Link>
