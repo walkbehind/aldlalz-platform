@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>الدلالز — نموذج تصميم (Design Mockup)</title>
+  <!-- NOTE: This is a DESIGN MOCKUP only — not production code. Tailwind via CDN for prototyping. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"IBM Plex Sans Arabic"', "system-ui", "sans-serif"] },
+          colors: {
+            // Brand navy (from logo)
+            brand: {
+              50: "#eef1f6", 100: "#d3dbe8", 500: "#23406e",
+              600: "#1a2f54", 700: "#122340", 900: "#0b1729",
+            },
+            // Brand gold/bronze (from logo)
+            gold: {
+              50: "#faf5e9", 100: "#f2e6c7", 400: "#d6b873",
+              500: "#c2a05a", 600: "#a8863c", 700: "#866a2e",
+            },
+            surface: { DEFAULT: "#ffffff", muted: "#f5f4f0" },
+            text: { DEFAULT: "#13182a", muted: "#5d6577" },
+            border: "#e6e3da",
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-surface-muted text-text">
+
+  <!-- Skip link (a11y) -->
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-3 focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">
+    تخطّي إلى المحتوى
+  </a>
+
+  <!-- ============ HEADER (mobile-aware) ============ -->
+  <header class="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
+      <div class="flex items-center gap-2">
+        <button id="menuBtn" aria-label="القائمة" class="rounded-lg p-2 hover:bg-surface-muted md:hidden">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+<!-- Brand logo. NOTE: assets/aldlalz-logo.png is the FULL brand sheet (primary, dark, stacked, icon-only, monochrome). A cleanly-cropped primary/icon-only export is recommended for production. -->
+        <a href="index.html" class="flex items-center gap-2">
+          <img src="assets/aldlalz-logo-primary.png" alt="الدلالز - Aldlalz" class="h-9 w-auto md:h-10" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'text-xl font-bold text-brand-600',textContent:'الدلالز'}))" />
+        </a>
+      </div>
+
+      <nav class="hidden items-center gap-1 md:flex" aria-label="التنقل الرئيسي">
+        <a href="#" aria-current="page" class="rounded-lg px-3 py-2 text-sm font-semibold text-brand-700">الرئيسية</a>
+        <a href="#" class="rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-muted">العقارات</a>
+        <a href="#" class="rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-muted">الباقات</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <button class="rounded-lg border border-border px-3 py-1.5 text-sm font-medium hover:bg-surface-muted">EN</button>
+        <a href="#" class="hidden rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-muted sm:block">دخول</a>
+        <a href="#" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">+ أضف عقارك</a>
+      </div>
+    </div>
+
+    <!-- Mobile menu (the missing piece) -->
+    <div id="mobileMenu" class="hidden border-t border-border bg-white md:hidden">
+      <nav class="mx-auto flex max-w-6xl flex-col px-4 py-2" aria-label="تنقل الجوال">
+        <a href="#" class="rounded-lg px-3 py-3 font-semibold text-brand-700">الرئيسية</a>
+        <a href="#" class="rounded-lg px-3 py-3 text-text-muted hover:bg-surface-muted">العقارات</a>
+        <a href="#" class="rounded-lg px-3 py-3 text-text-muted hover:bg-surface-muted">الباقات</a>
+        <a href="#" class="rounded-lg px-3 py-3 text-text-muted hover:bg-surface-muted">تسجيل الدخول</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ HERO + SEARCH (the #1 conversion lever) ============ -->
+    <section class="relative overflow-hidden bg-gradient-to-bl from-brand-700 to-brand-900">
+      <div class="absolute inset-0 opacity-25" style="background:radial-gradient(circle at 20% 20%, #c2a05a 0, transparent 42%), radial-gradient(circle at 90% 70%, #23406e 0, transparent 45%);"></div>
+      <div class="relative mx-auto max-w-6xl px-4 py-12 md:py-16">
+        <h1 class="text-3xl font-bold text-white md:text-5xl">عقارك القادم في الكويت يبدأ هنا</h1>
+        <p class="mt-3 max-w-xl text-base text-brand-50 md:text-lg">بيع، شراء، وإيجار العقارات مع دلالين موثوقين في جميع المحافظات.</p>
+
+        <!-- Search card -->
+        <div class="mt-7 rounded-2xl bg-white p-3 shadow-xl md:p-4">
+          <!-- Buy/Rent toggle -->
+          <div class="mb-3 inline-flex rounded-xl bg-surface-muted p-1 text-sm font-semibold">
+            <button class="rounded-lg bg-brand-600 px-5 py-2 text-white">للبيع</button>
+            <button class="rounded-lg px-5 py-2 text-text-muted">للإيجار</button>
+            <button class="rounded-lg px-5 py-2 text-text-muted">حجز</button>
+          </div>
+          <div class="grid gap-3 md:grid-cols-[1.4fr_1fr_1fr_auto]">
+            <label class="block">
+              <span class="sr-only">المحافظة أو المنطقة</span>
+              <div class="flex items-center gap-2 rounded-xl border border-border px-3 py-3">
+                <svg class="text-text-muted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <input class="w-full bg-transparent text-sm outline-none placeholder:text-text-muted" placeholder="المحافظة، المنطقة..." />
+              </div>
+            </label>
+            <select class="rounded-xl border border-border bg-white px-3 py-3 text-sm text-text-muted">
+              <option>نوع العقار</option><option>شقة</option><option>منزل</option><option>أرض</option><option>محل</option>
+            </select>
+            <select class="rounded-xl border border-border bg-white px-3 py-3 text-sm text-text-muted">
+              <option>السعر (د.ك)</option><option>حتى 50,000</option><option>50,000 - 150,000</option><option>+150,000</option>
+            </select>
+            <button class="flex items-center justify-center gap-2 rounded-xl bg-gold-500 px-6 py-3 font-semibold text-brand-700 hover:bg-gold-600 hover:text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              بحث
+            </button>
+          </div>
+        </div>
+
+        <!-- Trust strip -->
+        <div class="mt-6 flex flex-wrap gap-x-8 gap-y-2 text-sm text-brand-50">
+          <span><strong class="text-white">+12,400</strong> عقار</span>
+          <span><strong class="text-white">6</strong> محافظات</span>
+          <span><strong class="text-white">+850</strong> دلال موثّق</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CLICKABLE CATEGORIES (real entry points, real icons) ============ -->
+    <section class="mx-auto max-w-6xl px-4 py-8">
+      <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <a href="#" class="group flex items-center gap-3 rounded-xl border border-border bg-white p-4 hover:border-brand-500 hover:shadow-sm">
+          <span class="grid h-11 w-11 place-items-center rounded-lg bg-brand-50 text-brand-600">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4 8 4v14"/><path d="M9 9h0M9 13h0M9 17h0"/></svg>
+          </span>
+          <span class="font-semibold group-hover:text-brand-700">للبيع</span>
+        </a>
+        <a href="#" class="group flex items-center gap-3 rounded-xl border border-border bg-white p-4 hover:border-brand-500 hover:shadow-sm">
+          <span class="grid h-11 w-11 place-items-center rounded-lg bg-gold-50 text-gold-600">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+          </span>
+          <span class="font-semibold group-hover:text-brand-700">للإيجار</span>
+        </a>
+        <a href="#" class="group flex items-center gap-3 rounded-xl border border-border bg-white p-4 hover:border-brand-500 hover:shadow-sm">
+          <span class="grid h-11 w-11 place-items-center rounded-lg bg-brand-50 text-brand-600">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </span>
+          <span class="font-semibold group-hover:text-brand-700">حجز</span>
+        </a>
+        <a href="#" class="group flex items-center gap-3 rounded-xl border border-border bg-white p-4 hover:border-brand-500 hover:shadow-sm">
+          <span class="grid h-11 w-11 place-items-center rounded-lg bg-gold-50 text-gold-600">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.5L5.7 21l2.3-7.2-6-4.4h7.6z"/></svg>
+          </span>
+          <span class="font-semibold group-hover:text-brand-700">ترفيه</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============ RESULTS BAR: sort + filter + map toggle ============ -->
+    <section class="mx-auto max-w-6xl px-4 pb-24 md:pb-12">
+      <div class="mb-4 flex items-center justify-between gap-3">
+        <h2 class="text-lg font-bold md:text-xl">عقارات مميّزة في الكويت</h2>
+        <p class="hidden text-sm text-text-muted sm:block" aria-live="polite">124 نتيجة</p>
+      </div>
+
+      <!-- Sticky filter/sort bar (mobile sheet pattern on small screens) -->
+      <div class="mb-5 flex flex-wrap items-center gap-2">
+        <button class="flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium hover:bg-surface-muted">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          الفلاتر
+        </button>
+        <select class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium">
+          <option>الترتيب: الأحدث</option>
+          <option>السعر: من الأقل للأعلى</option>
+          <option>السعر: من الأعلى للأقل</option>
+          <option>الأكثر مشاهدة</option>
+        </select>
+        <div class="ms-auto inline-flex rounded-lg border border-border bg-white p-0.5 text-sm font-medium">
+          <button class="rounded-md bg-brand-600 px-3 py-1.5 text-white">قائمة</button>
+          <button class="rounded-md px-3 py-1.5 text-text-muted">خريطة</button>
+        </div>
+      </div>
+
+      <!-- Listing grid -->
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Card 1 -->
+        <article class="flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition hover:shadow-md">
+          <a href="#" class="relative block">
+            <div class="aspect-[16/10] bg-gradient-to-bl from-brand-100 to-gold-50"></div>
+            <span class="absolute end-3 top-3 rounded-full bg-gold-500 px-2.5 py-1 text-xs font-semibold text-brand-700">مميّز</span>
+            <button aria-label="حفظ في المفضلة" class="absolute start-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-text-muted hover:text-brand-600">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 10-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 000-7.8z"/></svg>
+            </button>
+          </a>
+          <div class="flex flex-1 flex-col p-4">
+            <div class="mb-2 flex flex-wrap gap-2">
+              <span class="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">للبيع</span>
+              <span class="rounded-full bg-surface-muted px-2.5 py-0.5 text-xs font-medium text-text-muted">شقة</span>
+              <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>موثّق
+              </span>
+            </div>
+            <h3 class="line-clamp-2 font-semibold leading-snug">شقة فاخرة بإطلالة بحرية — السالمية</h3>
+            <p class="mt-2 text-lg font-bold text-brand-600">145,000 د.ك</p>
+            <p class="mt-1 text-sm text-text-muted">حولي — السالمية</p>
+            <div class="mt-3 flex flex-wrap gap-4 border-t border-border pt-3 text-sm text-text-muted">
+              <span class="inline-flex items-center gap-1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 12V7a2 2 0 012-2h14a2 2 0 012 2v5M3 18h18"/></svg>3 غرف</span>
+              <span class="inline-flex items-center gap-1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12V6a2 2 0 012-2h0a2 2 0 012 2M2 12h20v3a4 4 0 01-4 4H6a4 4 0 01-4-4z"/></svg>2 حمام</span>
+              <span class="inline-flex items-center gap-1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/></svg>180 م²</span>
+            </div>
+            <p class="mt-3 text-xs text-text-muted">نُشر قبل يومين · رقم العقار #A-2048</p>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition hover:shadow-md">
+          <a href="#" class="relative block">
+            <div class="aspect-[16/10] bg-gradient-to-bl from-brand-100 to-gold-50"></div>
+            <button aria-label="حفظ في المفضلة" class="absolute start-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-text-muted hover:text-brand-600">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 10-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 000-7.8z"/></svg>
+            </button>
+          </a>
+          <div class="flex flex-1 flex-col p-4">
+            <div class="mb-2 flex flex-wrap gap-2">
+              <span class="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">للإيجار</span>
+              <span class="rounded-full bg-surface-muted px-2.5 py-0.5 text-xs font-medium text-text-muted">منزل</span>
+            </div>
+            <h3 class="line-clamp-2 font-semibold leading-snug">بيت دور أرضي واسع — جابر الأحمد</h3>
+            <p class="mt-2 text-lg font-bold text-brand-600">950 <span class="text-sm font-medium text-text-muted">د.ك / شهرياً</span></p>
+            <p class="mt-1 text-sm text-text-muted">العاصمة — جابر الأحمد</p>
+            <div class="mt-3 flex flex-wrap gap-4 border-t border-border pt-3 text-sm text-text-muted">
+              <span class="inline-flex items-center gap-1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 12V7a2 2 0 012-2h14a2 2 0 012 2v5M3 18h18"/></svg>4 غرف</span>
+              <span class="inline-flex items-center gap-1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12V6a2 2 0 012-2h0a2 2 0 012 2M2 12h20v3a4 4 0 01-4 4H6a4 4 0 01-4-4z"/></svg>3 حمام</span>
+              <span class="inline-flex items-center gap-1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/></svg>320 م²</span>
+            </div>
+            <p class="mt-3 text-xs text-text-muted">نُشر اليوم · رقم العقار #R-7791</p>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition hover:shadow-md">
+          <a href="#" class="relative block">
+            <div class="aspect-[16/10] bg-gradient-to-bl from-brand-100 to-gold-50"></div>
+            <span class="absolute end-3 top-3 rounded-full bg-gold-500 px-2.5 py-1 text-xs font-semibold text-brand-700">مميّز</span>
+            <button aria-label="حفظ في المفضلة" class="absolute start-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-text-muted hover:text-brand-600">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 10-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 000-7.8z"/></svg>
+            </button>
+          </a>
+          <div class="flex flex-1 flex-col p-4">
+            <div class="mb-2 flex flex-wrap gap-2">
+              <span class="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">للبيع</span>
+              <span class="rounded-full bg-surface-muted px-2.5 py-0.5 text-xs font-medium text-text-muted">أرض</span>
+              <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>موثّق
+              </span>
+            </div>
+            <h3 class="line-clamp-2 font-semibold leading-snug">أرض استثمارية على شارعين — الفنطاس</h3>
+            <p class="mt-2 text-lg font-bold text-brand-600">220,000 د.ك</p>
+            <p class="mt-1 text-sm text-text-muted">الأحمدي — الفنطاس</p>
+            <div class="mt-3 flex flex-wrap gap-4 border-t border-border pt-3 text-sm text-text-muted">
+              <span class="inline-flex items-center gap-1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/></svg>500 م²</span>
+              <span class="inline-flex items-center gap-1">واجهة 20م</span>
+            </div>
+            <p class="mt-3 text-xs text-text-muted">نُشر قبل 5 أيام · رقم العقار #L-3310</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ DETAIL PAGE: mobile sticky contact bar (key conversion driver) ============ -->
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] md:hidden">
+    <div class="mx-auto flex max-w-6xl items-center gap-2">
+      <button class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#25D366] py-3 font-semibold text-white">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.4.5c-.2.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.7-.1 1.2z"/></svg>
+        واتساب
+      </button>
+      <button class="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-brand-500 py-3 font-semibold text-brand-600">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.6A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.6 2.8a2 2 0 01-.5 2.1L8 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.5 2.8.6a2 2 0 011.7 2z"/></svg>
+        إظهار الرقم
+      </button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("menuBtn").addEventListener("click", function () {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
+    });
+  </script>
+</body>
+</html>

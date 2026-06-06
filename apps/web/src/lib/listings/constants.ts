@@ -183,10 +183,12 @@ export const PAGE_SIZE = 12;
 
 export function labelFor<T extends string>(
   map: Record<T, { ar: string; en: string }>,
-  key: T,
+  key: string,
   locale: string
 ): string {
-  return locale === "ar" ? map[key].ar : map[key].en;
+  const entry = (map as Record<string, { ar: string; en: string }>)[key];
+  if (!entry) return key;
+  return locale === "ar" ? entry.ar : entry.en;
 }
 
 export function formatPriceKwd(price: number | string, locale: string): string {

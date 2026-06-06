@@ -525,6 +525,20 @@ export function serializeListing(listing: Listing) {
 
 export type SerializedListing = ReturnType<typeof serializeListing>;
 
+export async function getSitemapListings(limit = 5000) {
+  try {
+    return await prisma.listing.findMany({
+      where: { isDraft: false, adminStatus: "APPROVED" },
+      orderBy: { updatedAt: "desc" },
+      take: limit,
+      select: { id: true, updatedAt: true },
+    });
+  } catch (error) {
+    if (isListingSchemaError(error)) return [];
+    throw error;
+  }
+}
+
 export async function getPublicListingForMetadata(id: string) {
   return prisma.listing.findFirst({
     where: { id, isDraft: false, adminStatus: "APPROVED" },

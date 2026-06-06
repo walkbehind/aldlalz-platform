@@ -100,15 +100,18 @@ export const ListingBilingualFields = forwardRef<
   const setPrimaryDescription = (v: string) =>
     primaryLocale === "ar" ? setDescriptionAr(v) : setDescriptionEn(v);
 
-  const applySecondary = (title: string, description: string) => {
-    if (secondaryLocale === "ar") {
-      setTitleAr(title);
-      setDescriptionAr(description);
-    } else {
-      setTitleEn(title);
-      setDescriptionEn(description);
-    }
-  };
+  const applySecondary = useCallback(
+    (title: string, description: string) => {
+      if (secondaryLocale === "ar") {
+        setTitleAr(title);
+        setDescriptionAr(description);
+      } else {
+        setTitleEn(title);
+        setDescriptionEn(description);
+      }
+    },
+    [secondaryLocale]
+  );
 
   const [translating, setTranslating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -168,6 +171,7 @@ export const ListingBilingualFields = forwardRef<
     secondaryLocale,
     sourceKey,
     labels.translationFailed,
+    applySecondary,
   ]);
 
   useImperativeHandle(ref, () => ({

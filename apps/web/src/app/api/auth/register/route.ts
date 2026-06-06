@@ -1,20 +1,39 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { z } from "zod";
 import { prisma } from "@aldlalz/database";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
+
+const registerSchema = z.object({
+  email: z.string().trim().toLowerCase().email().max(200),
+  password: z.string().min(8).max(200),
+  name: z.string().trim().max(120).optional().default(""),
+  locale: z.enum(["ar", "en"]).optional().default("ar"),
+});
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const email = String(body.email ?? "")
-      .toLowerCase()
-      .trim();
-    const password = String(body.password ?? "");
-    const name = String(body.name ?? "").trim();
-    const locale = body.locale === "en" ? "en" : "ar";
+    const limit = rateLimit(`register:${getClientIp(request)}`, 5, 60 * 60 * 1000);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: "RATE_LIMITED" },
+        { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+      );
+    }
 
-    if (!email || !password || password.length < 8) {
+    let json: unknown;
+    try {
+      json = await request.json();
+    } catch {
       return NextResponse.json({ error: "INVALID_INPUT" }, { status: 400 });
     }
+
+    const parsed = registerSchema.safeParse(json);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "INVALID_INPUT" }, { status: 400 });
+    }
+
+    const { email, password, name, locale } = parsed.data;
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {

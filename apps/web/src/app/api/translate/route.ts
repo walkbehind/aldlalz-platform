@@ -6,6 +6,7 @@ import {
 } from "@/lib/translation";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
   title: z.string().trim().min(1).max(200),
@@ -22,6 +23,14 @@ export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return errorResponse("UNAUTHORIZED", 401);
+  }
+
+  const limit = rateLimit(`translate:${session.user.id}`, 30, 60 * 1000);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "RATE_LIMITED" },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+    );
   }
 
   if (!isTranslationConfigured()) {

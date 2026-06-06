@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>تفاصيل العقار — الدلالز (Design Mockup)</title>
+  <!-- DESIGN MOCKUP only — not production code. Tailwind via CDN. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: { sans: ['"IBM Plex Sans Arabic"', "system-ui", "sans-serif"] },
+        colors: {
+          brand: { 50:"#eef1f6",100:"#d3dbe8",500:"#23406e",600:"#1a2f54",700:"#122340",900:"#0b1729" },
+          gold: { 50:"#faf5e9",100:"#f2e6c7",400:"#d6b873",500:"#c2a05a",600:"#a8863c",700:"#866a2e" },
+          surface: { DEFAULT:"#ffffff", muted:"#f5f4f0" },
+          text: { DEFAULT:"#13182a", muted:"#5d6577" }, border:"#e6e3da",
+        },
+      }},
+    };
+  </script>
+  <style>body{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif}</style>
+</head>
+<body class="bg-surface-muted text-text">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-3 focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">تخطّي إلى المحتوى</a>
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
+      <!-- Brand logo. NOTE: assets/aldlalz-logo.png is the FULL brand sheet; a cropped primary/icon-only export is recommended for production. -->
+      <a href="index.html" class="flex items-center gap-2">
+        <img src="assets/aldlalz-logo-primary.png" alt="الدلالز - Aldlalz" class="h-9 w-auto md:h-10" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'text-xl font-bold text-brand-600',textContent:'الدلالز'}))" />
+      </a>
+      <nav class="hidden items-center gap-1 md:flex" aria-label="التنقل الرئيسي">
+        <a href="index.html" class="rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-muted">الرئيسية</a>
+        <a href="aldlalz-design-sample.html" aria-current="page" class="rounded-lg px-3 py-2 text-sm font-semibold text-brand-700">العقارات</a>
+        <a href="packages.html" class="rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-muted">الباقات</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <button class="rounded-lg border border-border px-3 py-1.5 text-sm font-medium hover:bg-surface-muted">EN</button>
+        <a href="new-listing.html" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">+ أضف عقارك</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="mx-auto max-w-6xl px-4 pb-28 md:pb-12">
+    <!-- BREADCRUMBS -->
+    <nav class="flex flex-wrap items-center gap-2 py-4 text-sm text-text-muted" aria-label="مسار التصفح">
+      <a href="index.html" class="hover:text-brand-600">الرئيسية</a><span>/</span>
+      <a href="#" class="hover:text-brand-600">حولي</a><span>/</span>
+      <a href="#" class="hover:text-brand-600">السالمية</a><span>/</span>
+      <span class="text-text">شقة فاخرة بإطلالة بحرية</span>
+    </nav>
+
+    <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+      <div class="lg:col-span-2">
+        <!-- GALLERY -->
+        <div class="overflow-hidden rounded-2xl border border-border bg-white">
+          <div class="relative aspect-[16/10] bg-gradient-to-bl from-brand-100 to-gold-50">
+            <span class="absolute end-3 top-3 rounded-full bg-gold-500 px-2.5 py-1 text-xs font-semibold text-brand-700">مميّز</span>
+            <span class="absolute bottom-3 end-3 rounded-full bg-black/55 px-3 py-1 text-xs text-white">1 / 12</span>
+            <button aria-label="الصورة السابقة" class="absolute start-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-black/45 text-xl text-white">‹</button>
+            <button aria-label="الصورة التالية" class="absolute end-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-black/45 text-xl text-white">›</button>
+          </div>
+          <div class="flex gap-2 overflow-x-auto p-3">
+            <div class="h-16 w-24 shrink-0 rounded-lg border-2 border-brand-500 bg-brand-100"></div>
+            <div class="h-16 w-24 shrink-0 rounded-lg border-2 border-transparent bg-gold-50"></div>
+            <div class="h-16 w-24 shrink-0 rounded-lg border-2 border-transparent bg-brand-100"></div>
+            <div class="h-16 w-24 shrink-0 rounded-lg border-2 border-transparent bg-gold-50"></div>
+            <div class="h-16 w-24 shrink-0 rounded-lg border-2 border-transparent bg-brand-100"></div>
+          </div>
+        </div>
+
+        <!-- TITLE + PRICE + KEY FACTS STRIP -->
+        <div class="mt-6">
+          <div class="mb-3 flex flex-wrap items-center gap-2">
+            <span class="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">للبيع</span>
+            <span class="rounded-full bg-surface-muted px-2.5 py-0.5 text-xs font-medium text-text-muted">شقة</span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>موثّق
+            </span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-gold-50 px-2.5 py-0.5 text-xs font-medium text-gold-700">PACI: 12345678</span>
+          </div>
+
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <h1 class="text-2xl font-bold md:text-3xl">شقة فاخرة بإطلالة بحرية — السالمية</h1>
+            <div class="flex gap-2">
+              <button aria-label="حفظ" class="grid h-10 w-10 place-items-center rounded-lg border border-border hover:bg-surface-muted">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 10-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 000-7.8z"/></svg>
+              </button>
+              <button aria-label="مشاركة" class="grid h-10 w-10 place-items-center rounded-lg border border-border hover:bg-surface-muted">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <p class="mt-3 text-3xl font-bold text-brand-600">145,000 <span class="text-lg">د.ك</span></p>
+          <p class="mt-2 text-text-muted">حولي — السالمية · نُشر قبل يومين · رقم العقار #A-2048</p>
+
+          <!-- Key facts strip (Zillow-style) -->
+          <dl class="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
+            <div class="bg-white p-4 text-center"><dt class="text-xs text-text-muted">غرف النوم</dt><dd class="mt-1 text-lg font-bold">3</dd></div>
+            <div class="bg-white p-4 text-center"><dt class="text-xs text-text-muted">الحمامات</dt><dd class="mt-1 text-lg font-bold">2</dd></div>
+            <div class="bg-white p-4 text-center"><dt class="text-xs text-text-muted">المساحة</dt><dd class="mt-1 text-lg font-bold">180 م²</dd></div>
+            <div class="bg-white p-4 text-center"><dt class="text-xs text-text-muted">مواقف</dt><dd class="mt-1 text-lg font-bold">2</dd></div>
+          </dl>
+        </div>
+
+        <!-- DESCRIPTION (with read-more) -->
+        <section class="mt-8 rounded-2xl border border-border bg-white p-5">
+          <h2 class="mb-3 text-lg font-semibold">الوصف</h2>
+          <p class="leading-relaxed text-text">شقة راقية بإطلالة بحرية مباشرة في قلب السالمية، تشطيبات فاخرة، مطبخ مجهّز بالكامل، قريبة من الخدمات والمولات الرئيسية. مناسبة للعائلات الباحثة عن الرفاهية والموقع المميّز...</p>
+          <button class="mt-3 text-sm font-semibold text-brand-600 hover:underline">قراءة المزيد</button>
+        </section>
+
+        <!-- AMENITIES -->
+        <section class="mt-6 rounded-2xl border border-border bg-white p-5">
+          <h2 class="mb-4 text-lg font-semibold">المميزات</h2>
+          <ul class="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
+            <li class="inline-flex items-center gap-2"><span class="text-gold-600">✓</span> مكيّف مركزي</li>
+            <li class="inline-flex items-center gap-2"><span class="text-gold-600">✓</span> مصعد</li>
+            <li class="inline-flex items-center gap-2"><span class="text-gold-600">✓</span> أمن 24 ساعة</li>
+            <li class="inline-flex items-center gap-2"><span class="text-gold-600">✓</span> موقف خاص</li>
+            <li class="inline-flex items-center gap-2"><span class="text-gold-600">✓</span> مسبح مشترك</li>
+            <li class="inline-flex items-center gap-2"><span class="text-gold-600">✓</span> إطلالة بحرية</li>
+          </ul>
+        </section>
+
+        <!-- MAP -->
+        <section class="mt-6 rounded-2xl border border-border bg-white p-5">
+          <h2 class="mb-4 text-lg font-semibold">الموقع</h2>
+          <div class="relative grid h-56 place-items-center rounded-xl bg-gradient-to-bl from-brand-100 to-gold-50 text-text-muted">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a2f54" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+        </section>
+      </div>
+
+      <!-- STICKY CONTACT CARD (desktop) -->
+      <aside class="mt-6 lg:mt-0">
+        <div class="sticky top-20 rounded-2xl border border-border bg-white p-5 shadow-sm">
+          <h2 class="mb-4 text-lg font-semibold">تواصل مع المعلِن</h2>
+          <div class="mb-4 flex items-center gap-3">
+            <div class="grid h-14 w-14 place-items-center rounded-full bg-brand-50 text-xl font-bold text-brand-600">أ</div>
+            <div>
+              <p class="font-medium">أبو محمد للعقارات</p>
+              <p class="inline-flex items-center gap-1 text-xs text-emerald-700"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>دلال موثّق</p>
+            </div>
+          </div>
+          <p class="mb-3 text-sm text-text-muted" dir="ltr">+965 9••• ••••</p>
+          <div class="flex flex-col gap-2">
+            <button class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-3 font-semibold text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.4.5c-.2.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.7-.1 1.2z"/></svg>
+              واتساب
+            </button>
+            <button class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-brand-500 py-3 font-semibold text-brand-600">إظهار الرقم</button>
+            <button class="w-full rounded-xl py-2 text-sm font-medium text-text-muted hover:bg-surface-muted">الإبلاغ عن العقار</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- MOBILE STICKY CONTACT BAR -->
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] md:hidden">
+    <div class="mx-auto flex max-w-6xl items-center gap-2">
+      <button class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#25D366] py-3 font-semibold text-white">واتساب</button>
+      <button class="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-brand-500 py-3 font-semibold text-brand-600">إظهار الرقم</button>
+    </div>
+  </div>
+</body>
+</html>

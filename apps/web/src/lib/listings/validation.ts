@@ -77,5 +77,6 @@ export type ListingSearchParams = {
   maxPrice?: string;
   bedrooms?: string;
   bathrooms?: string;
+  sort?: string;
   page?: string;
 };

@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@aldlalz/database";
 import bcrypt from "bcryptjs";
 import type { UserRole } from "@aldlalz/database";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 declare module "next-auth" {
   interface User {
@@ -40,8 +41,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        // Throttle login attempts per client IP to blunt brute-force/credential stuffing.
+        const ip = request instanceof Request ? getClientIp(request) : "unknown";
+        if (!rateLimit(`login:${ip}`, 10, 15 * 60 * 1000).allowed) {
           return null;
         }
 

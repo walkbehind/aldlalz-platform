@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>أضف عقارك — الدلالز (Design Mockup)</title>
+  <!-- DESIGN MOCKUP only — not production code. Tailwind via CDN. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = { theme: { extend: {
+      fontFamily: { sans: ['"IBM Plex Sans Arabic"', "system-ui", "sans-serif"] },
+      colors: {
+        brand: { 50:"#eef1f6",100:"#d3dbe8",500:"#23406e",600:"#1a2f54",700:"#122340",900:"#0b1729" },
+        gold: { 50:"#faf5e9",100:"#f2e6c7",400:"#d6b873",500:"#c2a05a",600:"#a8863c",700:"#866a2e" },
+        surface: { DEFAULT:"#ffffff", muted:"#f5f4f0" },
+        text: { DEFAULT:"#13182a", muted:"#5d6577" }, border:"#e6e3da",
+      },
+    }}};
+  </script>
+  <style>body{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif}</style>
+</head>
+<body class="bg-surface-muted text-text">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-3 focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white">تخطّي إلى المحتوى</a>
+
+  <header class="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
+      <!-- Brand logo. NOTE: assets/aldlalz-logo.png is the FULL brand sheet; a cropped export is recommended for production. -->
+      <a href="index.html" class="flex items-center gap-2">
+        <img src="assets/aldlalz-logo-primary.png" alt="الدلالز - Aldlalz" class="h-9 w-auto md:h-10" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'text-xl font-bold text-brand-600',textContent:'الدلالز'}))" />
+      </a>
+      <a href="aldlalz-design-sample.html" class="text-sm font-medium text-text-muted hover:text-brand-600">حفظ كمسودّة وخروج</a>
+    </div>
+  </header>
+
+  <main id="main" class="mx-auto max-w-3xl px-4 py-8">
+    <h1 class="text-2xl font-bold">أضف عقارك</h1>
+    <p class="mt-1 text-text-muted">انشر عقارك في دقائق ووصل لآلاف الباحثين في الكويت.</p>
+
+    <!-- STEP PROGRESS -->
+    <ol class="mt-6 flex items-center gap-2 text-sm" aria-label="خطوات الإضافة">
+      <li class="flex items-center gap-2 font-semibold text-brand-700">
+        <span class="grid h-7 w-7 place-items-center rounded-full bg-brand-600 text-white">1</span> النوع
+      </li>
+      <li class="h-px flex-1 bg-gold-400"></li>
+      <li class="flex items-center gap-2 font-semibold text-brand-700">
+        <span class="grid h-7 w-7 place-items-center rounded-full bg-brand-600 text-white">2</span> التفاصيل
+      </li>
+      <li class="h-px flex-1 bg-border"></li>
+      <li class="flex items-center gap-2 text-text-muted">
+        <span class="grid h-7 w-7 place-items-center rounded-full border border-border">3</span> الموقع
+      </li>
+      <li class="h-px flex-1 bg-border"></li>
+      <li class="flex items-center gap-2 text-text-muted">
+        <span class="grid h-7 w-7 place-items-center rounded-full border border-border">4</span> الصور
+      </li>
+    </ol>
+
+    <!-- CURRENT STEP CARD: details -->
+    <section class="mt-6 rounded-2xl border border-border bg-white p-5 md:p-6">
+      <h2 class="text-lg font-semibold">تفاصيل العقار</h2>
+
+      <!-- Listing purpose -->
+      <fieldset class="mt-4">
+        <legend class="mb-2 text-sm font-medium">الغرض</legend>
+        <div class="grid grid-cols-3 gap-2">
+          <label class="cursor-pointer rounded-xl border-2 border-brand-500 bg-brand-50 p-3 text-center text-sm font-semibold text-brand-700">للبيع</label>
+          <label class="cursor-pointer rounded-xl border border-border p-3 text-center text-sm text-text-muted hover:border-brand-300">للإيجار</label>
+          <label class="cursor-pointer rounded-xl border border-border p-3 text-center text-sm text-text-muted hover:border-brand-300">حجز</label>
+        </div>
+      </fieldset>
+
+      <div class="mt-5 grid gap-4 sm:grid-cols-2">
+        <label class="block">
+          <span class="mb-1 block text-sm font-medium">العنوان (عربي)</span>
+          <input class="w-full rounded-xl border border-border px-3 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100" placeholder="شقة فاخرة بإطلالة بحرية" />
+        </label>
+        <label class="block">
+          <span class="mb-1 block text-sm font-medium">العنوان (إنجليزي)</span>
+          <input dir="ltr" class="w-full rounded-xl border border-border px-3 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100" placeholder="Luxury sea-view apartment" />
+        </label>
+        <label class="block">
+          <span class="mb-1 block text-sm font-medium">نوع العقار</span>
+          <select class="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm"><option>شقة</option><option>منزل</option><option>أرض</option><option>محل</option></select>
+        </label>
+        <label class="block">
+          <span class="mb-1 block text-sm font-medium">السعر (د.ك)</span>
+          <input type="number" class="w-full rounded-xl border border-border px-3 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100" placeholder="145000" />
+        </label>
+        <label class="block">
+          <span class="mb-1 block text-sm font-medium">غرف النوم</span>
+          <select class="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm"><option>1</option><option>2</option><option>3</option><option>4+</option></select>
+        </label>
+        <label class="block">
+          <span class="mb-1 block text-sm font-medium">الحمامات</span>
+          <select class="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm"><option>1</option><option>2</option><option>3+</option></select>
+        </label>
+        <label class="block sm:col-span-2">
+          <span class="mb-1 block text-sm font-medium">المساحة (م²)</span>
+          <input type="number" class="w-full rounded-xl border border-border px-3 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100" placeholder="180" />
+        </label>
+        <label class="block sm:col-span-2">
+          <span class="mb-1 block text-sm font-medium">الوصف</span>
+          <textarea rows="4" class="w-full rounded-xl border border-border px-3 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100" placeholder="اكتب وصفاً جذاباً للعقار..."></textarea>
+        </label>
+      </div>
+
+      <p class="mt-3 inline-flex items-center gap-2 rounded-lg bg-gold-50 px-3 py-2 text-xs text-gold-700">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h0"/></svg>
+        نصيحة: الإعلانات التي تحتوي على 6 صور أو أكثر تحصل على ضعف عدد المشاهدات.
+      </p>
+    </section>
+
+    <!-- NAV BUTTONS -->
+    <div class="mt-6 flex items-center justify-between">
+      <button class="rounded-xl border border-border bg-white px-5 py-2.5 text-sm font-medium hover:bg-surface-muted">السابق</button>
+      <button class="rounded-xl bg-brand-600 px-8 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">التالي: الموقع</button>
+    </div>
+  </main>
+</body>
+</html>
