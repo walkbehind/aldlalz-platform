@@ -1,4 +1,4 @@
-import { prisma } from "@aldlalz/database";
+import { prisma, Prisma } from "@aldlalz/database";
 import type {
   BillingProviderAdapter,
   GrantSubscriptionInput,
@@ -22,23 +22,40 @@ export class ManualBillingProvider implements BillingProviderAdapter {
     const expiresAt = new Date(startsAt);
     expiresAt.setDate(expiresAt.getDate() + durationDays);
 
-    await prisma.userSubscription.updateMany({
-      where: { userId: input.userId, status: "ACTIVE" },
-      data: { status: "CANCELLED" },
-    });
+    const createSub = () =>
+      prisma.$transaction(async (tx) => {
+        await tx.userSubscription.updateMany({
+          where: { userId: input.userId, status: "ACTIVE" },
+          data: { status: "CANCELLED" },
+        });
 
-    const sub = await prisma.userSubscription.create({
-      data: {
-        userId: input.userId,
-        planId: plan.id,
-        status: "ACTIVE",
-        billingProvider: input.billingProvider ?? "MANUAL",
-        externalPaymentId: input.externalPaymentId ?? null,
-        maxListings: plan.maxListings,
-        startsAt,
-        expiresAt,
-      },
-    });
+        return tx.userSubscription.create({
+          data: {
+            userId: input.userId,
+            planId: plan.id,
+            status: "ACTIVE",
+            billingProvider: input.billingProvider ?? "MANUAL",
+            externalPaymentId: input.externalPaymentId ?? null,
+            maxListings: plan.maxListings,
+            startsAt,
+            expiresAt,
+          },
+        });
+      });
+
+    let sub;
+    try {
+      sub = await createSub();
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        sub = await createSub();
+      } else {
+        throw error;
+      }
+    }
 
     return {
       subscriptionId: sub.id,

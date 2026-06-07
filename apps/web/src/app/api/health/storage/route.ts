@@ -6,8 +6,14 @@ import {
   LISTING_IMAGES_BUCKET,
 } from "@/lib/supabase/client";
 import { NextResponse } from "next/server";
+import { isDetailedHealthAllowed } from "@/lib/health";
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isDetailedHealthAllowed(request)) {
+    const configured = isSupabaseStorageConfigured();
+    return NextResponse.json({ ok: configured });
+  }
+
   const url = getSupabaseUrl();
   const hasServiceKey = !!getSupabaseServiceRoleKey();
   const configured = isSupabaseStorageConfigured();

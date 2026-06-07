@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma, type FeatureDurationType } from "@aldlalz/database";
+import { prisma, type FeatureDurationType, Prisma } from "@aldlalz/database";
 import { AppErrorCode } from "@/lib/app-errors";
 import { requireSessionUser, requireAdminUser } from "@/lib/listings/auth";
 import { actionFail, actionOk, type ActionResult } from "@/lib/listings/action-result";
@@ -53,17 +53,27 @@ export async function createFeaturedRequestAction(
 
     const durationDays = durationDaysForType(durationType);
 
-    await prisma.featuredRequest.create({
-      data: {
-        userId: user.id,
-        listingId,
-        placementType: DEFAULT_FEATURE_PLACEMENT,
-        durationType,
-        durationDays,
-        status: "PENDING",
-        currency: DEFAULT_FEATURE_CURRENCY,
-      },
-    });
+    try {
+      await prisma.featuredRequest.create({
+        data: {
+          userId: user.id,
+          listingId,
+          placementType: DEFAULT_FEATURE_PLACEMENT,
+          durationType,
+          durationDays,
+          status: "PENDING",
+          currency: DEFAULT_FEATURE_CURRENCY,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        return actionFail("FEATURE_REQUEST_EXISTS");
+      }
+      throw error;
+    }
 
     revalidateFeaturedPaths();
     return actionOk();

@@ -1,4 +1,5 @@
 import { prisma, type FeaturedRequestStatus } from "@aldlalz/database";
+import { requireAdminUser } from "@/lib/listings/auth";
 
 export async function expireStaleFeaturedListings() {
   const now = new Date();
@@ -29,6 +30,7 @@ export async function expireStaleFeaturedListings() {
 }
 
 export async function listFeaturedRequests(status?: FeaturedRequestStatus) {
+  await requireAdminUser();
   await expireStaleFeaturedListings();
   return prisma.featuredRequest.findMany({
     where: status ? { status } : undefined,

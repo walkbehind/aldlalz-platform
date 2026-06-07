@@ -16,7 +16,10 @@ import { requireAdminUser, requireSessionUser } from "./auth";
 import { parseListingForm, rejectListingSchema } from "./validation";
 import { actionFail, actionOk, type ActionResult } from "./action-result";
 import { userHasPhone } from "@/lib/profile/queries";
-import { checkListingLimit } from "@/lib/subscriptions/queries";
+import {
+  getUserListingLimit,
+  listingCountsTowardLimit,
+} from "@/lib/subscriptions/queries";
 
 function isDatabaseError(error: unknown): boolean {
   return (
@@ -155,26 +158,38 @@ export async function submitListingAction(
 ): Promise<ActionResult> {
   return wrapAction(async () => {
     const user = await requireSessionUser();
-    const existing = await prisma.listing.findFirst({
-      where: { id, ownerId: user.id },
-    });
-    if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
 
     const hasPhone = await userHasPhone(user.id);
     if (!hasPhone) throw new Error("PHONE_REQUIRED");
 
-    const limits = await checkListingLimit(user.id, user.role);
-    if (!limits.allowed && existing.isDraft) {
-      throw new Error("LISTING_LIMIT_REACHED");
-    }
+    await prisma.$transaction(async (tx) => {
+      const existing = await tx.listing.findFirst({
+        where: { id, ownerId: user.id },
+      });
+      if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
 
-    await prisma.listing.update({
-      where: { id },
-      data: {
-        isDraft: false,
-        adminStatus: "PENDING",
-        rejectionReason: null,
-      },
+      if (!listingCountsTowardLimit(existing)) {
+        const limit = await getUserListingLimit(user.id, user.role);
+        const used = await tx.listing.count({
+          where: {
+            ownerId: user.id,
+            isDraft: false,
+            adminStatus: { in: ["PENDING", "APPROVED"] },
+          },
+        });
+        if (used >= limit) {
+          throw new Error("LISTING_LIMIT_REACHED");
+        }
+      }
+
+      await tx.listing.update({
+        where: { id },
+        data: {
+          isDraft: false,
+          adminStatus: "PENDING",
+          rejectionReason: null,
+        },
+      });
     });
 
     revalidateListingPaths(id);
@@ -212,17 +227,38 @@ export async function approveListingAction(
 ): Promise<ActionResult> {
   return wrapAction(async () => {
     await requireAdminUser();
-    const existing = await prisma.listing.findFirst({
-      where: { id, isDraft: false },
-    });
-    if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
 
-    await prisma.listing.update({
-      where: { id },
-      data: {
-        adminStatus: "APPROVED",
-        rejectionReason: null,
-      },
+    await prisma.$transaction(async (tx) => {
+      const existing = await tx.listing.findFirst({
+        where: { id, isDraft: false },
+      });
+      if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
+
+      const owner = await tx.user.findUnique({
+        where: { id: existing.ownerId },
+        select: { role: true },
+      });
+      if (!owner) throw new Error(AppErrorCode.NOT_FOUND);
+
+      const limit = await getUserListingLimit(existing.ownerId, owner.role);
+      const used = await tx.listing.count({
+        where: {
+          ownerId: existing.ownerId,
+          isDraft: false,
+          adminStatus: { in: ["PENDING", "APPROVED"] },
+        },
+      });
+      if (used > limit) {
+        throw new Error("LISTING_LIMIT_REACHED");
+      }
+
+      await tx.listing.update({
+        where: { id },
+        data: {
+          adminStatus: "APPROVED",
+          rejectionReason: null,
+        },
+      });
     });
 
     revalidateListingPaths(id);

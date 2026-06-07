@@ -5,6 +5,7 @@ import {
   setListingCoverImage,
   uploadListingImages,
 } from "@/lib/listings/images";
+import { requireSessionUser } from "@/lib/listings/auth";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
@@ -23,16 +24,24 @@ function errorResponse(code: string, status: number) {
   return NextResponse.json({ error: code }, { status });
 }
 
+async function activeUserOr401() {
+  try {
+    return await requireSessionUser();
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(_request: Request, context: RouteContext) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await activeUserOr401();
+  if (!user) {
     return errorResponse("UNAUTHORIZED", 401);
   }
 
   const { id } = await context.params;
 
   try {
-    const images = await getListingImagesForOwner(id, session.user.id);
+    const images = await getListingImagesForOwner(id, user.id);
     return NextResponse.json({ images });
   } catch (e) {
     const message = e instanceof Error ? e.message : "FAILED";
@@ -41,8 +50,8 @@ export async function GET(_request: Request, context: RouteContext) {
 }
 
 export async function POST(request: Request, context: RouteContext) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await activeUserOr401();
+  if (!user) {
     return errorResponse("UNAUTHORIZED", 401);
   }
 
@@ -55,7 +64,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    const created = await uploadListingImages(id, session.user.id, files);
+    const created = await uploadListingImages(id, user.id, files);
     revalidateListing(id);
     return NextResponse.json({ images: created });
   } catch (e) {
@@ -73,8 +82,8 @@ export async function POST(request: Request, context: RouteContext) {
 }
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await activeUserOr401();
+  if (!user) {
     return errorResponse("UNAUTHORIZED", 401);
   }
 
@@ -87,9 +96,9 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   try {
     if (body.action === "reorder" && body.orderedIds) {
-      await reorderListingImages(id, session.user.id, body.orderedIds);
+      await reorderListingImages(id, user.id, body.orderedIds);
     } else if (body.action === "cover" && body.imageId) {
-      await setListingCoverImage(id, session.user.id, body.imageId);
+      await setListingCoverImage(id, user.id, body.imageId);
     } else {
       return errorResponse("INVALID_ACTION", 400);
     }

@@ -1,9 +1,9 @@
-import { auth } from "@/lib/auth";
 import {
   isTranslationConfigured,
   translateListingContent,
   type LocaleCode,
 } from "@/lib/translation";
+import { requireSessionUser } from "@/lib/listings/auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { rateLimit } from "@/lib/rate-limit";
@@ -20,12 +20,14 @@ function errorResponse(code: string, status: number) {
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  let user;
+  try {
+    user = await requireSessionUser();
+  } catch {
     return errorResponse("UNAUTHORIZED", 401);
   }
 
-  const limit = rateLimit(`translate:${session.user.id}`, 30, 60 * 1000);
+  const limit = rateLimit(`translate:${user.id}`, 30, 60 * 1000);
   if (!limit.allowed) {
     return NextResponse.json(
       { error: "RATE_LIMITED" },

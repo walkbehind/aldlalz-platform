@@ -1,5 +1,5 @@
-import { auth } from "@/lib/auth";
 import { deleteListingImage } from "@/lib/listings/images";
+import { requireSessionUser } from "@/lib/listings/auth";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
@@ -8,15 +8,17 @@ type RouteContext = {
 };
 
 export async function DELETE(_request: Request, context: RouteContext) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  let user;
+  try {
+    user = await requireSessionUser();
+  } catch {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
 
   const { id, imageId } = await context.params;
 
   try {
-    await deleteListingImage(id, session.user.id, imageId);
+    await deleteListingImage(id, user.id, imageId);
     revalidatePath(`/ar/dashboard/listings/${id}/edit`);
     revalidatePath(`/en/dashboard/listings/${id}/edit`);
     revalidatePath(`/ar/listings/${id}`);

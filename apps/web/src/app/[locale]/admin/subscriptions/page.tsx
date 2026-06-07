@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
-import { listUserSubscriptions } from "@/lib/subscriptions/queries";
+import { listUserSubscriptions, getEffectiveSubscriptionStatus } from "@/lib/subscriptions/queries";
 import { CancelSubscriptionButton } from "@/components/admin/cancel-subscription-button";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -44,7 +44,9 @@ export default async function AdminSubscriptionsPage({ params }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {subscriptions.map((sub) => (
+              {subscriptions.map((sub) => {
+                const effectiveStatus = getEffectiveSubscriptionStatus(sub);
+                return (
                 <tr key={sub.id}>
                   <td className="px-4 py-3" dir="ltr">
                     {sub.user.email}
@@ -54,7 +56,7 @@ export default async function AdminSubscriptionsPage({ params }: Props) {
                       ? sub.plan.nameAr
                       : sub.plan.nameEn ?? sub.plan.nameAr}
                   </td>
-                  <td className="px-4 py-3">{t(`statuses.${sub.status}`)}</td>
+                  <td className="px-4 py-3">{t(`statuses.${effectiveStatus}`)}</td>
                   <td className="px-4 py-3">{sub.maxListings}</td>
                   <td className="px-4 py-3">
                     {sub.expiresAt.toLocaleDateString(
@@ -63,7 +65,7 @@ export default async function AdminSubscriptionsPage({ params }: Props) {
                   </td>
                   <td className="px-4 py-3">{sub.billingProvider}</td>
                   <td className="px-4 py-3">
-                    {sub.status === "ACTIVE" && (
+                    {effectiveStatus === "ACTIVE" && (
                       <CancelSubscriptionButton
                         subscriptionId={sub.id}
                         label={t("cancel")}
@@ -71,7 +73,8 @@ export default async function AdminSubscriptionsPage({ params }: Props) {
                     )}
                   </td>
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
         </div>

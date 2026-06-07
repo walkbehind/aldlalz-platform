@@ -6,6 +6,7 @@ import {
 } from "@aldlalz/database";
 import { getCoverImage } from "@/lib/listings/images";
 import { getThumbnailStorageUrl } from "@/lib/supabase/client";
+import { requireAdminUser } from "@/lib/listings/auth";
 import { PAGE_SIZE } from "./constants";
 import type { ListingSearchParams } from "./validation";
 
@@ -218,6 +219,9 @@ export async function searchPublicListings(params: ListingSearchParams) {
 }
 
 async function searchPublicListingsModern(params: ListingSearchParams) {
+  const { expireStaleFeaturedListings } = await import("@/lib/featured/queries");
+  await expireStaleFeaturedListings();
+
   const page = Math.max(1, Number(params.page) || 1);
   const where = buildPublicWhere(params);
 
@@ -295,6 +299,9 @@ export async function getPublicListingById(id: string) {
 }
 
 async function getPublicListingByIdModern(id: string) {
+  const { expireStaleFeaturedListings } = await import("@/lib/featured/queries");
+  await expireStaleFeaturedListings();
+
   const listing = await prisma.listing.findFirst({
     where: {
       id,
@@ -468,6 +475,8 @@ export async function getOwnerListing(ownerId: string, id: string) {
 }
 
 export async function getAdminListings(adminStatus: AdminStatus) {
+  await requireAdminUser();
+
   return withListingSchemaFallback(
     () =>
       prisma.listing.findMany({
@@ -504,6 +513,8 @@ export async function getAdminListings(adminStatus: AdminStatus) {
 }
 
 export async function getAdminListingCounts() {
+  await requireAdminUser();
+
   const [pending, approved, rejected] = await Promise.all([
     prisma.listing.count({ where: { isDraft: false, adminStatus: "PENDING" } }),
     prisma.listing.count({

@@ -1,10 +1,15 @@
 import { prisma } from "@aldlalz/database";
 import { NextResponse } from "next/server";
+import { isDetailedHealthAllowed } from "@/lib/health";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isDetailedHealthAllowed(request)) {
+    return NextResponse.json({ ok: true });
+  }
+
   try {
     const [ping] = await prisma.$queryRaw<
       [{ db: string; now: Date }]

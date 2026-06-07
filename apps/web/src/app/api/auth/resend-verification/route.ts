@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@aldlalz/database";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { createAuthToken } from "@/lib/auth/tokens";
 import { sendVerificationEmail } from "@/lib/auth/email";
+import { requireSessionUser } from "@/lib/listings/auth";
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  let sessionUser;
+  try {
+    sessionUser = await requireSessionUser();
+  } catch {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
 
@@ -21,7 +23,7 @@ export async function POST(request: Request) {
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: sessionUser.id },
     select: { email: true, emailVerified: true, langPreference: true },
   });
 
