@@ -9,7 +9,11 @@ import {
   NEARBY_DEFAULT_RADIUS_KM,
   type LatLng,
 } from "@/lib/maps/geo";
-import { mapToCardData, type ListingCardData } from "@/lib/listings/queries";
+import {
+  mapToCardData,
+  publicListingBaseWhere,
+  type ListingCardData,
+} from "@/lib/listings/queries";
 
 export type NearbyListing = ListingCardData & {
   distanceKm: number;
@@ -75,8 +79,7 @@ export async function getNearbyListings(
 
   const rows = await prisma.listing.findMany({
     where: {
-      isDraft: false,
-      adminStatus: "APPROVED",
+      ...publicListingBaseWhere,
       latitude: { not: null, gte: box.minLat, lte: box.maxLat },
       longitude: { not: null, gte: box.minLng, lte: box.maxLng },
       ...(options?.excludeId ? { id: { not: options.excludeId } } : {}),

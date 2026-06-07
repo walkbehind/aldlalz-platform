@@ -159,12 +159,18 @@ export function mapToCardData(
   };
 }
 
+/** Approved, live listings whose owner account is active. */
+export const publicListingBaseWhere = {
+  isDraft: false,
+  adminStatus: "APPROVED" as const,
+  owner: { isActive: true },
+} satisfies Prisma.ListingWhereInput;
+
 function buildPublicWhere(
   params: ListingSearchParams
 ): Prisma.ListingWhereInput {
   const where: Prisma.ListingWhereInput = {
-    isDraft: false,
-    adminStatus: "APPROVED",
+    ...publicListingBaseWhere,
   };
 
   if (params.listingType) {
@@ -272,8 +278,7 @@ export async function getFeaturedListings(limit = 6) {
     async () => {
       const rows = await prisma.listing.findMany({
         where: {
-          isDraft: false,
-          adminStatus: "APPROVED",
+          ...publicListingBaseWhere,
           isFeatured: true,
         },
         orderBy: { updatedAt: "desc" },
@@ -299,8 +304,7 @@ const fetchPublicListingByIdModern = cache(async (id: string) => {
   const listing = await prisma.listing.findFirst({
     where: {
       id,
-      isDraft: false,
-      adminStatus: "APPROVED",
+      ...publicListingBaseWhere,
     },
     include: {
       owner: {
@@ -335,8 +339,7 @@ async function getPublicListingByIdLegacy(id: string) {
   const listing = await prisma.listing.findFirst({
     where: {
       id,
-      isDraft: false,
-      adminStatus: "APPROVED",
+      ...publicListingBaseWhere,
     },
     include: {
       owner: {
@@ -379,8 +382,7 @@ export async function getSimilarListings(listing: {
       prisma.listing.findMany({
         where: {
           id: { not: listing.id },
-          isDraft: false,
-          adminStatus: "APPROVED",
+          ...publicListingBaseWhere,
           OR: [
             { governorate: listing.governorate, area: listing.area },
             {
@@ -401,8 +403,7 @@ export async function getSimilarListings(listing: {
       prisma.listing.findMany({
         where: {
           id: { not: listing.id },
-          isDraft: false,
-          adminStatus: "APPROVED",
+          ...publicListingBaseWhere,
           OR: [
             { governorate: listing.governorate, area: listing.area },
             {
@@ -540,7 +541,7 @@ export type SerializedListing = ReturnType<typeof serializeListing>;
 export async function getSitemapListings(limit = 5000) {
   try {
     return await prisma.listing.findMany({
-      where: { isDraft: false, adminStatus: "APPROVED" },
+      where: publicListingBaseWhere,
       orderBy: { updatedAt: "desc" },
       take: limit,
       select: { id: true, updatedAt: true },
@@ -553,7 +554,7 @@ export async function getSitemapListings(limit = 5000) {
 
 export async function getPublicListingForMetadata(id: string) {
   return prisma.listing.findFirst({
-    where: { id, isDraft: false, adminStatus: "APPROVED" },
+    where: { id, ...publicListingBaseWhere },
     select: {
       id: true,
       titleAr: true,

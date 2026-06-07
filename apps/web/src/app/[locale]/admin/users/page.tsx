@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AdminUserActions } from "@/components/admin/admin-user-actions";
 import { AdminGrantSubscriptionForm } from "@/components/admin/admin-grant-subscription-form";
+import { AdminSetPasswordForm } from "@/components/admin/admin-set-password-form";
 import { listAdminUsers } from "@/lib/admin/actions";
 import {
   getActiveSubscriptionsForUsers,
@@ -94,6 +95,19 @@ export default async function AdminUsersPage({
                     currentRole={user.role as UserRole}
                     isActive={user.isActive}
                     isSuperAdmin={isSuperAdmin}
+                  />
+                </div>
+                <div className="border-t border-border pt-3">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
+                    {t("passwordSection")}
+                  </p>
+                  <AdminSetPasswordForm
+                    userId={user.id}
+                    disabled={
+                      user.id === session.user.id ||
+                      (!isSuperAdmin &&
+                        (user.role === "ADMIN" || user.role === "SUPERADMIN"))
+                    }
                   />
                 </div>
                 <div className="border-t border-border pt-3">
