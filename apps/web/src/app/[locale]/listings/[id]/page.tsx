@@ -4,11 +4,12 @@ import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Icon, type IconName } from "@/components/ui/icon";
 import { ListingGallery } from "@/components/listings/listing-gallery";
 import { ListingMapDisplay } from "@/components/listings/listing-map-display";
 import { ListingContactCard } from "@/components/listings/listing-contact-card";
+import { ListingShareButton } from "@/components/listings/listing-share-button";
 import { ListingCard } from "@/components/listings/listing-card";
 import {
   getPublicListingById,
@@ -79,7 +80,6 @@ export default async function ListingDetailPage({ params }: Props) {
   if (!listing) notFound();
 
   const t = await getTranslations("listingDetail");
-  const common = await getTranslations("common");
   const similar = await getSimilarListings(listing);
   const nearby =
     listing.latitude != null && listing.longitude != null
@@ -101,9 +101,62 @@ export default async function ListingDetailPage({ params }: Props) {
   const lng =
     listing.longitude != null ? Number(listing.longitude.toString()) : null;
 
+  const highlights: { icon: IconName; label: string; value: string }[] = [];
+  if (listing.bedrooms != null)
+    highlights.push({
+      icon: "bed",
+      label: t("bedrooms"),
+      value: String(listing.bedrooms),
+    });
+  if (listing.bathrooms != null)
+    highlights.push({
+      icon: "bath",
+      label: t("bathrooms"),
+      value: String(listing.bathrooms),
+    });
+  if (listing.sizeM2 != null)
+    highlights.push({
+      icon: "ruler",
+      label: t("sizeM2"),
+      value: `${listing.sizeM2.toString()} m²`,
+    });
+  if (listing.parking != null)
+    highlights.push({
+      icon: "car",
+      label: t("parking"),
+      value: String(listing.parking),
+    });
+
+  const details: { label: string; value: string }[] = [
+    {
+      label: t("propertyType"),
+      value: labelFor(PROPERTY_TYPE_LABELS, listing.propertyType, locale),
+    },
+    {
+      label: t("listingType"),
+      value: labelFor(LISTING_TYPE_LABELS, listing.listingType, locale),
+    },
+    {
+      label: t("governorate"),
+      value: labelFor(GOVERNORATE_LABELS, listing.governorate, locale),
+    },
+    { label: t("area"), value: listing.area },
+  ];
+  if (listing.paciNumber)
+    details.push({ label: t("paciNumber"), value: listing.paciNumber });
+
   return (
     <Container className="pb-12">
-      <div className="mb-6 lg:grid lg:grid-cols-3 lg:gap-8">
+      <nav className="mb-4 flex items-center gap-1.5 text-sm text-text-muted">
+        <Link href="/listings" className="transition-colors hover:text-brand-600">
+          {t("title")}
+        </Link>
+        <Icon name="chevronRight" size={14} className="rtl:rotate-180" />
+        <span className="line-clamp-1 text-text">{title}</span>
+      </nav>
+
+      <div className="lg:grid lg:grid-cols-3 lg:gap-8">
+        {/* Main column */}
         <div className="lg:col-span-2">
           <ListingGallery
             images={listing.images.map((img) => ({
@@ -116,33 +169,129 @@ export default async function ListingDetailPage({ params }: Props) {
             title={title}
           />
 
+          {/* Title block */}
           <div className="mt-6">
-            <div className="mb-3 flex flex-wrap gap-2">
-              <Badge>
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <Badge variant="brand">
                 {labelFor(LISTING_TYPE_LABELS, listing.listingType, locale)}
               </Badge>
               <Badge variant="neutral">
                 {labelFor(PROPERTY_TYPE_LABELS, listing.propertyType, locale)}
               </Badge>
               {listing.isFeatured && (
-                <Badge variant="gold">{t("featured")}</Badge>
+                <Badge variant="gold">
+                  <Icon name="sparkles" size={12} />
+                  {t("featured")}
+                </Badge>
               )}
             </div>
 
-            <h1 className="text-2xl font-bold md:text-3xl">{title}</h1>
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-0">
+                <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+                  {title}
+                </h1>
+                <p className="mt-2 flex items-center gap-1.5 text-text-muted">
+                  <Icon name="mapPin" size={18} className="text-brand-400" />
+                  {listing.area} ·{" "}
+                  {labelFor(GOVERNORATE_LABELS, listing.governorate, locale)}
+                </p>
+              </div>
+              <ListingShareButton
+                title={title}
+                url={listingUrl}
+                shareLabel={t("share")}
+                copiedLabel={t("shareCopied")}
+              />
+            </div>
 
-            <p className="mt-3 text-3xl font-bold text-brand-600">
+            <p className="mt-4 text-3xl font-bold text-brand-600">
               {formatPriceKwd(listing.priceKwd.toString(), locale)}
             </p>
-
-            <p className="mt-2 text-text-muted">
-              {labelFor(GOVERNORATE_LABELS, listing.governorate, locale)} —{" "}
-              {listing.area}
-            </p>
           </div>
+
+          {/* Highlights bar */}
+          {highlights.length > 0 && (
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {highlights.map((h) => (
+                <div
+                  key={h.label}
+                  className="rounded-2xl border border-border bg-surface p-4 text-center shadow-[var(--shadow-xs)]"
+                >
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                    <Icon name={h.icon} size={20} />
+                  </span>
+                  <p className="mt-2 text-lg font-bold text-text">{h.value}</p>
+                  <p className="text-xs text-text-muted">{h.label}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Mobile contact card */}
+          <div className="mt-6 lg:hidden">
+            <ListingContactCard
+              owner={listing.owner}
+              locale={locale}
+              listingTitle={title}
+              listingUrl={listingUrl}
+              labels={{
+                contact: t("contact"),
+                interested: t("interested"),
+                contactHint: t("contactHint"),
+                verified: t("verified"),
+                call: t("call"),
+                whatsapp: t("whatsapp"),
+                ownerProfile: t("ownerProfile"),
+                phoneMasked: t("phoneMasked"),
+              }}
+            />
+          </div>
+
+          {/* Overview */}
+          {description && (
+            <Card className="mt-6">
+              <h2 className="mb-3 text-lg font-bold">{t("overview")}</h2>
+              <div className="whitespace-pre-wrap leading-relaxed text-text-muted">
+                {description}
+              </div>
+            </Card>
+          )}
+
+          {/* Details */}
+          <Card className="mt-6">
+            <h2 className="mb-4 text-lg font-bold">{t("highlights")}</h2>
+            <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+              {details.map((d) => (
+                <div
+                  key={d.label}
+                  className="flex items-center justify-between border-b border-border pb-3"
+                >
+                  <dt className="text-sm text-text-muted">{d.label}</dt>
+                  <dd className="font-semibold text-text">{d.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </Card>
+
+          {/* Map */}
+          {lat != null && lng != null && (
+            <Card className="mt-6">
+              <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
+                <Icon name="mapPin" size={20} className="text-brand-500" />
+                {t("location")}
+              </h2>
+              <ListingMapDisplay
+                lat={lat}
+                lng={lng}
+                addressLine={listing.addressLine}
+              />
+            </Card>
+          )}
         </div>
 
-        <div className="mt-6 lg:mt-0">
+        {/* Sticky sidebar (desktop) */}
+        <div className="mt-6 hidden lg:mt-0 lg:block">
           <ListingContactCard
             owner={listing.owner}
             locale={locale}
@@ -150,74 +299,15 @@ export default async function ListingDetailPage({ params }: Props) {
             listingUrl={listingUrl}
             labels={{
               contact: t("contact"),
+              interested: t("interested"),
+              contactHint: t("contactHint"),
+              verified: t("verified"),
               call: t("call"),
               whatsapp: t("whatsapp"),
               ownerProfile: t("ownerProfile"),
               phoneMasked: t("phoneMasked"),
             }}
           />
-        </div>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          {description && (
-            <div className="mb-8 whitespace-pre-wrap leading-relaxed">
-              <h2 className="mb-3 text-lg font-semibold">{t("description")}</h2>
-              {description}
-            </div>
-          )}
-
-          <dl className="grid gap-4 sm:grid-cols-2">
-            {listing.bedrooms != null && (
-              <div>
-                <dt className="text-sm text-text-muted">{t("bedrooms")}</dt>
-                <dd className="font-medium">{listing.bedrooms}</dd>
-              </div>
-            )}
-            {listing.bathrooms != null && (
-              <div>
-                <dt className="text-sm text-text-muted">{t("bathrooms")}</dt>
-                <dd className="font-medium">{listing.bathrooms}</dd>
-              </div>
-            )}
-            {listing.parking != null && (
-              <div>
-                <dt className="text-sm text-text-muted">{t("parking")}</dt>
-                <dd className="font-medium">{listing.parking}</dd>
-              </div>
-            )}
-            {listing.sizeM2 != null && (
-              <div>
-                <dt className="text-sm text-text-muted">{t("sizeM2")}</dt>
-                <dd className="font-medium">{listing.sizeM2.toString()} m²</dd>
-              </div>
-            )}
-            {listing.paciNumber && (
-              <div>
-                <dt className="text-sm text-text-muted">{t("paciNumber")}</dt>
-                <dd className="font-medium">{listing.paciNumber}</dd>
-              </div>
-            )}
-          </dl>
-
-          {lat != null && lng != null && (
-            <div className="mt-8">
-              <ListingMapDisplay
-                lat={lat}
-                lng={lng}
-                addressLine={listing.addressLine}
-              />
-            </div>
-          )}
-        </Card>
-
-        <div className="lg:hidden">
-          <Link href="/listings">
-            <Button variant="secondary" className="w-full">
-              {common("backToListings")}
-            </Button>
-          </Link>
         </div>
       </div>
 

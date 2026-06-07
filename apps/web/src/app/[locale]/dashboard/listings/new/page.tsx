@@ -1,8 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
-import { redirect } from "@/i18n/navigation";
-import { PageHeader } from "@/components/layout/page-header";
+import { redirect, Link } from "@/i18n/navigation";
 import { NewListingFlow } from "@/components/listings/new-listing-flow";
+import { Icon } from "@/components/ui/icon";
 import {
   googleMapsConfigured,
   getGoogleMapsApiKey,
@@ -25,6 +25,7 @@ export default async function NewListingPage({ params }: Props) {
   const listings = await getTranslations("dashboard.listings");
   const map = await getTranslations("dashboard.listings.map");
   const tr = await getTranslations("dashboard.listings.translation");
+  const wiz = await getTranslations("dashboard.listings.wizard");
 
   const labels = {
     listingType: t("listingType"),
@@ -63,16 +64,35 @@ export default async function NewListingPage({ params }: Props) {
     descriptionEn: t("descriptionEn"),
   };
 
+  const wizardLabels = {
+    detailsStep: wiz("detailsStep"),
+    detailsDesc: wiz("detailsDesc"),
+    photosStep: wiz("photosStep"),
+    photosDesc: wiz("photosDesc"),
+    publishStep: wiz("publishStep"),
+    publishDesc: wiz("publishDesc"),
+    stepLabel: wiz("stepLabel"),
+    savedBadge: wiz("savedBadge"),
+    createTitle: t("createTitle"),
+    createSubtitle: t("createSubtitle"),
+  };
+
   return (
     <>
-      <PageHeader
-        title={t("createTitle")}
-        subtitle={t("createSubtitle")}
-      />
+      <div className="mb-6">
+        <Link
+          href="/dashboard/listings"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-text-muted transition-colors hover:text-brand-600"
+        >
+          <Icon name="chevronLeft" size={16} className="rtl:rotate-180" />
+          {listings("backToList")}
+        </Link>
+      </div>
       <NewListingFlow
         locale={locale}
         labels={labels}
         translationLabels={translationLabels}
+        wizardLabels={wizardLabels}
         submitLabel={t("saveDraft")}
         mediaTitle={listings("mediaTitle")}
         photosHint={t("photosHint")}

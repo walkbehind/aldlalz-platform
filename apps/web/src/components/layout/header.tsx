@@ -6,6 +6,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { signOut } from "next-auth/react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 
@@ -34,25 +35,19 @@ export function Header({ session }: HeaderProps) {
     session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-surface/95 backdrop-blur">
-      <Container className="flex h-20 items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 border-b border-border bg-surface/80 backdrop-blur-xl">
+      <Container className="flex h-16 items-center justify-between gap-4 md:h-20">
         <div className="flex items-center gap-2">
           <button
             type="button"
             aria-label={t("menu")}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="-ms-2 rounded-lg p-2 text-text hover:bg-surface-muted md:hidden"
+            className="-ms-2 rounded-lg p-2 text-text transition-colors hover:bg-surface-muted md:hidden"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              {open ? (
-                <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
-              ) : (
-                <path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" />
-              )}
-            </svg>
+            <Icon name={open ? "close" : "menu"} size={22} />
           </button>
-          <Link href="/" aria-label="Aldlalz">
+          <Link href="/" aria-label="Aldlalz" className="transition-opacity hover:opacity-80">
             <BrandLogo locale={locale} />
           </Link>
         </div>
@@ -65,11 +60,14 @@ export function Header({ session }: HeaderProps) {
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-muted ${
+                className={`relative rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors hover:text-brand-600 ${
                   active ? "text-brand-600" : "text-text-muted"
                 }`}
               >
                 {t(item.key)}
+                {active && (
+                  <span className="absolute inset-x-3.5 -bottom-0.5 h-0.5 rounded-full bg-gold-500" />
+                )}
               </Link>
             );
           })}
@@ -78,6 +76,7 @@ export function Header({ session }: HeaderProps) {
         <div className="flex items-center gap-2">
           <Link href="/dashboard/listings/new" className="hidden sm:block">
             <Button variant="accent" size="sm">
+              <Icon name="plus" size={16} />
               {t("addListing")}
             </Button>
           </Link>

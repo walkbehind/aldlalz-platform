@@ -1,11 +1,12 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/container";
-import { PageHeader } from "@/components/layout/page-header";
 import { ListingFilters } from "@/components/listings/listing-filters";
 import { ListingCard } from "@/components/listings/listing-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/feedback";
+import { Icon } from "@/components/ui/icon";
 import {
   getFeaturedListings,
   searchPublicListings,
@@ -37,7 +38,7 @@ export default async function ListingsPage({ params, searchParams }: Props) {
   try {
     const [searchResult, featuredResult] = await Promise.all([
       searchPublicListings(filters),
-      hasFilters ? Promise.resolve([]) : getFeaturedListings(6),
+      hasFilters ? Promise.resolve([]) : getFeaturedListings(3),
     ]);
     items = searchResult.items;
     page = searchResult.page;
@@ -63,21 +64,30 @@ export default async function ListingsPage({ params, searchParams }: Props) {
   }
 
   return (
-    <Container>
-      <PageHeader title={t("title")} subtitle={t("subtitle")} />
+    <Container className="pb-12">
+      {/* Page header */}
+      <div className="mb-6 border-b border-border pb-6">
+        <h1 className="text-3xl font-bold tracking-tight text-text">
+          {t("title")}
+        </h1>
+        <p className="mt-2 text-text-muted">{t("subtitle")}</p>
+      </div>
 
       {loadError && (
-        <Card className="mb-6 border-amber-200 bg-amber-50">
-          <p className="font-medium text-amber-900">{t("loadError")}</p>
-          <p className="mt-2 text-sm text-amber-800">{loadError}</p>
-          <p className="mt-2 text-sm text-amber-800">{t("loadErrorHint")}</p>
+        <Card className="mb-6 border-warning/30 bg-warning-soft">
+          <p className="font-semibold text-warning">{t("loadError")}</p>
+          <p className="mt-2 text-sm text-text-muted">{loadError}</p>
+          <p className="mt-2 text-sm text-text-muted">{t("loadErrorHint")}</p>
         </Card>
       )}
 
       {!loadError && !hasFilters && featured.length > 0 && (
         <section className="mb-10">
-          <h2 className="mb-4 text-xl font-bold">{t("featuredTitle")}</h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <h2 className="mb-4 inline-flex items-center gap-2 text-xl font-bold">
+            <Icon name="sparkles" size={20} className="text-gold-500" />
+            {t("featuredTitle")}
+          </h2>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featured.map((listing) => (
               <ListingCard
                 key={listing.id}
@@ -91,52 +101,71 @@ export default async function ListingsPage({ params, searchParams }: Props) {
         </section>
       )}
 
-      <ListingFilters initial={filters} />
+      {/* Two-column: filters + results */}
+      <div className="grid gap-6 lg:grid-cols-[300px_1fr] lg:gap-8">
+        <aside className="lg:self-start">
+          <ListingFilters initial={filters} />
+        </aside>
 
-      {!loadError && items.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border bg-surface p-8 text-center text-text-muted">
-          {t("empty")}
-        </p>
-      ) : !loadError ? (
-        <>
-          <p className="mb-4 text-sm text-text-muted">
-            {t("resultsCount", { count: total })}
-          </p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((listing) => (
-              <ListingCard
-                key={listing.id}
-                listing={listing}
-                locale={locale}
-                viewDetailsLabel={t("viewDetails")}
-                featuredLabel={t("featuredBadge")}
-              />
-            ))}
-          </div>
-
-          {totalPages > 1 && (
-            <div className="mt-8 flex items-center justify-center gap-3">
-              {prevPage && (
-                <Link href={pageHref(prevPage)}>
-                  <Button variant="secondary" size="sm">
-                    {t("prevPage")}
-                  </Button>
-                </Link>
-              )}
-              <span className="text-sm text-text-muted">
-                {t("pageOf", { page, total: totalPages })}
+        <div className="min-w-0">
+          {!loadError && (
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <h2 className="text-lg font-bold text-text">
+                {t("resultsTitle")}
+              </h2>
+              <span className="rounded-full bg-surface px-3 py-1 text-sm font-medium text-text-muted shadow-[var(--shadow-xs)]">
+                {t("resultsCount", { count: total })}
               </span>
-              {nextPage && (
-                <Link href={pageHref(nextPage)}>
-                  <Button variant="secondary" size="sm">
-                    {t("nextPage")}
-                  </Button>
-                </Link>
-              )}
             </div>
           )}
-        </>
-      ) : null}
+
+          {!loadError && items.length === 0 ? (
+            <EmptyState title={t("empty")} />
+          ) : !loadError ? (
+            <>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {items.map((listing) => (
+                  <ListingCard
+                    key={listing.id}
+                    listing={listing}
+                    locale={locale}
+                    viewDetailsLabel={t("viewDetails")}
+                    featuredLabel={t("featuredBadge")}
+                  />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="mt-10 flex items-center justify-center gap-3">
+                  {prevPage ? (
+                    <Link href={pageHref(prevPage)}>
+                      <Button variant="secondary" size="sm">
+                        <Icon name="chevronLeft" size={16} className="rtl:rotate-180" />
+                        {t("prevPage")}
+                      </Button>
+                    </Link>
+                  ) : (
+                    <span />
+                  )}
+                  <span className="text-sm font-medium text-text-muted">
+                    {t("pageOf", { page, total: totalPages })}
+                  </span>
+                  {nextPage ? (
+                    <Link href={pageHref(nextPage)}>
+                      <Button variant="secondary" size="sm">
+                        {t("nextPage")}
+                        <Icon name="chevronRight" size={16} className="rtl:rotate-180" />
+                      </Button>
+                    </Link>
+                  ) : (
+                    <span />
+                  )}
+                </div>
+              )}
+            </>
+          ) : null}
+        </div>
+      </div>
     </Container>
   );
 }

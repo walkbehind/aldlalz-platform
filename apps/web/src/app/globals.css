@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-/* ─── Aldlalz design tokens ───────────────────────────────
+/* ─── Aldlalz design system ───────────────────────────────
    Brand: Navy #0A2D5E / Navy Dark #082247, Gold #D4AF57 / Gold Dark #B8913C
-   Background #F8F9FB. Source: Aldlalz UI Design Brief.
+   Background #F8F9FB. A premium Kuwait real-estate marketplace.
    The whole app re-skins from these tokens — components reference them. */
 @theme {
   /* Brand navy (primary) */
@@ -31,22 +31,83 @@
 
   /* Surfaces & text */
   --color-surface: #ffffff;
-  --color-surface-muted: #f8f9fb;
+  --color-surface-muted: #f5f7fb;
+  --color-surface-sunken: #eef1f7;
   --color-border: #e4e8f0;
+  --color-border-strong: #d2d9e6;
   --color-text: #0e1726;
   --color-text-muted: #5b6577;
+  --color-text-subtle: #8a94a6;
+
+  /* Semantic */
+  --color-success: #0f9d6e;
+  --color-success-soft: #e7f6f0;
+  --color-warning: #d4901f;
+  --color-warning-soft: #fcf3e2;
+  --color-danger: #d64545;
+  --color-danger-soft: #fdebeb;
 
   /* Typography — set by next/font in the locale layout */
   --font-sans: var(--font-latin), var(--font-arabic), "Segoe UI", Tahoma,
     system-ui, sans-serif;
 
-  /* Radii (brief: property cards 18px) */
-  --radius-card: 1.125rem;
+  /* Radii */
+  --radius-card: 1.25rem;
+  --radius-lg: 0.875rem;
 
-  /* Elevation */
+  /* Elevation — soft, layered, navy-tinted */
+  --shadow-xs: 0 1px 2px rgb(10 45 94 / 0.05);
   --shadow-card: 0 1px 2px rgb(10 45 94 / 0.04), 0 8px 24px rgb(10 45 94 / 0.06);
-  --shadow-card-hover: 0 4px 12px rgb(10 45 94 / 0.08),
-    0 16px 40px rgb(10 45 94 / 0.1);
+  --shadow-card-hover: 0 8px 18px rgb(10 45 94 / 0.1),
+    0 20px 48px rgb(10 45 94 / 0.12);
+  --shadow-float: 0 12px 32px rgb(10 45 94 / 0.14),
+    0 4px 10px rgb(10 45 94 / 0.06);
+
+  /* Animations */
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in: fade-in 0.4s ease both;
+  --animate-scale-in: scale-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
 }
 
 @layer base {
@@ -69,5 +130,91 @@
   :focus-visible {
     outline: 2px solid var(--color-brand-500);
     outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-gold-200);
+    color: var(--color-brand-700);
+  }
+}
+
+@layer utilities {
+  /* Brand gradient backdrops */
+  .bg-brand-gradient {
+    background-image: linear-gradient(135deg, #0a2d5e 0%, #061a37 60%, #041229 100%);
+  }
+
+  .bg-gold-gradient {
+    background-image: linear-gradient(135deg, #e2c46d 0%, #d4af57 50%, #b8913c 100%);
+  }
+
+  /* Subtle navy mesh used behind hero sections */
+  .bg-hero-mesh {
+    background-image:
+      radial-gradient(circle at 12% 18%, rgb(212 175 87 / 0.28) 0, transparent 38%),
+      radial-gradient(circle at 88% 12%, rgb(47 83 132 / 0.55) 0, transparent 42%),
+      radial-gradient(circle at 78% 88%, rgb(212 175 87 / 0.18) 0, transparent 40%),
+      linear-gradient(135deg, #0a2d5e 0%, #061a37 70%, #041229 100%);
+  }
+
+  .text-gradient-gold {
+    background-image: linear-gradient(120deg, #f5e9c6, #d4af57 60%, #b8913c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Hide scrollbars on horizontal scroll rows */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Skeleton shimmer */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-surface-sunken) 25%,
+      var(--color-surface-muted) 37%,
+      var(--color-surface-sunken) 63%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  /* Animation entrances */
+  .animate-fade-up {
+    animation: var(--animate-fade-up);
+  }
+  .animate-fade-in {
+    animation: var(--animate-fade-in);
+  }
+  .animate-scale-in {
+    animation: var(--animate-scale-in);
+  }
+
+  /* Card hover lift used on interactive tiles */
+  .hover-lift {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-up,
+    .animate-fade-in,
+    .animate-scale-in,
+    .skeleton {
+      animation: none;
+    }
+    .hover-lift {
+      transition: none;
+    }
   }
 }
