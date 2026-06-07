@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma, type AdminStatus, type SubscriptionStatus } from "@aldlalz/database";
 import {
   ADMIN_MAX_LISTINGS,
@@ -16,8 +17,8 @@ export type ActiveSubscription = {
   includedFeatureCredits: number;
 };
 
-/** Marks past-due ACTIVE subscriptions as EXPIRED (lazy expiry). */
-export async function expireStaleSubscriptions() {
+/** Marks past-due ACTIVE subscriptions as EXPIRED (lazy expiry). Once per request. */
+export const expireStaleSubscriptions = cache(async () => {
   const now = new Date();
   await prisma.userSubscription.updateMany({
     where: {
@@ -26,7 +27,7 @@ export async function expireStaleSubscriptions() {
     },
     data: { status: "EXPIRED" },
   });
-}
+});
 
 export function getEffectiveSubscriptionStatus(sub: {
   status: SubscriptionStatus;
@@ -38,15 +39,63 @@ export function getEffectiveSubscriptionStatus(sub: {
   return sub.status;
 }
 
+const fetchActiveSubscription = cache(
+  async (userId: string): Promise<ActiveSubscription | null> => {
+    await expireStaleSubscriptions();
+
+    const now = new Date();
+    const sub = await prisma.userSubscription.findFirst({
+      where: {
+        userId,
+        status: "ACTIVE",
+        expiresAt: { gt: now },
+      },
+      orderBy: { expiresAt: "desc" },
+      include: {
+        plan: {
+          select: {
+            nameAr: true,
+            nameEn: true,
+            includedFeatureCredits: true,
+          },
+        },
+      },
+    });
+
+    if (!sub) return null;
+
+    return {
+      id: sub.id,
+      planId: sub.planId,
+      maxListings: sub.maxListings,
+      expiresAt: sub.expiresAt,
+      status: sub.status,
+      planNameAr: sub.plan.nameAr,
+      planNameEn: sub.plan.nameEn,
+      includedFeatureCredits: sub.plan.includedFeatureCredits,
+    };
+  }
+);
+
 export async function getActiveSubscription(
   userId: string
 ): Promise<ActiveSubscription | null> {
+  return fetchActiveSubscription(userId);
+}
+
+/** Batch active subscription lookup — one query for admin user lists. */
+export async function getActiveSubscriptionsForUsers(
+  userIds: string[]
+): Promise<Map<string, ActiveSubscription>> {
+  const uniqueIds = [...new Set(userIds)];
+  if (uniqueIds.length === 0) return new Map();
+
   await expireStaleSubscriptions();
 
   const now = new Date();
-  const sub = await prisma.userSubscription.findFirst({
+  const subs = await prisma.userSubscription.findMany({
     where: {
-      userId,
+      userId: { in: uniqueIds },
       status: "ACTIVE",
       expiresAt: { gt: now },
     },
@@ -62,18 +111,21 @@ export async function getActiveSubscription(
     },
   });
 
-  if (!sub) return null;
-
-  return {
-    id: sub.id,
-    planId: sub.planId,
-    maxListings: sub.maxListings,
-    expiresAt: sub.expiresAt,
-    status: sub.status,
-    planNameAr: sub.plan.nameAr,
-    planNameEn: sub.plan.nameEn,
-    includedFeatureCredits: sub.plan.includedFeatureCredits,
-  };
+  const map = new Map<string, ActiveSubscription>();
+  for (const sub of subs) {
+    if (map.has(sub.userId)) continue;
+    map.set(sub.userId, {
+      id: sub.id,
+      planId: sub.planId,
+      maxListings: sub.maxListings,
+      expiresAt: sub.expiresAt,
+      status: sub.status,
+      planNameAr: sub.plan.nameAr,
+      planNameEn: sub.plan.nameEn,
+      includedFeatureCredits: sub.plan.includedFeatureCredits,
+    });
+  }
+  return map;
 }
 
 /** Active = submitted and pending approval or live */
@@ -87,18 +139,23 @@ export async function countActiveListings(userId: string): Promise<number> {
   });
 }
 
+function listingLimitForRole(
+  role: string,
+  subscription: ActiveSubscription | null
+): number {
+  if (isAdminRole(role as "ADMIN" | "SUPERADMIN")) {
+    return ADMIN_MAX_LISTINGS;
+  }
+  if (subscription) return subscription.maxListings;
+  return FREE_TIER_MAX_LISTINGS;
+}
+
 export async function getUserListingLimit(
   userId: string,
   role: string
 ): Promise<number> {
-  if (isAdminRole(role as "ADMIN" | "SUPERADMIN")) {
-    return ADMIN_MAX_LISTINGS;
-  }
-
-  const active = await getActiveSubscription(userId);
-  if (active) return active.maxListings;
-
-  return FREE_TIER_MAX_LISTINGS;
+  const subscription = await getActiveSubscription(userId);
+  return listingLimitForRole(role, subscription);
 }
 
 export type ListingLimitCheck = {
@@ -107,27 +164,24 @@ export type ListingLimitCheck = {
   used: number;
   remaining: number;
   hasSubscription: boolean;
+  subscription: ActiveSubscription | null;
 };
 
 export async function checkListingLimit(
   userId: string,
   role: string
 ): Promise<ListingLimitCheck> {
-  await expireStaleSubscriptions();
-
-  const [limit, used] = await Promise.all([
-    getUserListingLimit(userId, role),
-    countActiveListings(userId),
-  ]);
-
-  const active = await getActiveSubscription(userId);
+  const subscription = await getActiveSubscription(userId);
+  const limit = listingLimitForRole(role, subscription);
+  const used = await countActiveListings(userId);
 
   return {
     allowed: used < limit,
     limit,
     used,
     remaining: Math.max(0, limit - used),
-    hasSubscription: !!active,
+    hasSubscription: !!subscription,
+    subscription,
   };
 }
 
@@ -147,8 +201,6 @@ export async function assertCanSubmitListing(
   role: string,
   listing: { id: string; isDraft: boolean; adminStatus: AdminStatus | string }
 ): Promise<void> {
-  await expireStaleSubscriptions();
-
   if (listingCountsTowardLimit(listing)) {
     return;
   }

@@ -36,15 +36,14 @@ export default async function ListingsPage({ params, searchParams }: Props) {
   let loadError: string | null = null;
 
   try {
-    const [searchResult, featuredResult] = await Promise.all([
-      searchPublicListings(filters),
-      hasFilters ? Promise.resolve([]) : getFeaturedListings(3),
-    ]);
+    const searchResult = await searchPublicListings(filters);
     items = searchResult.items;
     page = searchResult.page;
     totalPages = searchResult.totalPages;
     total = searchResult.total;
-    featured = featuredResult;
+    if (!hasFilters) {
+      featured = await getFeaturedListings(3);
+    }
   } catch (error) {
     console.error("[listings]", error);
     loadError =

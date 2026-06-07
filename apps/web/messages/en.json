@@ -232,6 +232,10 @@
       "expires": "Expires {date}",
       "freeTier": "Free plan: {used} of {count} listings used"
     },
+    "loadError": {
+      "title": "Could not load profile",
+      "retry": "Try again"
+    },
     "form": {
       "title": "Account details",
       "subtitle": "Keep your contact information up to date",

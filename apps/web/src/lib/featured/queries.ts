@@ -1,7 +1,9 @@
+import { cache } from "react";
 import { prisma, type FeaturedRequestStatus } from "@aldlalz/database";
 import { requireAdminUser } from "@/lib/listings/auth";
 
-export async function expireStaleFeaturedListings() {
+/** Marks expired featured requests and clears listing flags. Once per request. */
+export const expireStaleFeaturedListings = cache(async () => {
   const now = new Date();
   const expired = await prisma.featuredRequest.findMany({
     where: {
@@ -27,7 +29,7 @@ export async function expireStaleFeaturedListings() {
       })
     ),
   ]);
-}
+});
 
 export async function listFeaturedRequests(status?: FeaturedRequestStatus) {
   await requireAdminUser();

@@ -96,7 +96,7 @@ Then **Redeploy** on Vercel.
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY` (server-only — never expose to client)
 3. **Security model:** uploads, deletes, reorder, and cover changes go through authenticated Next.js API routes using the service role. Only the listing owner can mutate images. Public read is via the public bucket URL.
-4. **Mobile optimization:** uploads are converted to WebP (max 1600px) via `sharp`. Thumbnails use Supabase image transforms (`/storage/v1/render/image/public/...`) for cards and gallery strips.
+4. **Mobile optimization:** uploads are converted to WebP (max 1600px) via `sharp`. Cards use public object URLs; Next.js Image handles display sizing.
 5. **Verify:** after deploy, upload photos on a draft listing in the dashboard, set a cover, reorder, then submit and view the public listing gallery.
 
 ## 7. Google Maps (Phase 3)

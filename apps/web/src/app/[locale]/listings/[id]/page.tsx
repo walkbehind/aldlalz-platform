@@ -24,7 +24,6 @@ import {
   PROPERTY_TYPE_LABELS,
 } from "@/lib/listings/constants";
 import { getCoverImage } from "@/lib/listings/images";
-import { getThumbnailStorageUrl } from "@/lib/supabase/client";
 import { getNearbyListingsForListing } from "@/lib/listings/nearby";
 import { formatDistanceKm } from "@/lib/maps/geo";
 
@@ -162,7 +161,7 @@ export default async function ListingDetailPage({ params }: Props) {
             images={listing.images.map((img) => ({
               id: img.id,
               url: img.url,
-              thumbUrl: getThumbnailStorageUrl(img.storagePath),
+              thumbUrl: img.url,
               width: img.width,
               height: img.height,
             }))}

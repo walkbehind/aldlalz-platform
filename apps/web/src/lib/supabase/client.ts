@@ -37,16 +37,12 @@ export function getPublicStorageUrl(storagePath: string) {
   return `${url}/storage/v1/object/public/${LISTING_IMAGES_BUCKET}/${storagePath}`;
 }
 
-/** Supabase image transform — fast thumbnails for cards and gallery strip */
-export function getThumbnailStorageUrl(storagePath: string, width = THUMB_WIDTH) {
-  const base = getSupabaseUrl();
-  if (!base) return getPublicStorageUrl(storagePath);
-  const params = new URLSearchParams({
-    width: String(width),
-    quality: "80",
-    resize: "contain",
-  });
-  return `${base}/storage/v1/render/image/public/${LISTING_IMAGES_BUCKET}/${storagePath}?${params.toString()}`;
+/**
+ * Card/gallery thumbnail URL. Uses the public object URL — Next.js Image handles sizing.
+ * (Supabase /render/image transforms require a paid add-on; transform URLs return 403.)
+ */
+export function getThumbnailStorageUrl(storagePath: string) {
+  return getPublicStorageUrl(storagePath);
 }
 
 export function buildListingImagePath(

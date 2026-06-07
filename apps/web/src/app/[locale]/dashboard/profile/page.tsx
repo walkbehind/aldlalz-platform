@@ -4,10 +4,7 @@ import { redirect } from "@/i18n/navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import { ProfileForm } from "@/components/profile/profile-form";
 import { getUserProfile } from "@/lib/profile/queries";
-import {
-  getActiveSubscription,
-  checkListingLimit,
-} from "@/lib/subscriptions/queries";
+import { checkListingLimit } from "@/lib/subscriptions/queries";
 import { Card } from "@/components/ui/card";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -27,10 +24,8 @@ export default async function ProfilePage({ params }: Props) {
   }
 
   const t = await getTranslations("profile");
-  const [subscription, limits] = await Promise.all([
-    getActiveSubscription(session.user.id),
-    checkListingLimit(session.user.id, session.user.role),
-  ]);
+  const limits = await checkListingLimit(session.user.id, session.user.role);
+  const subscription = limits.subscription;
 
   return (
     <>

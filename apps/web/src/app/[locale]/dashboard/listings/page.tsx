@@ -9,7 +9,6 @@ import { Icon } from "@/components/ui/icon";
 import { getOwnerListings } from "@/lib/listings/queries";
 import { ListingStatusBadge } from "@/components/listings/listing-status-badge";
 import { DeleteDraftButton } from "@/components/listings/delete-draft-button";
-import { getThumbnailStorageUrl } from "@/lib/supabase/client";
 import {
   formatPriceKwd,
   GOVERNORATE_LABELS,
@@ -75,7 +74,7 @@ export default async function MyListingsPage({ params, searchParams }: Props) {
               locale === "ar"
                 ? listing.titleAr
                 : listing.titleEn || listing.titleAr;
-            const cover = (listing as { images?: { storagePath: string }[] })
+            const cover = (listing as { images?: { url: string }[] })
               .images?.[0];
             const views = (listing as { viewCount?: number }).viewCount ?? 0;
 
@@ -87,7 +86,7 @@ export default async function MyListingsPage({ params, searchParams }: Props) {
                 <div className="relative h-40 w-full shrink-0 overflow-hidden rounded-xl bg-surface-sunken sm:h-24 sm:w-32">
                   {cover ? (
                     <Image
-                      src={getThumbnailStorageUrl(cover.storagePath)}
+                      src={cover.url}
                       alt={title}
                       fill
                       sizes="(max-width: 640px) 100vw, 128px"

@@ -8,7 +8,7 @@ import { AdminUserActions } from "@/components/admin/admin-user-actions";
 import { AdminGrantSubscriptionForm } from "@/components/admin/admin-grant-subscription-form";
 import { listAdminUsers } from "@/lib/admin/actions";
 import {
-  getActiveSubscription,
+  getActiveSubscriptionsForUsers,
   listActivePlans,
 } from "@/lib/subscriptions/queries";
 import { formatKuwaitPhoneDisplay } from "@/lib/contact/phone";
@@ -40,8 +40,8 @@ export default async function AdminUsersPage({
   const plans = await listActivePlans();
   const isSuperAdmin = session.user.role === "SUPERADMIN";
 
-  const subscriptions = await Promise.all(
-    users.map((u) => getActiveSubscription(u.id))
+  const subscriptionByUser = await getActiveSubscriptionsForUsers(
+    users.map((u) => u.id)
   );
 
   return (
@@ -64,12 +64,12 @@ export default async function AdminUsersPage({
         <Card>{t("empty")}</Card>
       ) : (
         <div className="space-y-4">
-          {users.map((user, index) => {
+          {users.map((user) => {
             const name =
               locale === "ar"
                 ? user.nameAr ?? user.nameEn ?? user.email
                 : user.nameEn ?? user.nameAr ?? user.email;
-            const sub = subscriptions[index];
+            const sub = subscriptionByUser.get(user.id) ?? null;
             return (
               <Card key={user.id} className="space-y-3">
                 <div className="flex flex-wrap items-start justify-between gap-3">

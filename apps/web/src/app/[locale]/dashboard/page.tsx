@@ -14,7 +14,6 @@ import {
   labelFor,
 } from "@/lib/listings/constants";
 import { getOwnerListings } from "@/lib/listings/queries";
-import { getThumbnailStorageUrl } from "@/lib/supabase/client";
 import Image from "next/image";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -232,7 +231,7 @@ export default async function DashboardPage({ params }: Props) {
                     ? listing.titleAr
                     : listing.titleEn || listing.titleAr;
                 const cover = (
-                  listing as { images?: { storagePath: string }[] }
+                  listing as { images?: { url: string }[] }
                 ).images?.[0];
                 const views =
                   (listing as { viewCount?: number }).viewCount ?? 0;
@@ -245,7 +244,7 @@ export default async function DashboardPage({ params }: Props) {
                       <div className="relative h-14 w-16 shrink-0 overflow-hidden rounded-xl bg-surface-sunken">
                         {cover ? (
                           <Image
-                            src={getThumbnailStorageUrl(cover.storagePath)}
+                            src={cover.url}
                             alt=""
                             fill
                             sizes="64px"

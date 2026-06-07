@@ -4,8 +4,9 @@ import {
   type Listing,
   type Prisma,
 } from "@aldlalz/database";
+import { cache } from "react";
 import { getCoverImage } from "@/lib/listings/images";
-import { getThumbnailStorageUrl } from "@/lib/supabase/client";
+import { expireStaleFeaturedListings } from "@/lib/featured/queries";
 import { requireAdminUser } from "@/lib/listings/auth";
 import { PAGE_SIZE } from "./constants";
 import type { ListingSearchParams } from "./validation";
@@ -149,7 +150,7 @@ export function mapToCardData(
       ? {
           id: cover.id,
           url: cover.url,
-          thumbUrl: getThumbnailStorageUrl(cover.storagePath),
+          thumbUrl: cover.url,
           isCover: cover.isCover,
           width: cover.width,
           height: cover.height,
@@ -219,22 +220,19 @@ export async function searchPublicListings(params: ListingSearchParams) {
 }
 
 async function searchPublicListingsModern(params: ListingSearchParams) {
-  const { expireStaleFeaturedListings } = await import("@/lib/featured/queries");
   await expireStaleFeaturedListings();
 
   const page = Math.max(1, Number(params.page) || 1);
   const where = buildPublicWhere(params);
 
-  const [rows, total] = await Promise.all([
-    prisma.listing.findMany({
-      where,
-      orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-      select: cardListingSelect,
-    }),
-    prisma.listing.count({ where }),
-  ]);
+  const rows = await prisma.listing.findMany({
+    where,
+    orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+    skip: (page - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
+    select: cardListingSelect,
+  });
+  const total = await prisma.listing.count({ where });
 
   return {
     items: rows.map(mapToCardData),
@@ -249,16 +247,14 @@ async function searchPublicListingsLegacy(params: ListingSearchParams) {
   const page = Math.max(1, Number(params.page) || 1);
   const where = buildPublicWhere(params);
 
-  const [rows, total] = await Promise.all([
-    prisma.listing.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-      select: legacyCardListingSelect,
-    }),
-    prisma.listing.count({ where }),
-  ]);
+  const rows = await prisma.listing.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    skip: (page - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
+    select: legacyCardListingSelect,
+  });
+  const total = await prisma.listing.count({ where });
 
   return {
     items: rows.map(mapLegacyToCardData),
@@ -270,7 +266,6 @@ async function searchPublicListingsLegacy(params: ListingSearchParams) {
 }
 
 export async function getFeaturedListings(limit = 6) {
-  const { expireStaleFeaturedListings } = await import("@/lib/featured/queries");
   await expireStaleFeaturedListings();
 
   return withListingSchemaFallback(
@@ -298,8 +293,7 @@ export async function getPublicListingById(id: string) {
   );
 }
 
-async function getPublicListingByIdModern(id: string) {
-  const { expireStaleFeaturedListings } = await import("@/lib/featured/queries");
+const fetchPublicListingByIdModern = cache(async (id: string) => {
   await expireStaleFeaturedListings();
 
   const listing = await prisma.listing.findFirst({
@@ -331,6 +325,10 @@ async function getPublicListingByIdModern(id: string) {
   }
 
   return listing;
+});
+
+async function getPublicListingByIdModern(id: string) {
+  return fetchPublicListingByIdModern(id);
 }
 
 async function getPublicListingByIdLegacy(id: string) {
@@ -515,15 +513,15 @@ export async function getAdminListings(adminStatus: AdminStatus) {
 export async function getAdminListingCounts() {
   await requireAdminUser();
 
-  const [pending, approved, rejected] = await Promise.all([
-    prisma.listing.count({ where: { isDraft: false, adminStatus: "PENDING" } }),
-    prisma.listing.count({
-      where: { isDraft: false, adminStatus: "APPROVED" },
-    }),
-    prisma.listing.count({
-      where: { isDraft: false, adminStatus: "REJECTED" },
-    }),
-  ]);
+  const pending = await prisma.listing.count({
+    where: { isDraft: false, adminStatus: "PENDING" },
+  });
+  const approved = await prisma.listing.count({
+    where: { isDraft: false, adminStatus: "APPROVED" },
+  });
+  const rejected = await prisma.listing.count({
+    where: { isDraft: false, adminStatus: "REJECTED" },
+  });
   return { pending, approved, rejected };
 }
 

@@ -2,7 +2,6 @@ import {
   buildListingImageFolder,
   createSupabaseAdminClient,
   getPublicStorageUrl,
-  getThumbnailStorageUrl,
   isSupabaseStorageConfigured,
   LISTING_IMAGES_BUCKET,
   MAX_IMAGES_PER_LISTING,
@@ -39,7 +38,7 @@ export function toListingImageDto(image: {
   return {
     id: image.id,
     url: image.url,
-    thumbUrl: getThumbnailStorageUrl(image.storagePath),
+    thumbUrl: image.url,
     storagePath: image.storagePath,
     sortOrder: image.sortOrder,
     isCover: image.isCover,
@@ -262,5 +261,5 @@ export function getCoverThumbUrl(
 ): string | null {
   const cover = getCoverImage(images);
   if (!cover) return null;
-  return getThumbnailStorageUrl(cover.storagePath);
+  return cover.url;
 }

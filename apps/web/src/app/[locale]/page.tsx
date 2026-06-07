@@ -54,12 +54,9 @@ export default async function HomePage({ params }: Props) {
   let total = 0;
   let featured: Awaited<ReturnType<typeof getFeaturedListings>> = [];
   try {
-    const [search, featuredResult] = await Promise.all([
-      searchPublicListings({}),
-      getFeaturedListings(6),
-    ]);
+    const search = await searchPublicListings({});
     total = search.total;
-    featured = featuredResult;
+    featured = await getFeaturedListings(6);
   } catch {
     total = 0;
     featured = [];
