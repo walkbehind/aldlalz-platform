@@ -8,6 +8,8 @@ export const AppErrorCode = {
   STORAGE_NOT_CONFIGURED: "STORAGE_NOT_CONFIGURED",
   UPLOAD_FAILED: "UPLOAD_FAILED",
   DATABASE_ERROR: "DATABASE_ERROR",
+  PHONE_REQUIRED: "PHONE_REQUIRED",
+  LISTING_LIMIT_REACHED: "LISTING_LIMIT_REACHED",
 } as const;
 
 export type AppErrorCode = (typeof AppErrorCode)[keyof typeof AppErrorCode];

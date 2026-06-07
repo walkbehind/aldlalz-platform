@@ -73,6 +73,18 @@ enum PackageTarget {
   OFFICE
 }
 
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING
+}
+
+enum BillingProvider {
+  MANUAL
+  KNET
+}
+
 // ─── Auth.js ─────────────────────────────────────────────
 
 model User {
@@ -96,6 +108,7 @@ model User {
   accounts Account[]
   sessions Session[]
   listings Listing[]
+  subscriptions UserSubscription[]
 
   @@map("users")
 }
@@ -242,5 +255,32 @@ model Package {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  subscriptions UserSubscription[]
+
   @@map("packages")
+}
+
+model UserSubscription {
+  id        String @id @default(cuid())
+  userId    String
+  packageId String
+
+  status          SubscriptionStatus @default(PENDING)
+  billingProvider BillingProvider    @default(MANUAL)
+  externalPaymentId String?
+
+  maxListings Int
+  startsAt    DateTime @default(now())
+  expiresAt   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package Package @relation(fields: [packageId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([expiresAt])
+  @@map("user_subscriptions")
 }

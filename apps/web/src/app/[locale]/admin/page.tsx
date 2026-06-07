@@ -84,6 +84,23 @@ export default async function AdminPage({ params }: Props) {
           <Button size="sm">{t("listingsCard.review")}</Button>
         </Link>
       </Card>
+
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <Card>
+          <h2 className="text-lg font-semibold">{t("usersCard.title")}</h2>
+          <p className="mt-2 text-sm text-text-muted">{t("usersCard.description")}</p>
+          <Link href="/admin/users" className="mt-4 inline-block">
+            <Button size="sm" variant="secondary">{t("usersCard.action")}</Button>
+          </Link>
+        </Card>
+        <Card>
+          <h2 className="text-lg font-semibold">{t("subscriptionsCard.title")}</h2>
+          <p className="mt-2 text-sm text-text-muted">{t("subscriptionsCard.description")}</p>
+          <Link href="/admin/subscriptions" className="mt-4 inline-block">
+            <Button size="sm" variant="secondary">{t("subscriptionsCard.action")}</Button>
+          </Link>
+        </Card>
+      </div>
     </>
   );
 }

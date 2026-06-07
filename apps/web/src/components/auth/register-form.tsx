@@ -15,6 +15,7 @@ export function RegisterForm() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,7 +28,13 @@ export function RegisterForm() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, locale: document.documentElement.lang === "en" ? "en" : "ar" }),
+      body: JSON.stringify({
+        name,
+        email,
+        phone: phone.trim() || undefined,
+        password,
+        locale: document.documentElement.lang === "en" ? "en" : "ar",
+      }),
     });
 
     const data = await res.json().catch(() => ({}));
@@ -35,7 +42,7 @@ export function RegisterForm() {
 
     if (!res.ok) {
       const code = typeof data.error === "string" ? data.error : "SERVER_ERROR";
-      const known = ["EMAIL_TAKEN", "INVALID_INPUT", "SERVER_ERROR"] as const;
+      const known = ["EMAIL_TAKEN", "PHONE_TAKEN", "PHONE_INVALID", "INVALID_INPUT", "SERVER_ERROR"] as const;
       setError(
         known.includes(code as (typeof known)[number])
           ? tErrors(code as (typeof known)[number])
@@ -72,6 +79,19 @@ export function RegisterForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+        </div>
+        <div>
+          <Label htmlFor="phone">{t("phone")}</Label>
+          <Input
+            id="phone"
+            type="tel"
+            autoComplete="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="9XXX XXXX"
+            dir="ltr"
+          />
+          <p className="mt-1 text-xs text-text-muted">{t("phoneOptional")}</p>
         </div>
         <div>
           <Label htmlFor="password">{t("password")}</Label>

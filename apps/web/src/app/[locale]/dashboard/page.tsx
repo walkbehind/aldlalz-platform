@@ -5,12 +5,15 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Icon, type IconName } from "@/components/ui/icon";
 import { ListingStatusBadge } from "@/components/listings/listing-status-badge";
-import { getOwnerListings } from "@/lib/listings/queries";
+import { getUserProfile } from "@/lib/profile/queries";
+import { ContactCompletionBanner } from "@/components/profile/contact-completion-banner";
+import { checkListingLimit } from "@/lib/subscriptions/queries";
 import {
   formatPriceKwd,
   GOVERNORATE_LABELS,
   labelFor,
 } from "@/lib/listings/constants";
+import { getOwnerListings } from "@/lib/listings/queries";
 import { getThumbnailStorageUrl } from "@/lib/supabase/client";
 import Image from "next/image";
 
@@ -27,7 +30,10 @@ export default async function DashboardPage({ params }: Props) {
   const user = session.user;
 
   const t = await getTranslations("dashboard");
+  const tProfile = await getTranslations("profile");
   const listings = await getOwnerListings(user.id);
+  const profile = await getUserProfile(user.id);
+  const limits = await checkListingLimit(user.id, user.role);
 
   const stats = {
     total: listings.length,
@@ -132,6 +138,26 @@ export default async function DashboardPage({ params }: Props) {
 
   return (
     <div className="space-y-8">
+      {!profile?.phone && (
+        <ContactCompletionBanner
+          title={tProfile("contactBanner.title")}
+          description={tProfile("contactBanner.description")}
+          actionLabel={tProfile("contactBanner.action")}
+          href="/dashboard/profile"
+        />
+      )}
+
+      {!limits.hasSubscription && limits.remaining === 0 && (
+        <ContactCompletionBanner
+          title={tProfile("limitBanner.title")}
+          description={tProfile("limitBanner.description", {
+            limit: limits.limit,
+          })}
+          actionLabel={tProfile("limitBanner.action")}
+          href="/packages"
+        />
+      )}
+
       {/* Welcome hero */}
       <div className="relative overflow-hidden rounded-[var(--radius-card)] bg-hero-mesh px-6 py-7 text-white sm:px-8">
         <div className="relative flex flex-wrap items-center justify-between gap-4">

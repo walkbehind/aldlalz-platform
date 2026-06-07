@@ -15,6 +15,8 @@ import { deleteAllListingImagesFromStorage } from "@/lib/listings/images";
 import { requireAdminUser, requireSessionUser } from "./auth";
 import { parseListingForm, rejectListingSchema } from "./validation";
 import { actionFail, actionOk, type ActionResult } from "./action-result";
+import { userHasPhone } from "@/lib/profile/queries";
+import { checkListingLimit } from "@/lib/subscriptions/queries";
 
 function isDatabaseError(error: unknown): boolean {
   return (
@@ -157,6 +159,14 @@ export async function submitListingAction(
       where: { id, ownerId: user.id },
     });
     if (!existing) throw new Error(AppErrorCode.NOT_FOUND);
+
+    const hasPhone = await userHasPhone(user.id);
+    if (!hasPhone) throw new Error("PHONE_REQUIRED");
+
+    const limits = await checkListingLimit(user.id, user.role);
+    if (!limits.allowed && existing.isDraft) {
+      throw new Error("LISTING_LIMIT_REACHED");
+    }
 
     await prisma.listing.update({
       where: { id },

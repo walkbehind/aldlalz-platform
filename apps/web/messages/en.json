@@ -20,6 +20,8 @@
     "tagline": "Kuwait's property marketplace — buy, rent, and book with trusted brokers.",
     "quickLinks": "Quick links",
     "contact": "Contact",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
     "rights": "All rights reserved"
   },
   "dashboardNav": {
@@ -27,12 +29,15 @@
     "overview": "Overview",
     "myListings": "My listings",
     "addListing": "Add listing",
+    "profile": "Profile & settings",
     "backToSite": "Back to site"
   },
   "adminNav": {
     "section": "Admin",
     "overview": "Overview",
     "moderation": "Moderation",
+    "users": "Users",
+    "subscriptions": "Subscriptions",
     "backToSite": "Back to site"
   },
   "home": {
@@ -160,20 +165,109 @@
   },
   "packages": {
     "title": "Packages",
-    "subtitle": "Choose the plan that fits your real estate activity"
+    "subtitle": "Choose the plan that fits your real estate activity",
+    "currentPlan": "Current plan",
+    "contactAdmin": "Contact us to subscribe"
   },
   "auth": {
     "loginTitle": "Sign in",
     "registerTitle": "Create account",
     "email": "Email",
     "password": "Password",
+    "phone": "Phone (Kuwait)",
+    "phoneOptional": "Optional — required before publishing listings",
     "name": "Name",
     "submitLogin": "Sign in",
     "submitRegister": "Register",
     "submittingLogin": "Signing in…",
     "submittingRegister": "Creating account…",
     "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?"
+    "hasAccount": "Already have an account?",
+    "forgotPasswordLink": "Forgot password?",
+    "forgotPasswordTitle": "Forgot password",
+    "forgotPasswordSubtitle": "We'll send you a reset link",
+    "forgotPasswordHint": "Enter your account email and we'll send a password reset link.",
+    "sendResetLink": "Send reset link",
+    "sendingReset": "Sending…",
+    "resetEmailSent": "If an account exists for that email, a reset link has been sent.",
+    "backToLogin": "Back to sign in",
+    "resetPasswordTitle": "Reset password",
+    "resetPasswordSubtitle": "Choose a new password for your account",
+    "resetPasswordHint": "Use at least 8 characters.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "resetPassword": "Reset password",
+    "resettingPassword": "Resetting…",
+    "resetLinkInvalid": "This reset link is invalid or expired."
+  },
+  "profile": {
+    "title": "Profile & settings",
+    "subtitle": "Manage your contact details and account preferences",
+    "contactBanner": {
+      "title": "Add your phone number",
+      "description": "Buyers reach you by WhatsApp and call — complete your profile so listings can receive inquiries.",
+      "action": "Complete profile"
+    },
+    "limitBanner": {
+      "title": "Listing limit reached",
+      "description": "Your free plan allows {limit} published listing. Upgrade to add more.",
+      "action": "View packages"
+    },
+    "subscription": {
+      "title": "Your plan",
+      "listingsLimit": "Up to {count} listings",
+      "expires": "Expires {date}",
+      "freeTier": "Free plan: {used} of {count} listings used"
+    },
+    "form": {
+      "title": "Account details",
+      "subtitle": "Keep your contact information up to date",
+      "email": "Email",
+      "emailVerified": "Email verified",
+      "emailNotVerified": "Email not verified yet",
+      "resendVerification": "Resend verification email",
+      "resendSent": "Verification email sent — check your inbox",
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "phone": "Phone (Kuwait) *",
+      "phoneHint": "Format: 9XXX XXXX — shown to buyers on your listings",
+      "langPreference": "Preferred language",
+      "langAr": "Arabic",
+      "langEn": "English",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saved": "Profile updated"
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "Terms of Service",
+      "updated": "Last updated: June 2026",
+      "s1Title": "1. Acceptance",
+      "s1Body": "By using Aldlalz you agree to these terms. If you do not agree, do not use the platform.",
+      "s2Title": "2. Listings & content",
+      "s2Body": "You are responsible for the accuracy of your property listings. Aldlalz may review, approve, or remove content that violates these terms or applicable Kuwait law.",
+      "s3Title": "3. Accounts",
+      "s3Body": "You must provide accurate registration information and keep your credentials secure. You are responsible for activity under your account.",
+      "s4Title": "4. Subscriptions & fees",
+      "s4Body": "Paid plans and listing limits apply as described on the Packages page. Fees are subject to change with notice.",
+      "s5Title": "5. Contact",
+      "s5Body": "Questions about these terms: info@aldlalz.com"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "updated": "Last updated: June 2026",
+      "s1Title": "1. Data we collect",
+      "s1Body": "We collect account information (email, name, phone), listing content, and usage data necessary to operate the marketplace.",
+      "s2Title": "2. How we use data",
+      "s2Body": "Data is used to provide the service, enable buyer–seller contact, process subscriptions, and improve the platform.",
+      "s3Title": "3. Sharing",
+      "s3Body": "Your phone number and listing details are shown to buyers on approved listings. We do not sell personal data to third parties.",
+      "s4Title": "4. Security",
+      "s4Body": "We apply industry-standard measures to protect your data. No method of transmission over the internet is 100% secure.",
+      "s5Title": "5. Your rights",
+      "s5Body": "You may update your profile or request account deletion by contacting info@aldlalz.com"
+    }
   },
   "dashboard": {
     "title": "User dashboard",
@@ -336,6 +430,60 @@
       "pending": "Pending",
       "review": "Open review queue"
     },
+    "usersCard": {
+      "title": "User management",
+      "description": "Manage roles, broker/office promotion, and account status",
+      "action": "Manage users"
+    },
+    "subscriptionsCard": {
+      "title": "Subscriptions",
+      "description": "Grant or cancel manual subscriptions until payment goes live",
+      "action": "View subscriptions"
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "Search users and manage roles",
+      "searchPlaceholder": "Search by email, name, or phone",
+      "search": "Search",
+      "empty": "No users found",
+      "role": "Role",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "inactive": "Inactive",
+      "unverified": "Unverified email",
+      "listingsCount": "{count} listings",
+      "subscriptionSection": "Subscription",
+      "expires": "Expires {date}",
+      "viewAllSubscriptions": "View all subscriptions →",
+      "roles": {
+        "USER": "User",
+        "OWNER": "Owner",
+        "BROKER": "Broker",
+        "OFFICE": "Office",
+        "ADMIN": "Admin",
+        "SUPERADMIN": "Super admin"
+      }
+    },
+    "subscriptions": {
+      "title": "Subscriptions",
+      "subtitle": "All user subscription records",
+      "empty": "No subscriptions yet",
+      "user": "User",
+      "package": "Package",
+      "status": "Status",
+      "listings": "Listings",
+      "expires": "Expires",
+      "provider": "Provider",
+      "grant": "Grant plan",
+      "cancel": "Cancel",
+      "selectPackage": "Select package",
+      "statuses": {
+        "ACTIVE": "Active",
+        "EXPIRED": "Expired",
+        "CANCELLED": "Cancelled",
+        "PENDING": "Pending"
+      }
+    },
     "listings": {
       "title": "Review listings",
       "subtitle": "Approve or reject submitted listings",
@@ -377,6 +525,15 @@
     "pricePositive": "Price must be greater than zero",
     "reasonMin": "Rejection reason must be at least 3 characters",
     "EMAIL_TAKEN": "This email is already registered",
+    "PHONE_TAKEN": "This phone number is already registered",
+    "PHONE_INVALID": "Enter a valid Kuwait mobile number (e.g. 9XXX XXXX)",
+    "phoneRequired": "Phone number is required",
+    "phoneInvalid": "Enter a valid Kuwait mobile number",
+    "PHONE_REQUIRED": "Add your phone number in Profile before submitting listings",
+    "LISTING_LIMIT_REACHED": "You have reached your listing limit — upgrade your plan",
+    "PACKAGE_NOT_FOUND": "Package not found",
+    "PASSWORD_MISMATCH": "Passwords do not match",
+    "TOKEN_INVALID": "This link is invalid or expired",
     "INVALID_INPUT": "Invalid email or password (minimum 8 characters)",
     "INVALID_CREDENTIALS": "Invalid email or password",
     "UNAUTHORIZED_MEDIA": "Please sign in to upload photos"

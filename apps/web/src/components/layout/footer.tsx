@@ -10,6 +10,11 @@ const navLinks = [
   { href: "/packages", key: "packages" as const },
 ];
 
+const legalLinks = [
+  { href: "/terms", key: "terms" as const },
+  { href: "/privacy", key: "privacy" as const },
+];
+
 export async function Footer() {
   const locale = await getLocale();
   const nav = await getTranslations("nav");
@@ -40,6 +45,17 @@ export async function Footer() {
                 >
                   <Icon name="chevronRight" size={14} className="rtl:rotate-180" />
                   {nav(item.key)}
+                </Link>
+              </li>
+            ))}
+            {legalLinks.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="inline-flex items-center gap-1.5 text-brand-100/80 transition-colors hover:text-gold-400"
+                >
+                  <Icon name="chevronRight" size={14} className="rtl:rotate-180" />
+                  {f(item.key)}
                 </Link>
               </li>
             ))}
