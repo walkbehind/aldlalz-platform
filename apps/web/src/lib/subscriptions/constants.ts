@@ -1,5 +1,5 @@
-/** Free-tier listing cap for users without an active subscription */
+/** Free tier — one active listing without a paid subscription */
 export const FREE_TIER_MAX_LISTINGS = 1;
 
-/** Roles that bypass subscription listing limits */
-export const UNLIMITED_LISTING_ROLES = ["ADMIN", "SUPERADMIN"] as const;
+/** Admin operational cap (matches highest plan ceiling; never unlimited) */
+export const ADMIN_MAX_LISTINGS = 150;

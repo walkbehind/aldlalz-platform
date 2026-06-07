@@ -1,9 +1,7 @@
-import type { BillingProvider } from "@aldlalz/database";
-
 export type GrantSubscriptionInput = {
   userId: string;
-  packageId: string;
-  billingProvider?: BillingProvider;
+  planId: string;
+  billingProvider?: "MANUAL" | "KNET";
   externalPaymentId?: string;
   durationDays?: number;
 };
@@ -15,7 +13,7 @@ export type GrantSubscriptionResult = {
 };
 
 export interface BillingProviderAdapter {
-  readonly name: BillingProvider;
+  readonly name: "MANUAL" | "KNET";
   grantSubscription(input: GrantSubscriptionInput): Promise<GrantSubscriptionResult>;
   cancelSubscription(subscriptionId: string): Promise<void>;
 }

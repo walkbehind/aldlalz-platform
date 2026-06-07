@@ -1,51 +1,42 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
-import {
-  grantSubscriptionAction,
-  cancelSubscriptionAction,
-} from "@/lib/admin/actions";
+import { grantSubscriptionAction } from "@/lib/admin/actions";
+import { CancelSubscriptionButton } from "@/components/admin/cancel-subscription-button";
 
-type PackageOption = {
+type PlanOption = {
   id: string;
   nameAr: string;
   nameEn: string | null;
+  maxListings: number;
 };
 
 type Props = {
   userId: string;
-  packages: PackageOption[];
+  plans: PlanOption[];
   activeSubscriptionId?: string | null;
   locale: string;
 };
 
 export function AdminGrantSubscriptionForm({
   userId,
-  packages,
+  plans,
   activeSubscriptionId,
   locale,
 }: Props) {
   const t = useTranslations("admin.subscriptions");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [packageId, setPackageId] = useState(packages[0]?.id ?? "");
+  const [planId, setPlanId] = useState(plans[0]?.id ?? "");
 
   function onGrant() {
-    if (!packageId) return;
+    if (!planId) return;
     startTransition(async () => {
-      await grantSubscriptionAction(userId, packageId);
-      router.refresh();
-    });
-  }
-
-  function onCancel() {
-    if (!activeSubscriptionId) return;
-    startTransition(async () => {
-      await cancelSubscriptionAction(activeSubscriptionId);
+      await grantSubscriptionAction(userId, planId);
       router.refresh();
     });
   }
@@ -54,31 +45,32 @@ export function AdminGrantSubscriptionForm({
     <div className="flex flex-wrap items-end gap-2">
       <div className="min-w-[10rem]">
         <Select
-          value={packageId}
-          onChange={(e) => setPackageId(e.target.value)}
-          disabled={pending}
-          aria-label={t("selectPackage")}
+          value={planId}
+          onChange={(e) => setPlanId(e.target.value)}
+          disabled={pending || plans.length === 0}
+          aria-label={t("selectPlan")}
         >
-          {packages.map((pkg) => (
-            <option key={pkg.id} value={pkg.id}>
-              {locale === "ar" ? pkg.nameAr : pkg.nameEn ?? pkg.nameAr}
-            </option>
-          ))}
+          {plans.length === 0 ? (
+            <option value="">{t("noPlans")}</option>
+          ) : (
+            plans.map((plan) => (
+              <option key={plan.id} value={plan.id}>
+                {locale === "ar" ? plan.nameAr : plan.nameEn ?? plan.nameAr}
+                {" · "}
+                {plan.maxListings}
+              </option>
+            ))
+          )}
         </Select>
       </div>
-      <Button type="button" size="sm" disabled={pending || !packageId} onClick={onGrant}>
+      <Button type="button" size="sm" disabled={pending || !planId} onClick={onGrant}>
         {t("grant")}
       </Button>
       {activeSubscriptionId && (
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          disabled={pending}
-          onClick={onCancel}
-        >
-          {t("cancel")}
-        </Button>
+        <CancelSubscriptionButton
+          subscriptionId={activeSubscriptionId}
+          label={t("cancel")}
+        />
       )}
     </div>
   );

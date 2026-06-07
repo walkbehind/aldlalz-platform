@@ -35,7 +35,7 @@ export default async function AdminSubscriptionsPage({ params }: Props) {
             <thead className="bg-surface-muted text-start text-xs uppercase tracking-wide text-text-muted">
               <tr>
                 <th className="px-4 py-3">{t("user")}</th>
-                <th className="px-4 py-3">{t("package")}</th>
+                <th className="px-4 py-3">{t("plan")}</th>
                 <th className="px-4 py-3">{t("status")}</th>
                 <th className="px-4 py-3">{t("listings")}</th>
                 <th className="px-4 py-3">{t("expires")}</th>
@@ -51,8 +51,8 @@ export default async function AdminSubscriptionsPage({ params }: Props) {
                   </td>
                   <td className="px-4 py-3">
                     {locale === "ar"
-                      ? sub.package.nameAr
-                      : sub.package.nameEn ?? sub.package.nameAr}
+                      ? sub.plan.nameAr
+                      : sub.plan.nameEn ?? sub.plan.nameAr}
                   </td>
                   <td className="px-4 py-3">{t(`statuses.${sub.status}`)}</td>
                   <td className="px-4 py-3">{sub.maxListings}</td>

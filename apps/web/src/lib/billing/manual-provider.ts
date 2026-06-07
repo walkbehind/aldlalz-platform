@@ -11,12 +11,13 @@ export class ManualBillingProvider implements BillingProviderAdapter {
   async grantSubscription(
     input: GrantSubscriptionInput
   ): Promise<GrantSubscriptionResult> {
-    const pkg = await prisma.package.findFirst({
-      where: { id: input.packageId, isActive: true },
+    const plan = await prisma.subscriptionPlan.findFirst({
+      where: { id: input.planId, isActive: true },
     });
-    if (!pkg) throw new Error("PACKAGE_NOT_FOUND");
+    if (!plan) throw new Error("PLAN_NOT_FOUND");
+    if (plan.maxListings <= 0) throw new Error("INVALID_PLAN_LIMIT");
 
-    const durationDays = input.durationDays ?? pkg.durationDays;
+    const durationDays = input.durationDays ?? plan.durationDays;
     const startsAt = new Date();
     const expiresAt = new Date(startsAt);
     expiresAt.setDate(expiresAt.getDate() + durationDays);
@@ -29,11 +30,11 @@ export class ManualBillingProvider implements BillingProviderAdapter {
     const sub = await prisma.userSubscription.create({
       data: {
         userId: input.userId,
-        packageId: pkg.id,
+        planId: plan.id,
         status: "ACTIVE",
         billingProvider: input.billingProvider ?? "MANUAL",
         externalPaymentId: input.externalPaymentId ?? null,
-        maxListings: pkg.maxListings,
+        maxListings: plan.maxListings,
         startsAt,
         expiresAt,
       },
@@ -56,11 +57,7 @@ export class ManualBillingProvider implements BillingProviderAdapter {
 
 const manualProvider = new ManualBillingProvider();
 
-export function getBillingProvider(provider: "MANUAL" | "KNET" = "MANUAL") {
-  if (provider === "KNET") {
-    // KNET adapter will plug in here without changing call sites.
-    return manualProvider;
-  }
+export function getBillingProvider(_provider: "MANUAL" | "KNET" = "MANUAL") {
   return manualProvider;
 }
 

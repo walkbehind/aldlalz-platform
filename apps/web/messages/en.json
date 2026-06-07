@@ -30,6 +30,7 @@
     "myListings": "My listings",
     "addListing": "Add listing",
     "profile": "Profile & settings",
+    "featured": "Featured requests",
     "backToSite": "Back to site"
   },
   "adminNav": {
@@ -38,6 +39,9 @@
     "moderation": "Moderation",
     "users": "Users",
     "subscriptions": "Subscriptions",
+    "plans": "Plans",
+    "featured": "Featured",
+    "revenue": "Revenue",
     "backToSite": "Back to site"
   },
   "home": {
@@ -164,10 +168,14 @@
     }
   },
   "packages": {
-    "title": "Packages",
-    "subtitle": "Choose the plan that fits your real estate activity",
+    "title": "Subscription plans",
+    "subtitle": "Every plan has a fixed listing limit — no unlimited listings",
     "currentPlan": "Current plan",
-    "contactAdmin": "Contact us to subscribe"
+    "contactAdmin": "Contact us to subscribe",
+    "listingsLimit": "Up to {count} active listings",
+    "featureCredits": "{count} featured credit(s) per month",
+    "empty": "No plans available — contact support",
+    "featuredNote": "Featured promotion is purchased separately — request from your dashboard after approval."
   },
   "auth": {
     "loginTitle": "Sign in",
@@ -209,9 +217,14 @@
       "action": "Complete profile"
     },
     "limitBanner": {
+      "title": "Upgrade for more listings",
+      "description": "Your free account includes one active listing. Choose a plan to publish more.",
+      "action": "View plans"
+    },
+    "limitReached": {
       "title": "Listing limit reached",
-      "description": "Your free plan allows {limit} published listing. Upgrade to add more.",
-      "action": "View packages"
+      "description": "You can have up to {limit} active listing(s). Upgrade to add more.",
+      "action": "View plans"
     },
     "subscription": {
       "title": "Your plan",
@@ -310,6 +323,32 @@
       "description": "Create and manage your property listings",
       "myListings": "View my listings",
       "create": "Add listing"
+    },
+    "featured": {
+      "title": "Featured promotion",
+      "subtitle": "Request featured placement for approved listings — separate from your subscription",
+      "requestSection": "Request featured",
+      "requestHint": "Choose a duration. Admin will review, confirm payment, then activate.",
+      "requestFeatured": "Request featured…",
+      "selectType": "Feature duration",
+      "noApprovedListings": "No approved listings to promote",
+      "viewPublic": "View listing",
+      "myRequests": "My feature requests",
+      "noRequests": "No feature requests yet",
+      "types": {
+        "DAYS_3": "Featured 3 days",
+        "DAYS_7": "Featured 7 days",
+        "DAYS_30": "Featured 30 days"
+      },
+      "statuses": {
+        "PENDING": "Pending review",
+        "APPROVED": "Approved",
+        "PAYMENT_CONFIRMED": "Payment confirmed",
+        "ACTIVE": "Live",
+        "REJECTED": "Rejected",
+        "EXPIRED": "Expired",
+        "CANCELLED": "Cancelled"
+      }
     },
     "listings": {
       "title": "My listings",
@@ -440,6 +479,16 @@
       "description": "Grant or cancel manual subscriptions until payment goes live",
       "action": "View subscriptions"
     },
+    "plansCard": {
+      "title": "Subscription plans",
+      "description": "Edit plan limits, pricing, and availability",
+      "action": "Manage plans"
+    },
+    "featuredCard": {
+      "title": "Featured requests",
+      "description": "Approve, confirm payment, and activate featured listings",
+      "action": "Review requests"
+    },
     "users": {
       "title": "Users",
       "subtitle": "Search users and manage roles",
@@ -469,20 +518,82 @@
       "subtitle": "All user subscription records",
       "empty": "No subscriptions yet",
       "user": "User",
-      "package": "Package",
+      "plan": "Plan",
+      "package": "Plan",
       "status": "Status",
       "listings": "Listings",
       "expires": "Expires",
       "provider": "Provider",
       "grant": "Grant plan",
       "cancel": "Cancel",
-      "selectPackage": "Select package",
+      "selectPlan": "Select plan",
+      "selectPackage": "Select plan",
+      "noPlans": "No active plans",
+      "hasActive": "Active subscription exists",
       "statuses": {
         "ACTIVE": "Active",
         "EXPIRED": "Expired",
         "CANCELLED": "Cancelled",
         "PENDING": "Pending"
       }
+    },
+    "plans": {
+      "title": "Subscription plans",
+      "subtitle": "Create and manage plans — all limits are enforced on the backend",
+      "create": "Create new plan",
+      "listings": "listings",
+      "days": "days",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "form": {
+        "slug": "Slug (lowercase)",
+        "nameAr": "Name (Arabic)",
+        "nameEn": "Name (English)",
+        "tier": "Sort tier",
+        "durationDays": "Duration (days)",
+        "maxListings": "Max active listings",
+        "includedFeatureCredits": "Featured credits per month",
+        "priceKwd": "Price (KWD)",
+        "save": "Save plan",
+        "create": "Create plan"
+      }
+    },
+    "featured": {
+      "title": "Featured requests",
+      "subtitle": "Review → approve → confirm payment → activate",
+      "empty": "No requests in this status",
+      "days": "days",
+      "status": "Status",
+      "approve": "Approve",
+      "confirmPayment": "Confirm payment",
+      "activate": "Activate featured",
+      "reject": "Reject",
+      "rejectReason": "Rejection reason",
+      "confirmReject": "Confirm reject",
+      "tabs": {
+        "PENDING": "Pending",
+        "APPROVED": "Approved",
+        "PAYMENT_CONFIRMED": "Payment confirmed",
+        "ACTIVE": "Active",
+        "REJECTED": "Rejected"
+      },
+      "statuses": {
+        "PENDING": "Pending review",
+        "APPROVED": "Approved",
+        "PAYMENT_CONFIRMED": "Payment confirmed",
+        "ACTIVE": "Live",
+        "REJECTED": "Rejected",
+        "EXPIRED": "Expired",
+        "CANCELLED": "Cancelled"
+      }
+    },
+    "revenue": {
+      "title": "Revenue reports",
+      "subtitle": "Future-ready reporting for subscriptions and featured sales",
+      "placeholder": "Revenue dashboard will aggregate subscription and featured payments once KNET is integrated.",
+      "futureSubscriptions": "Subscription revenue by plan and period",
+      "futureFeatured": "Featured request revenue by duration type",
+      "futureKnet": "KNET transaction reconciliation"
     },
     "listings": {
       "title": "Review listings",
@@ -531,7 +642,11 @@
     "phoneInvalid": "Enter a valid Kuwait mobile number",
     "PHONE_REQUIRED": "Add your phone number in Profile before submitting listings",
     "LISTING_LIMIT_REACHED": "You have reached your listing limit — upgrade your plan",
-    "PACKAGE_NOT_FOUND": "Package not found",
+    "SUBSCRIPTION_REQUIRED": "An active subscription is required to publish listings",
+    "PLAN_NOT_FOUND": "Plan not found",
+    "PLAN_SLUG_TAKEN": "Plan slug already exists",
+    "FEATURE_REQUEST_EXISTS": "This listing already has a pending or active feature request",
+    "PACKAGE_NOT_FOUND": "Plan not found",
     "PASSWORD_MISMATCH": "Passwords do not match",
     "TOKEN_INVALID": "This link is invalid or expired",
     "INVALID_INPUT": "Invalid email or password (minimum 8 characters)",

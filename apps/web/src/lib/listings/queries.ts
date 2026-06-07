@@ -266,6 +266,9 @@ async function searchPublicListingsLegacy(params: ListingSearchParams) {
 }
 
 export async function getFeaturedListings(limit = 6) {
+  const { expireStaleFeaturedListings } = await import("@/lib/featured/queries");
+  await expireStaleFeaturedListings();
+
   return withListingSchemaFallback(
     async () => {
       const rows = await prisma.listing.findMany({

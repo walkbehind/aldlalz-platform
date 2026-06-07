@@ -42,7 +42,7 @@ export default async function ProfilePage({ params }: Props) {
             <h2 className="font-semibold text-text">{t("subscription.title")}</h2>
             {subscription ? (
               <p className="mt-1 text-sm text-text-muted">
-                {locale === "ar" ? subscription.packageNameAr : subscription.packageNameEn ?? subscription.packageNameAr}
+                {locale === "ar" ? subscription.planNameAr : subscription.planNameEn ?? subscription.planNameAr}
                 {" · "}
                 {t("subscription.listingsLimit", { count: subscription.maxListings })}
                 {" · "}

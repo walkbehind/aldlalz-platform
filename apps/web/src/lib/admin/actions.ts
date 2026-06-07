@@ -14,22 +14,26 @@ function revalidateAdminPaths() {
   revalidatePath("/en/admin/users");
   revalidatePath("/ar/admin/subscriptions");
   revalidatePath("/en/admin/subscriptions");
+  revalidatePath("/ar/admin/plans");
+  revalidatePath("/en/admin/plans");
+  revalidatePath("/ar/admin/featured");
+  revalidatePath("/en/admin/featured");
 }
 
 export async function grantSubscriptionAction(
   userId: string,
-  packageId: string
+  planId: string
 ): Promise<ActionResult> {
   try {
     await requireAdminUser();
-    await grantSubscription({ userId, packageId, billingProvider: "MANUAL" });
+    await grantSubscription({ userId, planId, billingProvider: "MANUAL" });
     revalidateAdminPaths();
     return actionOk();
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === "UNAUTHORIZED") return actionFail(AppErrorCode.UNAUTHORIZED);
       if (error.message === "FORBIDDEN") return actionFail(AppErrorCode.FORBIDDEN);
-      if (error.message === "PACKAGE_NOT_FOUND") return actionFail("PACKAGE_NOT_FOUND");
+      if (error.message === "PLAN_NOT_FOUND") return actionFail("PLAN_NOT_FOUND");
     }
     return actionFail(AppErrorCode.SERVER_ERROR);
   }

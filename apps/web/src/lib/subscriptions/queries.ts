@@ -1,14 +1,19 @@
 import { prisma, type SubscriptionStatus } from "@aldlalz/database";
-import { FREE_TIER_MAX_LISTINGS, UNLIMITED_LISTING_ROLES } from "./constants";
+import {
+  ADMIN_MAX_LISTINGS,
+  FREE_TIER_MAX_LISTINGS,
+} from "./constants";
+import { isAdminRole } from "@/lib/listings/auth";
 
 export type ActiveSubscription = {
   id: string;
-  packageId: string;
+  planId: string;
   maxListings: number;
   expiresAt: Date;
   status: SubscriptionStatus;
-  packageNameAr: string;
-  packageNameEn: string | null;
+  planNameAr: string;
+  planNameEn: string | null;
+  includedFeatureCredits: number;
 };
 
 export async function getActiveSubscription(
@@ -23,7 +28,13 @@ export async function getActiveSubscription(
     },
     orderBy: { expiresAt: "desc" },
     include: {
-      package: { select: { nameAr: true, nameEn: true } },
+      plan: {
+        select: {
+          nameAr: true,
+          nameEn: true,
+          includedFeatureCredits: true,
+        },
+      },
     },
   });
 
@@ -31,16 +42,18 @@ export async function getActiveSubscription(
 
   return {
     id: sub.id,
-    packageId: sub.packageId,
+    planId: sub.planId,
     maxListings: sub.maxListings,
     expiresAt: sub.expiresAt,
     status: sub.status,
-    packageNameAr: sub.package.nameAr,
-    packageNameEn: sub.package.nameEn,
+    planNameAr: sub.plan.nameAr,
+    planNameEn: sub.plan.nameEn,
+    includedFeatureCredits: sub.plan.includedFeatureCredits,
   };
 }
 
-export async function countBillableListings(userId: string): Promise<number> {
+/** Active = submitted and pending approval or live */
+export async function countActiveListings(userId: string): Promise<number> {
   return prisma.listing.count({
     where: {
       ownerId: userId,
@@ -50,9 +63,12 @@ export async function countBillableListings(userId: string): Promise<number> {
   });
 }
 
-export async function getUserListingLimit(userId: string, role: string): Promise<number> {
-  if (UNLIMITED_LISTING_ROLES.includes(role as (typeof UNLIMITED_LISTING_ROLES)[number])) {
-    return Number.MAX_SAFE_INTEGER;
+export async function getUserListingLimit(
+  userId: string,
+  role: string
+): Promise<number> {
+  if (isAdminRole(role as "ADMIN" | "SUPERADMIN")) {
+    return ADMIN_MAX_LISTINGS;
   }
 
   const active = await getActiveSubscription(userId);
@@ -75,7 +91,7 @@ export async function checkListingLimit(
 ): Promise<ListingLimitCheck> {
   const [limit, used] = await Promise.all([
     getUserListingLimit(userId, role),
-    countBillableListings(userId),
+    countActiveListings(userId),
   ]);
 
   const active = await getActiveSubscription(userId);
@@ -89,9 +105,15 @@ export async function checkListingLimit(
   };
 }
 
-export async function listActivePackages() {
-  return prisma.package.findMany({
+export async function listActivePlans() {
+  return prisma.subscriptionPlan.findMany({
     where: { isActive: true },
+    orderBy: { tier: "asc" },
+  });
+}
+
+export async function listAllPlans() {
+  return prisma.subscriptionPlan.findMany({
     orderBy: { tier: "asc" },
   });
 }
@@ -102,8 +124,18 @@ export async function listUserSubscriptions(userId?: string) {
     orderBy: { createdAt: "desc" },
     include: {
       user: { select: { email: true, nameAr: true, nameEn: true } },
-      package: { select: { nameAr: true, nameEn: true, tier: true } },
+      plan: {
+        select: {
+          nameAr: true,
+          nameEn: true,
+          tier: true,
+          slug: true,
+        },
+      },
     },
-    take: 100,
+    take: 200,
   });
 }
+
+/** @deprecated use listActivePlans */
+export const listActivePackages = listActivePlans;

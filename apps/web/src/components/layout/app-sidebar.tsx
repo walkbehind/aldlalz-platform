@@ -74,13 +74,17 @@ export function AppSidebar({ section }: Props) {
         { href: "/admin/listings", label: t("moderation"), icon: "moderation" },
         { href: "/admin/users", label: t("users"), icon: "listings" },
         { href: "/admin/subscriptions", label: t("subscriptions"), icon: "add" },
+        { href: "/admin/plans", label: t("plans"), icon: "listings" },
+        { href: "/admin/featured", label: t("featured"), icon: "moderation" },
+        { href: "/admin/revenue", label: t("revenue"), icon: "back" },
       ];
     }
     return [
       { href: "/dashboard", label: t("overview"), icon: "overview" },
       { href: "/dashboard/listings", label: t("myListings"), icon: "listings" },
       { href: "/dashboard/listings/new", label: t("addListing"), icon: "add" },
-      { href: "/dashboard/profile", label: t("profile"), icon: "moderation" },
+      { href: "/dashboard/featured", label: t("featured"), icon: "moderation" },
+      { href: "/dashboard/profile", label: t("profile"), icon: "back" },
     ];
   }, [section, t]);
 

@@ -9,7 +9,7 @@ import { AdminGrantSubscriptionForm } from "@/components/admin/admin-grant-subsc
 import { listAdminUsers } from "@/lib/admin/actions";
 import {
   getActiveSubscription,
-  listActivePackages,
+  listActivePlans,
 } from "@/lib/subscriptions/queries";
 import { formatKuwaitPhoneDisplay } from "@/lib/contact/phone";
 import type { UserRole } from "@aldlalz/database";
@@ -37,7 +37,7 @@ export default async function AdminUsersPage({
 
   const t = await getTranslations("admin.users");
   const users = await listAdminUsers(q);
-  const packages = await listActivePackages();
+  const plans = await listActivePlans();
   const isSuperAdmin = session.user.role === "SUPERADMIN";
 
   const subscriptions = await Promise.all(
@@ -102,7 +102,7 @@ export default async function AdminUsersPage({
                   </p>
                   {sub && (
                     <p className="mb-2 text-sm text-text-muted">
-                      {locale === "ar" ? sub.packageNameAr : sub.packageNameEn ?? sub.packageNameAr}
+                      {locale === "ar" ? sub.planNameAr : sub.planNameEn ?? sub.planNameAr}
                       {" · "}
                       {t("expires", {
                         date: sub.expiresAt.toLocaleDateString(
@@ -113,7 +113,7 @@ export default async function AdminUsersPage({
                   )}
                   <AdminGrantSubscriptionForm
                     userId={user.id}
-                    packages={packages}
+                    plans={plans}
                     activeSubscriptionId={sub?.id}
                     locale={locale}
                   />

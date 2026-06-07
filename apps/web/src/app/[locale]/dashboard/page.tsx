@@ -147,13 +147,13 @@ export default async function DashboardPage({ params }: Props) {
         />
       )}
 
-      {!limits.hasSubscription && limits.remaining === 0 && (
+      {!limits.allowed && (
         <ContactCompletionBanner
-          title={tProfile("limitBanner.title")}
-          description={tProfile("limitBanner.description", {
+          title={tProfile("limitReached.title")}
+          description={tProfile("limitReached.description", {
             limit: limits.limit,
           })}
-          actionLabel={tProfile("limitBanner.action")}
+          actionLabel={tProfile("limitReached.action")}
           href="/packages"
         />
       )}

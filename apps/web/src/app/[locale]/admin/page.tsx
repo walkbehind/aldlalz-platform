@@ -85,7 +85,7 @@ export default async function AdminPage({ params }: Props) {
         </Link>
       </Card>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <h2 className="text-lg font-semibold">{t("usersCard.title")}</h2>
           <p className="mt-2 text-sm text-text-muted">{t("usersCard.description")}</p>
@@ -98,6 +98,20 @@ export default async function AdminPage({ params }: Props) {
           <p className="mt-2 text-sm text-text-muted">{t("subscriptionsCard.description")}</p>
           <Link href="/admin/subscriptions" className="mt-4 inline-block">
             <Button size="sm" variant="secondary">{t("subscriptionsCard.action")}</Button>
+          </Link>
+        </Card>
+        <Card>
+          <h2 className="text-lg font-semibold">{t("plansCard.title")}</h2>
+          <p className="mt-2 text-sm text-text-muted">{t("plansCard.description")}</p>
+          <Link href="/admin/plans" className="mt-4 inline-block">
+            <Button size="sm" variant="secondary">{t("plansCard.action")}</Button>
+          </Link>
+        </Card>
+        <Card>
+          <h2 className="text-lg font-semibold">{t("featuredCard.title")}</h2>
+          <p className="mt-2 text-sm text-text-muted">{t("featuredCard.description")}</p>
+          <Link href="/admin/featured" className="mt-4 inline-block">
+            <Button size="sm" variant="secondary">{t("featuredCard.action")}</Button>
           </Link>
         </Card>
       </div>
