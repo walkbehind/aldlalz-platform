@@ -33,7 +33,7 @@ export function ListingCard({
       : listing.titleEn || listing.titleAr;
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden p-0">
+    <Card className="flex h-full flex-col overflow-hidden p-0 transition-shadow hover:shadow-[var(--shadow-card-hover)]">
       <Link href={`/listings/${listing.id}`} className="block">
         <div className="relative aspect-[16/10] bg-surface-muted">
           {listing.coverImage ? (
@@ -51,7 +51,7 @@ export function ListingCard({
             </div>
           )}
           {listing.isFeatured && featuredLabel && (
-            <Badge className="absolute start-3 top-3 bg-brand-600 text-white">
+            <Badge variant="gold" className="absolute start-3 top-3 shadow-sm">
               {featuredLabel}
             </Badge>
           )}

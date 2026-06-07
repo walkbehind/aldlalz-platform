@@ -121,13 +121,11 @@ export default async function ListingDetailPage({ params }: Props) {
               <Badge>
                 {labelFor(LISTING_TYPE_LABELS, listing.listingType, locale)}
               </Badge>
-              <Badge className="bg-surface-muted text-text-muted">
+              <Badge variant="neutral">
                 {labelFor(PROPERTY_TYPE_LABELS, listing.propertyType, locale)}
               </Badge>
               {listing.isFeatured && (
-                <Badge className="bg-brand-600 text-white">
-                  {t("featured")}
-                </Badge>
+                <Badge variant="gold">{t("featured")}</Badge>
               )}
             </div>
 

@@ -1,10 +1,12 @@
 import { type ButtonHTMLAttributes } from "react";
 
-type Variant = "primary" | "secondary" | "ghost" | "outline";
+type Variant = "primary" | "accent" | "secondary" | "ghost" | "outline";
 
 const variants: Record<Variant, string> = {
   primary:
     "bg-brand-500 text-white hover:bg-brand-600 focus-visible:ring-brand-500",
+  accent:
+    "bg-gold-500 text-brand-700 hover:bg-gold-600 hover:text-white focus-visible:ring-gold-500",
   secondary:
     "bg-surface text-text border border-border hover:bg-surface-muted",
   ghost: "text-text hover:bg-surface-muted",

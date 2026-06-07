@@ -11,7 +11,16 @@
     "register": "Register",
     "dashboard": "Dashboard",
     "admin": "Admin",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "addListing": "Add listing",
+    "menu": "Menu",
+    "primaryNav": "Primary navigation"
+  },
+  "footer": {
+    "tagline": "Kuwait's property marketplace — buy, rent, and book with trusted brokers.",
+    "quickLinks": "Quick links",
+    "contact": "Contact",
+    "rights": "All rights reserved"
   },
   "home": {
     "title": "Welcome to Aldlalz",

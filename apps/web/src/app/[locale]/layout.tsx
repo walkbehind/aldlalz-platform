@@ -1,7 +1,21 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { Inter, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { routing, type Locale } from "@/i18n/routing";
+
+const latinFont = Inter({
+  subsets: ["latin"],
+  variable: "--font-latin",
+  display: "swap",
+});
+
+const arabicFont = IBM_Plex_Sans_Arabic({
+  subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-arabic",
+  display: "swap",
+});
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { auth } from "@/lib/auth";
@@ -29,7 +43,12 @@ export default async function LocaleLayout({ children, params }: Props) {
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning>
+    <html
+      lang={locale}
+      dir={dir}
+      className={`${latinFont.variable} ${arabicFont.variable}`}
+      suppressHydrationWarning
+    >
       <body className="flex min-h-screen flex-col">
         <NextIntlClientProvider messages={messages}>
           <SessionProvider session={session}>
