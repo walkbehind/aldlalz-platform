@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { redirect, Link } from "@/i18n/navigation";
-import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,7 +36,7 @@ export default async function MyListingsPage({
   const listings = await getOwnerListings(session.user.id);
 
   return (
-    <Container>
+    <>
       <PageHeader
         title={t("title")}
         subtitle={
@@ -45,7 +44,7 @@ export default async function MyListingsPage({
         }
         actions={
           <Link href="/dashboard/listings/new">
-            <Button size="sm">{t("create")}</Button>
+            <Button variant="accent" size="sm">{t("create")}</Button>
           </Link>
         }
       />
@@ -55,7 +54,7 @@ export default async function MyListingsPage({
           title={t("empty")}
           action={
             <Link href="/dashboard/listings/new">
-              <Button className="w-full sm:w-auto">{t("createFirst")}</Button>
+              <Button variant="accent" className="w-full sm:w-auto">{t("createFirst")}</Button>
             </Link>
           }
         />
@@ -68,7 +67,7 @@ export default async function MyListingsPage({
                 : listing.titleEn || listing.titleAr;
 
             return (
-              <Card key={listing.id} className="flex flex-col gap-4 p-4 sm:p-6 md:flex-row md:items-center md:justify-between">
+              <Card key={listing.id} className="flex flex-col gap-4 p-4 transition-shadow hover:shadow-[var(--shadow-card-hover)] sm:p-6 md:flex-row md:items-center md:justify-between">
                 <div className="min-w-0 flex-1">
                   <div className="mb-2 flex flex-wrap items-center gap-2">
                     <h2 className="text-lg font-semibold">{title}</h2>
@@ -108,6 +107,6 @@ export default async function MyListingsPage({
           })}
         </div>
       )}
-    </Container>
+    </>
   );
 }

@@ -22,6 +22,19 @@
     "contact": "Contact",
     "rights": "All rights reserved"
   },
+  "dashboardNav": {
+    "section": "Dashboard",
+    "overview": "Overview",
+    "myListings": "My listings",
+    "addListing": "Add listing",
+    "backToSite": "Back to site"
+  },
+  "adminNav": {
+    "section": "Admin",
+    "overview": "Overview",
+    "moderation": "Moderation",
+    "backToSite": "Back to site"
+  },
   "home": {
     "title": "Welcome to Aldlalz",
     "subtitle": "Sale • Rent • Booking • Entertainment • Projects — all in one place",
@@ -109,6 +122,13 @@
     "title": "User dashboard",
     "welcome": "Welcome",
     "comingSoon": "Wallet, messages, and more coming soon",
+    "stats": {
+      "title": "Your listings at a glance",
+      "total": "Total listings",
+      "approved": "Published",
+      "pending": "Under review",
+      "drafts": "Drafts"
+    },
     "listingsCard": {
       "title": "My listings",
       "description": "Create and manage your property listings",

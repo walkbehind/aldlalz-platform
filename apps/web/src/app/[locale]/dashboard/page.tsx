@@ -1,10 +1,11 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { redirect, Link } from "@/i18n/navigation";
-import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { StatCard } from "@/components/ui/stat-card";
+import { getOwnerListings } from "@/lib/listings/queries";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -19,13 +20,71 @@ export default async function DashboardPage({ params }: Props) {
   const user = session.user;
 
   const t = await getTranslations("dashboard");
+  const listings = await getOwnerListings(user.id);
+
+  const stats = {
+    total: listings.length,
+    approved: listings.filter((l) => !l.isDraft && l.adminStatus === "APPROVED")
+      .length,
+    pending: listings.filter((l) => !l.isDraft && l.adminStatus === "PENDING")
+      .length,
+    drafts: listings.filter((l) => l.isDraft).length,
+  };
 
   return (
-    <Container>
+    <>
       <PageHeader
         title={t("title")}
         subtitle={`${t("welcome")}, ${user.email}`}
       />
+
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">
+        {t("stats.title")}
+      </h2>
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        <StatCard
+          label={t("stats.total")}
+          value={stats.total}
+          tone="brand"
+          icon={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M3 9h18M9 21V9" />
+            </svg>
+          }
+        />
+        <StatCard
+          label={t("stats.approved")}
+          value={stats.approved}
+          tone="success"
+          icon={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          }
+        />
+        <StatCard
+          label={t("stats.pending")}
+          value={stats.pending}
+          tone="gold"
+          icon={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 2" />
+            </svg>
+          }
+        />
+        <StatCard
+          label={t("stats.drafts")}
+          value={stats.drafts}
+          tone="neutral"
+          icon={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+            </svg>
+          }
+        />
+      </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
@@ -40,7 +99,9 @@ export default async function DashboardPage({ params }: Props) {
               </Button>
             </Link>
             <Link href="/dashboard/listings/new">
-              <Button size="sm">{t("listingsCard.create")}</Button>
+              <Button variant="accent" size="sm">
+                {t("listingsCard.create")}
+              </Button>
             </Link>
           </div>
         </Card>
@@ -52,6 +113,6 @@ export default async function DashboardPage({ params }: Props) {
           </p>
         </Card>
       </div>
-    </Container>
+    </>
   );
 }

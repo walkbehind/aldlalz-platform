@@ -2,7 +2,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { redirect, Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
-import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -77,7 +76,7 @@ export default async function EditListingPage({
   };
 
   return (
-    <Container>
+    <>
       <PageHeader
         title={t("editTitle")}
         subtitle={
@@ -166,6 +165,6 @@ export default async function EditListingPage({
           <SubmitListingButton listingId={listing.id} label={t("resubmit")} />
         </Card>
       )}
-    </Container>
+    </>
   );
 }

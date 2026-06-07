@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { redirect, Link } from "@/i18n/navigation";
-import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -52,7 +51,7 @@ export default async function AdminListingsPage({
   const listings = await getAdminListings(status);
 
   return (
-    <Container>
+    <>
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
       <div className="mb-6 flex flex-wrap gap-2">
@@ -144,6 +143,6 @@ export default async function AdminListingsPage({
           })}
         </div>
       )}
-    </Container>
+    </>
   );
 }

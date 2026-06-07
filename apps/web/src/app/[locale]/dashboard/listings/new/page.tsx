@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
-import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { NewListingFlow } from "@/components/listings/new-listing-flow";
 import {
@@ -65,7 +64,7 @@ export default async function NewListingPage({ params }: Props) {
   };
 
   return (
-    <Container>
+    <>
       <PageHeader
         title={t("createTitle")}
         subtitle={t("createSubtitle")}
@@ -94,6 +93,6 @@ export default async function NewListingPage({ params }: Props) {
         }}
         mapsNotConfigured={map("notConfigured")}
       />
-    </Container>
+    </>
   );
 }
